@@ -1,7 +1,6 @@
 package DatabaseAccess;
 
 import java.sql.*;
-import java.util.UUID;
 
 import Entities.User;
 
@@ -28,7 +27,7 @@ public class DBAccessor {
 				lName = null, 
 				email = null, 
 				password = null,
-				sessionID = null;
+				role = null;
 
 		try {
 
@@ -42,19 +41,20 @@ public class DBAccessor {
 
 			while (results.next()) {
 				id = results.getInt("id");
+				role = results.getString("role");
 				fName = results.getString("fName");
 				lName = results.getString("lname");
 				email = results.getString("email");
 				password = results.getString("password");
-				sessionID = results.getString("sessionID");
 			}
 
 			results.close();
 			statement.close();
 			conn.close();
 
+			if (id != 0) {return new User(id, role, fName, lName, email, password);}
 
-			return new User(id, fName, lName, email, password, sessionID);
+			return null;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -62,23 +62,4 @@ public class DBAccessor {
 
 		return null;
 	}
-
-	public static void writeSessionToDatabaseByID(int userID, UUID sessionID) {
-		String sql = "UPDATE users"
-				+ "SET sessionID = ?"
-				+ "WHERE id = ?";
-
-		try {
-			conn = DriverManager.getConnection(connString, dbUsername, dbPassword);
-
-			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, sessionID.toString());
-			statement.setInt(2, userID);
-		} catch (Exception e) {
-
-		}
-
-
-	}
-
 }

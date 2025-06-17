@@ -1,24 +1,22 @@
 package Entities;
 
-import java.util.UUID;
-
 public class User {
 	int id;
-	String fName, lName, email, password, sessionID;
+	String fName, lName, email, password, role;
 
 	User(String email, String password) {
 		this.email = email;
 		this.password = password;
 	}
 
-	public User(int id, String fName, String lName, String email, String password, String sessionID) {
+	public User(int id, String role, String fName, String lName, String email, String password) {
 		super();
 		this.id = id;
+		this.role = role;
 		this.fName = fName;
 		this.lName = lName;
 		this.email = email;
 		this.password = password;
-		this.sessionID = sessionID;
 	}
 
 	public int getId() {
@@ -27,6 +25,14 @@ public class User {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public String getfName() {
@@ -59,13 +65,5 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public String getSessionID() {
-		return sessionID;
-	}
-
-	public void setSessionID(String sessionID) {
-		this.sessionID = sessionID;
 	}
 }
