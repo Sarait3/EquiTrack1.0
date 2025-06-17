@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+            
+    
+    <wb-module deploy-name="EquiTrack">
+                        
+        
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+                        
+        
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+                
+        <dependent-module archiveName="mysql-connector-j-8.0.33.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/CST8116 Homework/CST8116 Eclipse Workspace/SampleProject/WebContent/WEB-INF/lib/mysql-connector-j-8.0.33.jar">
+                        
+            <dependency-type>uses</dependency-type>
+                    
+        </dependent-module>
+                        
+        
+        <property name="java-output-path" value="/EquiTrack/build/classes"/>
+        <property name="context-root" value="EquiTrack"/>
+                    
+    
+    </wb-module>
+        
+
+</project-modules>
