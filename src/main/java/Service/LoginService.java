@@ -1,3 +1,7 @@
+package Service;
+
+import DatabaseAccess.DBReader;
+import Entities.User;
 
 public class LoginService {
 

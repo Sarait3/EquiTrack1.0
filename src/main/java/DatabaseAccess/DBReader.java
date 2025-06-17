@@ -1,5 +1,9 @@
+package DatabaseAccess;
+
 import java.sql.*;
 import java.util.UUID;
+
+import Entities.User;
 
 public class DBReader {
 	private static final String connString = "jdbc:mysql://localhost/EquiTrack";
