@@ -1,4 +1,4 @@
-package Servlets;
+package com.equitrack.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import Entities.User;
-import Service.LoginService;
+import com.equitrack.model.User;
+import com.equitrack.service.LoginService;
 
 /**
  * Servlet implementation class LoginServlet

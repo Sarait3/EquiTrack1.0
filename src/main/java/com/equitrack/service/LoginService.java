@@ -1,12 +1,10 @@
-package Service;
-
-import java.util.UUID;
+package com.equitrack.service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import DatabaseAccess.DBAccessor;
-import Entities.User;
+import com.equitrack.dao.DBAccessor;
+import com.equitrack.model.*;
 
 public class LoginService {
 
@@ -19,6 +17,7 @@ public class LoginService {
 		String page = String.format("<html>"
 				+ "<head title=\"EquiTrack\">"
 				+ "<style>p {color: red;}</style>"
+				+ "</head>"
 				+ "<body>"
 				+ "<h1>Login</h1>"
 				+ "<form method=\"post\">"
@@ -30,7 +29,6 @@ public class LoginService {
 				+ "%s"
 				+ "</form>"
 				+ "</body>"
-				+ "</head>"
 				+ "</html>",
 				errormsg
 				);

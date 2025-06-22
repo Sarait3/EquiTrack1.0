@@ -1,4 +1,4 @@
-package Entities;
+package com.equitrack.model;
 
 public class User {
 	int id;
