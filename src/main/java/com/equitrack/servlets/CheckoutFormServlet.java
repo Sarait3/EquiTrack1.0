@@ -39,6 +39,7 @@ public class CheckoutFormServlet extends HttpServlet {
 		
 		if (user == null) {
 			response.sendRedirect("Login");
+			return;
 		}
 		
 		PrintWriter writer = response.getWriter();
@@ -55,8 +56,9 @@ public class CheckoutFormServlet extends HttpServlet {
 		String itemId = request.getParameter("itemId");
 		int userId = Integer.valueOf(request.getParameter("userId"));
 		Date checkoutDate = Date.valueOf(request.getParameter("checkoutDate"));
+		Date returnDate = Date.valueOf(request.getParameter("returnDate"));
 		
-		checkout.checkoutItem(itemId, userId, checkoutDate);
+		checkout.checkoutItem(itemId, userId, checkoutDate, returnDate);
 		
 		writer.write("Item Checked Out");
 	}

@@ -3,7 +3,7 @@ package com.equitrack.service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.equitrack.dao.DBAccessor;
+import com.equitrack.dao.UserDao;
 import com.equitrack.model.*;
 
 public class LoginService {
@@ -39,7 +39,7 @@ public class LoginService {
 
 	public User validateLogin(String email, String password) {
 
-		User user = DBAccessor.getUser("email", email);
+		User user = UserDao.getUser("email", email);
 
 		if(user != null) {
 			if (user.getPassword().equals(password)) {

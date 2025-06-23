@@ -4,13 +4,7 @@ public class User {
 	int id;
 	String fName, lName, email, password, role;
 
-	User(String email, String password) {
-		this.email = email;
-		this.password = password;
-	}
-
 	public User(int id, String role, String fName, String lName, String email, String password) {
-		super();
 		this.id = id;
 		this.role = role;
 		this.fName = fName;
