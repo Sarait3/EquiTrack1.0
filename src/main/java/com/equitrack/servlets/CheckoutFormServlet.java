@@ -60,7 +60,7 @@ public class CheckoutFormServlet extends HttpServlet {
 		
 		checkout.checkoutItem(itemId, userId, checkoutDate, returnDate);
 		
-		writer.write("Item Checked Out");
+		response.sendRedirect("");
 	}
 
 }
