@@ -1,8 +1,8 @@
-package builders;
+package com.equitrack.service;
 
 import java.util.ArrayList;
-import com.test.model.Equipment;
-import com.test.model.User;
+import com.equitrack.model.Equipment;
+import com.equitrack.model.User;
 
 public class ListViewBuilder extends PageBuilder {
 	private User user;

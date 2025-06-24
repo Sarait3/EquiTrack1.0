@@ -1,4 +1,4 @@
-package com.test.servlets;
+package com.equitrack.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.test.model.*;
+import com.equitrack.model.*;
 
-import builders.ListViewBuilder;
+import com.equitrack.service.ListViewBuilder;
 
-import com.test.dao.*;
+import com.equitrack.dao.*;
 
 @WebServlet("/ListView")
 public class ListViewServlet extends HttpServlet {
@@ -24,18 +24,14 @@ public class ListViewServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		User user = (User) request.getSession().getAttribute("currentUser");
+		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		} else {
-			try {
-				UserDao dao = new UserDao();
-				user = dao.getUserById(user.getId());
-				request.getSession().setAttribute("currentUser", user);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			UserDao dao = new UserDao();
+			user = dao.getUserById(user.getId());
+			request.getSession().setAttribute("user", user);
 		}
 
 		EquipmentDao dao = new EquipmentDao();

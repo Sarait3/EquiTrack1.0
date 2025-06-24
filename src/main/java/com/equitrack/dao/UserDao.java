@@ -15,7 +15,15 @@ public class UserDao {
 	private static final String userColEmail = "email";
 	private static final String userColPass = "password";
 	
-	public static User getUser(String columnName, String columnData) {
+	public User getUserById(int userId) {
+		return getUser(userColId, Integer.toString(userId));
+	}
+	
+	public User getUserByEmail(String userEmail) {
+		return getUser(userColEmail, userEmail);
+	}
+	
+	private User getUser(String columnName, String columnData) {
 		try {
 			MyLock.readLock.lock();
 

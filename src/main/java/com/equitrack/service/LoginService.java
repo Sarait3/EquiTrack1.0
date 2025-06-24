@@ -33,12 +33,13 @@ public class LoginService {
 				+ "            <div class='header-content'>\r\n"
 				+ "            </div>\r\n"
 				+ "        </div>\r\n"
-				+ "        <form class='container-detail edit-form' action='Login' method='POST' enctype=\"multipart/form-data\">\r\n"
+				+ "        <form class='container-detail edit-form' action='Login' method='POST'>\r\n"
 				+ "        <label for='email'>Email:</label>\r\n"
 				+ "        <input type='text' name='email' id='email' required>\r\n"
 				+ "        <label for='password'>Password:</label>\r\n"
 				+ "        <input type='password' name='password' id='password' required>\r\n"
-				+ "        <button type='submit'>Login</button>\r\n"
+				+ "		   <div class='form-buttons'>"
+				+ "        <button type='submit'>Login</button></div>\r\n"
 				+ "        %s\r\n"
 				+ "        </form>\r\n"
 				+ "    </body>\r\n"
@@ -51,8 +52,8 @@ public class LoginService {
 	}
 
 	public User validateLogin(String email, String password) {
-
-		User user = UserDao.getUser("email", email);
+		UserDao dao = new UserDao();
+		User user = dao.getUserByEmail(email);
 
 		if(user != null) {
 			if (user.getPassword().equals(password)) {

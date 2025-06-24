@@ -1,4 +1,4 @@
-package com.test.servlets;
+package com.equitrack.servlets;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -7,13 +7,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.test.dao.EquipmentDao;
-import com.test.dao.UserDao;
-import com.test.model.Equipment;
-import com.test.model.User;
+import com.equitrack.dao.EquipmentDao;
+import com.equitrack.dao.UserDao;
+import com.equitrack.model.Equipment;
+import com.equitrack.model.User;
 
-import builders.ConfirmationPageBuilder;
-import builders.DetailViewBuilder;
+import com.equitrack.service.ConfirmationPageBuilder;
+import com.equitrack.service.DetailViewBuilder;
 
 @WebServlet("/DetailView")
 public class DetailViewServlet extends HttpServlet {
@@ -25,13 +25,9 @@ public class DetailViewServlet extends HttpServlet {
 			response.sendRedirect("Login");
 			return;
 		} else {
-			try {
-				UserDao dao = new UserDao();
-				user = dao.getUserById(user.getId());
-				request.getSession().setAttribute("currentUser", user);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			UserDao dao = new UserDao();
+			user = dao.getUserById(user.getId());
+			request.getSession().setAttribute("currentUser", user);
 		}
 		EquipmentDao dao = new EquipmentDao();
 		String equipmentId = request.getParameter("id");

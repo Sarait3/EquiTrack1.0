@@ -1,4 +1,4 @@
-package com.test.servlets;
+package com.equitrack.servlets;
 
 import java.io.IOException;
 
@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.test.dao.EquipmentDao;
-import com.test.dao.UserDao;
-import com.test.model.Equipment;
-import com.test.model.User;
+import com.equitrack.dao.EquipmentDao;
+import com.equitrack.dao.UserDao;
+import com.equitrack.model.Equipment;
+import com.equitrack.model.User;
 
-import builders.ConfirmationPageBuilder;
-import builders.EditEquipmentBuilder;
+import com.equitrack.service.ConfirmationPageBuilder;
+import com.equitrack.service.EditEquipmentBuilder;
 
 @WebServlet("/EditEquipment")
 @MultipartConfig
@@ -30,13 +30,9 @@ public class EditEquipmentServlet extends HttpServlet {
 			response.sendRedirect("Login");
 			return;
 		} else {
-			try {
-				UserDao dao = new UserDao();
-				user = dao.getUserById(user.getId());
-				request.getSession().setAttribute("currentUser", user);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			UserDao dao = new UserDao();
+			user = dao.getUserById(user.getId());
+			request.getSession().setAttribute("currentUser", user);
 		}
 
 		EquipmentDao dao = new EquipmentDao();

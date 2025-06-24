@@ -1,4 +1,4 @@
-package com.test.servlets;
+package com.equitrack.servlets;
 
 import java.io.IOException;
 
@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.test.dao.EquipmentDao;
-import com.test.dao.UserDao;
-import com.test.model.Equipment;
-import com.test.model.User;
+import com.equitrack.dao.EquipmentDao;
+import com.equitrack.dao.UserDao;
+import com.equitrack.model.Equipment;
+import com.equitrack.model.User;
 
-import builders.AddEquipmentBuilder;
-import builders.ConfirmationPageBuilder;
+import com.equitrack.service.AddEquipmentBuilder;
+import com.equitrack.service.ConfirmationPageBuilder;
 
 @WebServlet("/AddEquipment")
 @MultipartConfig
@@ -29,13 +29,9 @@ public class AddEquipmentServlet extends HttpServlet {
 			response.sendRedirect("Login");
 			return;
 		} else {
-			try {
-				UserDao dao = new UserDao();
-				user = dao.getUserById(user.getId());
-				request.getSession().setAttribute("currentUser", user);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			UserDao dao = new UserDao();
+			user = dao.getUserById(user.getId());
+			request.getSession().setAttribute("currentUser", user);
 		}
 
 		AddEquipmentBuilder builder = new AddEquipmentBuilder(user);
@@ -62,7 +58,7 @@ public class AddEquipmentServlet extends HttpServlet {
 		String notes = request.getParameter("notes");
 		boolean isAvailable = Boolean.parseBoolean(request.getParameter("isAvailable"));
 
-		Equipment equipment = new Equipment(name, isAvailable, location, imagePath, notes);
+		Equipment equipment = new Equipment(name, isAvailable, location, imagePath, notes, null);
 		dao.createEquipment(equipment);
 		String message = "Equipment created successfully";
 		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message);

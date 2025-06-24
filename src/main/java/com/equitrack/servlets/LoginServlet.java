@@ -62,7 +62,7 @@ public class LoginServlet extends HttpServlet {
 			writer.write(login.loginPage(false));
 		} else {
 			login.createSession(user, request);
-			writer.write("login successful");
+			response.sendRedirect("/EquiTrack/ListView");
 		}
 	}
 

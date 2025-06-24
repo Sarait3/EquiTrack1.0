@@ -1,4 +1,4 @@
-package builders;
+package com.equitrack.service;
 
 public class ConfirmationPageBuilder extends PageBuilder {
 	private String message;

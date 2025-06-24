@@ -7,10 +7,10 @@ import com.equitrack.dao.EquipmentDao;
 import com.equitrack.model.*;
 
 public class CheckoutService {
-	
+	private EquipmentDao dao = new EquipmentDao();
 	
 	public String checkoutForm(User user, String itemId) {
-		Equipment equipment = EquipmentDao.getEquipment(itemId);
+		Equipment equipment = dao.getEquipment(itemId);
 		String html = String.format("<!DOCTYPE html>\r\n"
 				+ "<html lang='en'>\r\n"
 				+ "<html>\r\n"
@@ -48,21 +48,21 @@ public class CheckoutService {
 				+ "</body>\r\n"
 				+ "\r\n"
 				+ "</html>", equipment.getName(), equipment.getName(), equipment.getId().toString(), 
-				user.getfName(), user.getlName(), Integer.toString(user.getId()), Date.valueOf(LocalDate.now()).toString());
+				user.getFName(), user.getLName(), Integer.toString(user.getId()), Date.valueOf(LocalDate.now()).toString());
 		
 		return html;
 	}
 	
 	public void checkoutItem(String itemId, int userId, Date checkoutDate, Date returnDate) {
-		Equipment equipment = EquipmentDao.getEquipment(itemId);
+		Equipment equipment = dao.getEquipment(itemId);
 		
 		if (equipment.isAvailable()) {
 			equipment.setAvailbale(false);
 		}
 		
-		EquipmentDao.logCheckout(itemId, userId, checkoutDate, returnDate);
+		dao.logCheckout(itemId, userId, checkoutDate, returnDate);
 		
-		EquipmentDao.updateEquipment(null);
+		dao.updateEquipment(null);
 	}
 }
 

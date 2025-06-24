@@ -20,7 +20,7 @@ public class EquipmentDao {
 	private static final String equipmentColNotes = "notes";
 	private static final String equipmentColReturnDate = "returnDate";
 
-	public static Map<UUID, Equipment> getAllEquipment() {
+	public Map<UUID, Equipment> getAllEquipment() {
 		try {
 			MyLock.readLock.lock();
 
@@ -56,7 +56,7 @@ public class EquipmentDao {
 		}
 	}
 
-	public static Equipment getEquipment(String id) {
+	public Equipment getEquipment(String id) {
 		try {
 			MyLock.readLock.lock();
 
@@ -96,7 +96,7 @@ public class EquipmentDao {
 		}
 	}
 
-	public static boolean createEquipment(Equipment equipment) {
+	public boolean createEquipment(Equipment equipment) {
 		try {
 			MyLock.writeLock.lock();
 
@@ -129,7 +129,7 @@ public class EquipmentDao {
 		}
 	}
 
-	public static boolean updateEquipment(Equipment equipment) {
+	public boolean updateEquipment(Equipment equipment) {
 		try {
 			MyLock.writeLock.lock();
 
@@ -167,7 +167,7 @@ public class EquipmentDao {
 		}
 	}
 
-	public static boolean deleteEquipment(String id) {
+	public boolean deleteEquipment(String id) {
 		try {
 			MyLock.writeLock.lock();
 
@@ -191,7 +191,7 @@ public class EquipmentDao {
 		}
 	}
 
-	public static boolean createOrUpdateteEquipment(Equipment equipment) {
+	public boolean createOrUpdateteEquipment(Equipment equipment) {
 		if (equipment != null && getAllEquipment().containsKey(equipment.getId())) {
 			return updateEquipment(equipment);
 		} else if (equipment != null){
@@ -201,7 +201,7 @@ public class EquipmentDao {
 		return false;
 	}
 
-	public static void logCheckout(String itemId, int userId, Date checkoutDate, Date returnDate) {
+	public void logCheckout(String itemId, int userId, Date checkoutDate, Date returnDate) {
 		try {
 			MyLock.writeLock.lock();
 

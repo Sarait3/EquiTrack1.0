@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import com.equitrack.model.User;
 import com.equitrack.service.CheckoutService;
+import com.equitrack.service.ConfirmationPageBuilder;
 
 /**
  * Servlet implementation class CheckoutFormServlet
@@ -60,7 +61,10 @@ public class CheckoutFormServlet extends HttpServlet {
 		
 		checkout.checkoutItem(itemId, userId, checkoutDate, returnDate);
 		
-		response.sendRedirect("");
+		ConfirmationPageBuilder builder = new ConfirmationPageBuilder("Checkout Successful");
+		String html = builder.buildPage();
+		response.setContentType("text/html");
+		response.getWriter().write(html);
 	}
 
 }

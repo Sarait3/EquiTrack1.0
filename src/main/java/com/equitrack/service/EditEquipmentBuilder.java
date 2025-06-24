@@ -1,7 +1,7 @@
-package builders;
+package com.equitrack.service;
 
-import com.test.model.Equipment;
-import com.test.model.User;
+import com.equitrack.model.Equipment;
+import com.equitrack.model.User;
 
 public class EditEquipmentBuilder extends PageBuilder {
 	private User user;
