@@ -28,7 +28,7 @@ public class CheckoutService {
 				+ "        <div class='header-content'>\r\n"
 				+ "        </div>\r\n"
 				+ "    </div>\r\n"
-				+ "    <form class='container-detail edit-form' action='Checkout' method='POST' enctype=\"multipart/form-data\">\r\n"
+				+ "    <form class='container-detail edit-form' action='CheckoutForm' method='POST'>\r\n"
 				+ "        <label for='itemName'>Item Name: </label>\r\n"
 				+ "        <input type='text' readonly name='itemName' id='itemName' value='%s'>\r\n"
 				+ "        <label for='itemId'>Item ID: </label>\r\n"
@@ -62,7 +62,7 @@ public class CheckoutService {
 		
 		dao.logCheckout(itemId, userId, checkoutDate, returnDate);
 		
-		dao.updateEquipment(null);
+		dao.updateEquipment(equipment);
 	}
 }
 

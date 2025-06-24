@@ -24,14 +24,14 @@ public class AddEquipmentServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		User user = (User) request.getSession().getAttribute("currentUser");
+		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		} else {
 			UserDao dao = new UserDao();
 			user = dao.getUserById(user.getId());
-			request.getSession().setAttribute("currentUser", user);
+			request.getSession().setAttribute("user", user);
 		}
 
 		AddEquipmentBuilder builder = new AddEquipmentBuilder(user);

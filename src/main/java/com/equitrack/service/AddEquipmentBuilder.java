@@ -13,7 +13,7 @@ public class AddEquipmentBuilder extends PageBuilder {
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
-		if (user.getRole().equals("Admin")) {
+		if (user.getRole().equalsIgnoreCase("Admin")) {
 
 			html.append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8'>")
 					.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>")

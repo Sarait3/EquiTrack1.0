@@ -52,7 +52,7 @@ public class DetailViewBuilder extends PageBuilder {
 					.append("</div>");
 		}
 
-		if (user.getRole().equals("Admin")) {
+		if (user.getRole().equalsIgnoreCase("Admin")) {
 			html.append(
 					"<div class='actions-section'><div class='actions-title'>Actions</div><div class='action-buttons'>")
 					.append("<form method='GET' action='DetailView'>").append("<input type='hidden' name='id' value='")

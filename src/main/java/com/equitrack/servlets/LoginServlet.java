@@ -43,7 +43,7 @@ public class LoginServlet extends HttpServlet {
 		if (session.getAttribute("user") == null) {
 			writer.write(login.loginPage(true));
 		} else {
-			writer.write("login successful");
+			response.sendRedirect("/EquiTrack/ListView");
 		}
 	}
 

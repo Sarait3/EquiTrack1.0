@@ -25,7 +25,7 @@ public class EditEquipmentServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		User user = (User) request.getSession().getAttribute("currentUser");
+		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;

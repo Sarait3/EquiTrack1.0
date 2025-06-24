@@ -17,7 +17,7 @@ public class EditEquipmentBuilder extends PageBuilder {
 		StringBuilder html = new StringBuilder();
 		String status = equipment.isAvailable() ? "available" : "unavailable";
 
-		if (user.getRole().equals("Admin")) {
+		if (user.getRole().equalsIgnoreCase("Admin")) {
 			html.append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8'>")
 					.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>")
 					.append("<title>Edit Equipment</title>").append("<link rel='stylesheet' href='css/style.css'>")

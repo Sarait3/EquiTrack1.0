@@ -42,7 +42,7 @@ public class ListViewBuilder extends PageBuilder {
 				|| statusFilter != null && !statusFilter.trim().isEmpty()) {
 			html.append("<a href='ListView' class='reset-btn'>View All</a>");
 		} else {
-			if (user.getRole().equals("Admin")) {
+			if (user.getRole().equalsIgnoreCase("Admin")) {
 				html.append("<a href='AddEquipment' class='add-btn'>Add Equipment</a>");
 			}
 		}

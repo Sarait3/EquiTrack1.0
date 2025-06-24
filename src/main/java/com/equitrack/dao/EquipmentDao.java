@@ -19,6 +19,12 @@ public class EquipmentDao {
 	private static final String equipmentColImagePath = "imagePath";
 	private static final String equipmentColNotes = "notes";
 	private static final String equipmentColReturnDate = "returnDate";
+	
+	private static final String logColId = "id";
+	private static final String logColItemId = "itemId";
+	private static final String logColUserId = "userId";
+	private static final String logColCheckoutDate = "checkoutDate";
+	private static final String logColReturnDate = "returnDate";
 
 	public Map<UUID, Equipment> getAllEquipment() {
 		try {
@@ -35,13 +41,13 @@ public class EquipmentDao {
 				ResultSet results = statement.executeQuery();
 
 				while (results.next()) {
-					id = results.getString("id");
-					name = results.getString("name");
-					isAvailable = results.getString("isAvailable");
-					location = results.getString("location");
-					imagePath = results.getString("imagePath");
-					notes = results.getString("notes");
-					returnDate = results.getDate(equipmentColReturnDate).toLocalDate();
+					id = results.getString(equipmentColId);
+					name = results.getString(equipmentColName);
+					isAvailable = results.getString(equipmentColIsAvailable);
+					location = results.getString(equipmentColLocation);
+					imagePath = results.getString(equipmentColImagePath);
+					notes = results.getString(equipmentColNotes);
+					returnDate = results.getDate(equipmentColReturnDate) == null ? null : results.getDate(equipmentColReturnDate).toLocalDate();
 
 					equipmentList.put(UUID.fromString(id), new Equipment(id, name, isAvailable, location, imagePath, notes, returnDate));
 				}
@@ -80,7 +86,7 @@ public class EquipmentDao {
 					location = results.getString(equipmentColLocation);
 					imagePath = results.getString(equipmentColImagePath);
 					notes = results.getString(equipmentColNotes);
-					returnDate = results.getDate(equipmentColReturnDate).toLocalDate();
+					returnDate = results.getDate(equipmentColReturnDate) == null ? null : results.getDate(equipmentColReturnDate).toLocalDate();
 
 					equipment = new Equipment(id, name, isAvailable, location, imagePath, notes, returnDate);
 
@@ -114,7 +120,7 @@ public class EquipmentDao {
 				statement.setString(4, equipment.getLocation());
 				statement.setString(5, equipment.getImagePath());
 				statement.setString(6, equipment.getNotes());
-				statement.setDate(7, Date.valueOf(equipment.getReturnDate()));
+				statement.setDate(7, equipment.getReturnDate() == null ? null : Date.valueOf(equipment.getReturnDate()));
 
 				statement.execute();
 
@@ -139,7 +145,7 @@ public class EquipmentDao {
 					+ equipmentColLocation + " = ?, "
 					+ equipmentColImagePath + " = ?, "
 					+ equipmentColNotes + " = ?, "
-					+ equipmentColReturnDate + " = ?"
+					+ equipmentColReturnDate + " = ? "
 					+ "WHERE " + equipmentColId + " = ?";
 
 			try {
@@ -151,7 +157,7 @@ public class EquipmentDao {
 				statement.setString(3, equipment.getLocation());
 				statement.setString(4, equipment.getImagePath());
 				statement.setString(5, equipment.getNotes());
-				statement.setDate(6, Date.valueOf(equipment.getReturnDate()));
+				statement.setDate(6, equipment.getReturnDate() == null ? null : Date.valueOf(equipment.getReturnDate()));
 				statement.setString(7, equipment.getId());
 
 				statement.execute();
@@ -205,15 +211,15 @@ public class EquipmentDao {
 		try {
 			MyLock.writeLock.lock();
 
-			String sql = "INSERT INTO checkoutLog (itemId, userId, checkoutDate)"
-					+ "VALUES (?, ?, ?, ?)";
+			String sql = String.format("INSERT INTO checkoutLog (%s, %s, %s, %s)"
+					+ "VALUES (?, ?, ?, ?)", logColItemId, logColUserId, logColCheckoutDate, logColReturnDate);
 
 			try {
 				Connection conn = DBConnection.getConnection();
 				PreparedStatement statement = conn.prepareStatement(sql);
 
-				statement.setInt(1, userId);
-				statement.setString(2, itemId);
+				statement.setString(1, itemId);
+				statement.setInt(2, userId);
 				statement.setDate(3, checkoutDate);
 				statement.setDate(4, returnDate);
 
