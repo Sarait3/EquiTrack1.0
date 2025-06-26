@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-	private static final String connString = "jdbc:mysql://localhost/EquiTrack";
+	private static final String connString = "jdbc:mysql://localhost/equitrack";
 	private static final String dbUsername = "dbUser";
 	private static final String dbPassword = "dbPassword";
 	

@@ -20,7 +20,7 @@ public class LoginService {
 				+ "        <meta charset='UTF-8'>\r\n"
 				+ "        <meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n"
 				+ "        <title>EquiTrack</title>\r\n"
-				+ "        <link rel='stylesheet' href='css/style.css'>\r\n"
+				+ "			<link rel='stylesheet' href='css/style.css'>\r\n"				
 				+ "	   <style>\r\n"
 				+ "        p {\r\n"
 				+ "            color: red;\r\n"

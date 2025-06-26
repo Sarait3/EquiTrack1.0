@@ -1,6 +1,5 @@
 package com.equitrack.service;
 
-import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
 
 public class AddEquipmentBuilder extends PageBuilder {

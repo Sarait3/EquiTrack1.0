@@ -42,9 +42,10 @@ public class DetailViewBuilder extends PageBuilder {
 		html.append("<div class='detail-section'>").append("<div class='section-title'>Equipment Information</div>")
 				.append("<div class='detail-grid'>")
 				.append("<div class='detail-item'><div class='item-label'>Location</div><div class='item-value'>"
-						+ equipment.getLocation() + "</div></div>")
-				.append("<div class='detail-item'><div class='item-label'>Status</div><div class='item-value'>"
-						+ statusText + "</div></div>")
+						+ equipment.getLocation() + "</div></div>");
+		if (!equipment.isAvailable() && equipment.getReturnDate()!=null) 
+				html.append("<div class='detail-item'><div class='item-label'>Return Date</div><div class='item-value'>"
+						+ equipment.getReturnDate() + "</div></div>")
 				.append("</div>");
 		if (equipment.getNotes() != null && !equipment.getNotes().trim().isEmpty()) {
 			html.append("<div class='notes-section'>").append("<div class='notes-title'>NOTES</div>")
