@@ -12,8 +12,15 @@ CREATE TABLE users (
     lName TEXT,
     email TEXT,
     password TEXT
-    );
-    
+);
+
+DELIMITER //
+CREATE TRIGGER hash_pass BEFORE INSERT ON users FOR EACH ROW
+BEGIN
+    SET NEW.password = sha2(new.password, 256);
+END;//
+DELIMITER ;
+
 CREATE TABLE equipment (
 	id VARCHAR(36) PRIMARY KEY,
     itemName TEXT,
