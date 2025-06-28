@@ -2,13 +2,28 @@ package com.equitrack.service;
 
 import com.equitrack.model.User;
 
+/**
+ * Generates the HTML page for adding a new piece of equipment. This page is
+ * only accessible to users with the "Admin" role.
+ */
 public class AddEquipmentBuilder extends PageBuilder {
 	private User user;
 
+	/**
+	 * Creates a new AddEquipmentBuilder for a given user
+	 *
+	 * @param user the currently logged-in user
+	 */
 	public AddEquipmentBuilder(User user) {
 		this.user = user;
 	}
 
+	/**
+	 * Builds and returns the HTML content for the Add Equipment page
+	 * 
+	 * @return a complete HTML string for the add equipment form or an access denied
+	 *         message
+	 */
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
@@ -16,7 +31,7 @@ public class AddEquipmentBuilder extends PageBuilder {
 
 			html.append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8'>")
 					.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>")
-					.append("<title>Edit Equipment</title>").append("<link rel='stylesheet' href='css/style.css'>")
+					.append("<title>Add Equipment</title>").append("<link rel='stylesheet' href='css/style.css'>")
 					.append("</head><body>");
 
 			html.append("<div class='header'><div class='header-content'>")
@@ -49,8 +64,14 @@ public class AddEquipmentBuilder extends PageBuilder {
 					.append("</div>");
 
 			html.append("</body></html>");
-		} else
-			html.append("<h2>Acess denied</h2>");
+		} else {
+			html.append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8'>")
+					.append("<title>Access Denied</title>").append("<link rel='stylesheet' href='css/style.css'>")
+					.append("</head><body>").append("<div class='container-detail'><h2>Access Denied</h2>")
+					.append("<p>You do not have permission to view this page.</p>")
+					.append("<a href='ListView' class='back-btn'>&larr; Back to List</a></div>")
+					.append("</body></html>");
+		}
 
 		return html.toString();
 	}

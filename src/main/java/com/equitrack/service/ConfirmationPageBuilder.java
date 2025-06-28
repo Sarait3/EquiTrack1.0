@@ -1,12 +1,28 @@
 package com.equitrack.service;
 
+/**
+ * Builds a simple HTML confirmation page displaying a success message. This
+ * page is typically used after successful actions such as adding, editing, or
+ * deleting equipment records
+ */
 public class ConfirmationPageBuilder extends PageBuilder {
+	/** The message to be displayed on the confirmation page */
 	private String message;
 
+	/**
+	 * Constructs a ConfirmationPageBuilder with the provided message
+	 *
+	 * @param message The success message to display to the user
+	 */
 	public ConfirmationPageBuilder(String message) {
 		this.message = message;
 	}
 
+	/**
+	 * Builds the HTML content for the confirmation page
+	 *
+	 * @return A complete HTML page as a string containing the confirmation message.
+	 */
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();

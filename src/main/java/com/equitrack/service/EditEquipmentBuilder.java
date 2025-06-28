@@ -3,19 +3,39 @@ package com.equitrack.service;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
 
+/**
+ * Builds the HTML page for editing equipment form Only users with the 'Admin'
+ * role are allowed to access this page, If a non-admin user tries to access the
+ * page, an "Access Denied" message is shown.
+ * 
+ */
 public class EditEquipmentBuilder extends PageBuilder {
+	/** The current logged-in user */
 	private User user;
+
+	/** The equipment to be edited */
 	private Equipment equipment;
 
+	/**
+	 * Constructs an EditEquipmentBuilder with the specified user and equipment
+	 *
+	 * @param user      the user currently logged in
+	 * @param equipment the equipment to be edited
+	 */
 	public EditEquipmentBuilder(User user, Equipment equipment) {
 		this.user = user;
 		this.equipment = equipment;
 	}
 
+	/**
+	 * Builds and returns the HTML content for the edit equipment page
+	 *
+	 * @return the generated HTML page as a String
+	 */
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
-		String status = equipment.isAvailable() ? "available" : "unavailable";
+		String status = equipment.isAvailableString();
 
 		if (user.getRole().equalsIgnoreCase("Admin")) {
 			html.append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8'>")
@@ -67,9 +87,11 @@ public class EditEquipmentBuilder extends PageBuilder {
 					.append("<a href='DetailView?id=").append(equipment.getId())
 					.append("' class='back-btn'>Cancel</a></div>").append("</form>").append("</div>");
 
+			html.append("</div></div>");
 			html.append("</body></html>");
 		} else
-			html.append("<h2>Access Denied</h2>");
+			html.append("<!DOCTYPE html><html><head><title>Access Denied</title></head><body>")
+					.append("<h2>Access Denied</h2>").append("</body></html>");
 		return html.toString();
 	}
 

@@ -12,8 +12,15 @@ CREATE TABLE users (
     lName TEXT,
     email TEXT,
     password TEXT
-    );
-    
+);
+
+DELIMITER //
+CREATE TRIGGER hash_pass BEFORE INSERT ON users FOR EACH ROW
+BEGIN
+    SET NEW.password = sha2(new.password, 256);
+END;//
+DELIMITER ;
+
 CREATE TABLE equipment (
 	id VARCHAR(36) PRIMARY KEY,
     itemName TEXT,
@@ -42,8 +49,8 @@ INSERT INTO users (userRole, fName, lName, email, password) VALUES
 ('Regular', 'Charlie', 'Weasley', 'charlie@example.com', 'charliepass');
 
 INSERT INTO equipment (id, itemName, isAvailable, location, imagePath, notes, returnDate) VALUES
-(UUID(), 'Crane', 'yes', 'Warehouse A', 'images/crane1.jpg', 'Large crane for high-reach tasks.', NULL),
-(UUID(), 'Excavator', 'no', 'Site A', 'images/excavator1.jpg', 'Currently in use for trenching.', '2025-06-30'),
-(UUID(), 'Loader', 'yes', 'Warehouse B', 'images/loader1.jpg', 'Compact loader with new tires.', NULL),
-(UUID(), 'Concrete Mixer', 'yes', 'Warehouse A', 'images/mixer1.jpg', 'Ready for concrete pour.', NULL),
-(UUID(), 'Welding Machine', 'no', 'Site B', 'images/welder1.jpg', 'Currently in use for steel frame welding.', '2025-07-02');
+(UUID(), 'Crane', 'available', 'Warehouse A', 'images/crane1.jpg', 'Large crane for high-reach tasks.', NULL),
+(UUID(), 'Excavator', 'unavailable', 'Site A', 'images/excavator1.jpg', 'Currently in use for trenching.', '2025-06-30'),
+(UUID(), 'Loader', 'available', 'Warehouse B', 'images/loader1.jpg', 'Compact loader with new tires.', NULL),
+(UUID(), 'Concrete Mixer', 'available', 'Warehouse A', 'images/mixer1.jpg', 'Ready for concrete pour.', NULL),
+(UUID(), 'Welding Machine', 'unavailable', 'Site B', 'images/welder1.jpg', 'Currently in use for steel frame welding.', '2025-07-02');

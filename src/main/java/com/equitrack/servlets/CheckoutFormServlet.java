@@ -21,46 +21,54 @@ import com.equitrack.service.ConfirmationPageBuilder;
 @WebServlet("/CheckoutForm")
 public class CheckoutFormServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
 	CheckoutService checkout = new CheckoutService();
-	
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public CheckoutFormServlet() {
-        super();
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * Handles GET requests to display the checkout form for a selected equipment
+	 * item
+	 *
+	 * @param request  the HttpServletRequest object
+	 * @param response the HttpServletResponse object
+	 * @throws ServletException
+	 * @throws IOException
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
-		
+
+		// Redirect to login page if the user is not authenticated
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		}
-		
-		PrintWriter writer = response.getWriter();
-		
-		writer.write(checkout.checkoutForm(user, request.getParameter("id")));
+
+		// Generate and send the checkout form HTML
+		response.getWriter().write(checkout.checkoutForm(user, request.getParameter("id")));
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * Handles POST requests to process the checkout
+	 *
+	 * @param request  the HttpServletRequest object
+	 * @param response the HttpServletResponse object
+	 * @throws ServletException
+	 * @throws IOException
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter writer = response.getWriter();
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		// Retrieve form parameters
 		String itemId = request.getParameter("itemId");
 		int userId = Integer.valueOf(request.getParameter("userId"));
 		Date checkoutDate = Date.valueOf(request.getParameter("checkoutDate"));
 		Date returnDate = Date.valueOf(request.getParameter("returnDate"));
-		
+
+		// Log checkout in the system
 		checkout.checkoutItem(itemId, userId, checkoutDate, returnDate);
-		
+
+		// Display confirmation page
 		ConfirmationPageBuilder builder = new ConfirmationPageBuilder("Checkout Successful");
 		String html = builder.buildPage();
 		response.setContentType("text/html");

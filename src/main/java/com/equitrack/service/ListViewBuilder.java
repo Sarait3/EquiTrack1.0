@@ -4,12 +4,26 @@ import java.util.ArrayList;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
 
+/**
+ * Builds the HTML content for the equipment list view page Displays all
+ * equipment items with filtering and search options
+ * 
+ */
 public class ListViewBuilder extends PageBuilder {
 	private User user;
 	private ArrayList<Equipment> equipmentList;
 	private String searchInput;
 	private String statusFilter;
 
+	/**
+	 * Constructs a ListViewBuilder with the given user, equipment list, search
+	 * input, and status filter
+	 *
+	 * @param user          the user currently logged in
+	 * @param equipmentList the list of equipment to display
+	 * @param searchInput   the search input string entered by the user
+	 * @param statusFilter  the selected equipment status filter
+	 */
 	public ListViewBuilder(User user, ArrayList<Equipment> equipmentList, String searchInput, String statusFilter) {
 		this.user = user;
 		this.equipmentList = equipmentList;
@@ -17,6 +31,12 @@ public class ListViewBuilder extends PageBuilder {
 		this.statusFilter = statusFilter;
 	}
 
+	/**
+	 * Builds the HTML string for the equipment list page Includes search/filter
+	 * forms, user information, and equipment display
+	 *
+	 * @return a string containing the complete HTML for the equipment list view
+	 */
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
@@ -52,15 +72,20 @@ public class ListViewBuilder extends PageBuilder {
 				.append("<div>Image</div><div>ID</div><div>Name</div><div>Location</div><div>Status</div>")
 				.append("</div><div id='equipmentItems'>");
 
-		for (Equipment eq : equipmentList) {
-			String status = eq.isAvailable() ? "available" : "unavailable";
-			html.append("<a class='equipment-item' href='DetailView?id=").append(eq.getId()).append("'>")
-					.append("<img class='equipment-image' src='").append(eq.getImagePath()).append("' alt='")
-					.append(eq.getName()).append("'>").append("<div class='equipment-id'>")
-					.append(eq.getId().substring(0, 8)).append("</div>").append("<div class='equipment-name'>")
-					.append(eq.getName()).append("</div>").append("<div class='equipment-location'>")
-					.append(eq.getLocation()).append("</div>").append("<span class='status-tag status-").append(status)
-					.append("'>").append(status.toUpperCase()).append("</span>").append("</a>");
+		if (equipmentList.isEmpty()) {
+			html.append("<div style=\"color: #666; text-align: center; font-size: 1.2rem; padding: 1.5rem; "
+					+ "margin-top: 2rem; font-style: italic;\">No results found.</div>");
+		} else {
+			for (Equipment eq : equipmentList) {
+				String status = eq.isAvailableString();
+				html.append("<a class='equipment-item' href='DetailView?id=").append(eq.getId()).append("'>")
+						.append("<img class='equipment-image' src='").append(eq.getImagePath()).append("' alt='")
+						.append(eq.getName()).append("'>").append("<div class='equipment-id'>")
+						.append(eq.getId().substring(0, 8)).append("</div>").append("<div class='equipment-name'>")
+						.append(eq.getName()).append("</div>").append("<div class='equipment-location'>")
+						.append(eq.getLocation()).append("</div>").append("<span class='status-tag status-")
+						.append(status).append("'>").append(status.toUpperCase()).append("</span>").append("</a>");
+			}
 		}
 
 		html.append("</div></div></div>");

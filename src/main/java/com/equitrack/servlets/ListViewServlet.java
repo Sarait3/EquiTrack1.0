@@ -16,30 +16,48 @@ import com.equitrack.service.ListViewBuilder;
 
 import com.equitrack.dao.*;
 
+/**
+ * This servlet handles displaying the list of equipment It supports search and
+ * status-based filtering
+ * 
+ */
 @WebServlet("/ListView")
 public class ListViewServlet extends HttpServlet {
-	private List<Equipment> allEquipment = new ArrayList<>();
 
+	/**
+	 * Handles GET requests to display the list of equipment Applies optional
+	 * filters for search keywords and availability status
+	 *
+	 * @param request  the HttpServletRequest object
+	 * @param response the HttpServletResponse object
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		// Check user authentication
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		} else {
-			UserDao dao = new UserDao();
-			user = dao.getUserById(user.getId());
+			// Refresh user info from the database
+			UserDao userDao = new UserDao();
+			user = userDao.getUserById(user.getId());
 			request.getSession().setAttribute("user", user);
 		}
 
-		EquipmentDao dao = new EquipmentDao();
-		ArrayList<Equipment> equipmentList = new ArrayList<>(dao.getAllEquipment().values());
+		// Retrieve all equipment from the database
+		EquipmentDao equipmentDao = new EquipmentDao();
+		ArrayList<Equipment> equipmentList = new ArrayList<>(equipmentDao.getAllEquipment().values());
 
+		// Get filter inputs from request
 		String searchInput = request.getParameter("searchInput");
 		String statusFilter = request.getParameter("statusFilter");
 
+		// Apply search filter if not null
 		if (searchInput != null && !searchInput.trim().isEmpty()) {
 			String lowerSearch = searchInput.toLowerCase();
 			ArrayList<Equipment> filteredList = new ArrayList<>();
@@ -52,6 +70,7 @@ public class ListViewServlet extends HttpServlet {
 			equipmentList = filteredList;
 		}
 
+		// Apply status filter if not null
 		if (statusFilter != null && !statusFilter.trim().isEmpty()) {
 			boolean available = statusFilter.equalsIgnoreCase("available");
 			ArrayList<Equipment> filteredList = new ArrayList<>();
@@ -63,6 +82,7 @@ public class ListViewServlet extends HttpServlet {
 			equipmentList = filteredList;
 		}
 
+		// Display the list of equipment
 		ListViewBuilder builder = new ListViewBuilder(user, equipmentList, searchInput, statusFilter);
 		String html = builder.buildPage();
 
