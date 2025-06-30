@@ -10,18 +10,24 @@ import com.equitrack.model.*;
  * Generates the HTML page for checking out a new piece of equipment Includes
  * generating the checkout form and performing the checkout process.
  */
-public class CheckoutService {
-	private EquipmentDao dao = new EquipmentDao();
+public class CheckoutService extends PageBuilder {
+	private User user;
+	private String itemId;
+	private EquipmentDao dao;
+
+	public CheckoutService(User user, String itemId) {
+		this.user = user;
+		this.itemId = itemId;
+		dao = new EquipmentDao();
+	}
 
 	/**
 	 * Generates an HTML form for checking out a specific equipment item
 	 *
-	 * @param user   The user who is checking out the equipment
-	 * @param itemId The ID of the equipment to be checked out
 	 * @return A string containing the HTML for the checkout form
 	 */
-	public String checkoutForm(User user, String itemId) {
-		Equipment equipment = dao.getEquipment(itemId);
+	public String buildPage() {
+		Equipment equipment = dao.getEquipment(this.itemId);
 		String html = String.format(
 				"<!DOCTYPE html>\r\n" + "<html lang='en'>\r\n" + "\r\n" + "<head>\r\n"
 						+ "    <meta charset='UTF-8'>\r\n"

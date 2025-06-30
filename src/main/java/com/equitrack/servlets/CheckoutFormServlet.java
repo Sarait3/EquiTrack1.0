@@ -1,7 +1,6 @@
 package com.equitrack.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Date;
 
 import javax.servlet.ServletException;
@@ -22,8 +21,7 @@ import com.equitrack.service.ConfirmationPageBuilder;
 public class CheckoutFormServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	CheckoutService checkout = new CheckoutService();
-
+	
 	/**
 	 * Handles GET requests to display the checkout form for a selected equipment
 	 * item
@@ -34,18 +32,21 @@ public class CheckoutFormServlet extends HttpServlet {
 	 * @throws IOException
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
-
+		String itemId = request.getParameter("id");
+		
 		// Redirect to login page if the user is not authenticated
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		}
-
+		
+		
 		// Generate and send the checkout form HTML
-		response.getWriter().write(checkout.checkoutForm(user, request.getParameter("id")));
+		CheckoutService checkout = new CheckoutService(user, itemId);
+		response.getWriter().write(checkout.buildPage());
 	}
 
 	/**
@@ -64,6 +65,7 @@ public class CheckoutFormServlet extends HttpServlet {
 		int userId = Integer.valueOf(request.getParameter("userId"));
 		Date checkoutDate = Date.valueOf(request.getParameter("checkoutDate"));
 		Date returnDate = Date.valueOf(request.getParameter("returnDate"));
+		CheckoutService checkout = new CheckoutService((User) request.getSession().getAttribute("user"), itemId);
 
 		// Log checkout in the system
 		checkout.checkoutItem(itemId, userId, checkoutDate, returnDate);
