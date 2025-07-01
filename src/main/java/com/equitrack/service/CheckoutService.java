@@ -71,10 +71,11 @@ public class CheckoutService extends PageBuilder {
 	 */
 	public void checkoutItem(String itemId, int userId, Date checkoutDate, Date returnDate) {
 		Equipment equipment = dao.getEquipment(itemId);
-
+		
 		if (equipment.isAvailable()) {
 			equipment.setAvailbale(false);
 		}
+		equipment.setReturnDate(returnDate.toLocalDate());
 
 		dao.logCheckout(itemId, userId, checkoutDate, returnDate);
 
