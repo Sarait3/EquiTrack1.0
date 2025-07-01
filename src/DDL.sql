@@ -21,6 +21,13 @@ BEGIN
 END;//
 DELIMITER ;
 
+DELIMITER //
+CREATE TRIGGER hash_pass_update BEFORE UPDATE ON users FOR EACH ROW
+BEGIN
+    SET NEW.password = sha2(new.password, 256);
+END;//
+DELIMITER ;
+
 CREATE TABLE equipment (
 	id VARCHAR(36) PRIMARY KEY,
     itemName TEXT,
