@@ -71,7 +71,7 @@ public class LoginServlet extends HttpServlet {
 
 		if (user == null) {
 			// Login failed: redisplay form with error
-			writer.write(login.loginPage(true));
+			writer.write(login.loginPage(false));
 		} else {
 			// Login successful: create user session
 			login.createSession(user, request);
