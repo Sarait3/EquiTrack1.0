@@ -15,7 +15,14 @@ CREATE TABLE users (
 );
 
 DELIMITER //
-CREATE TRIGGER hash_pass BEFORE INSERT ON users FOR EACH ROW
+CREATE TRIGGER hash_pass_insert BEFORE INSERT ON users FOR EACH ROW
+BEGIN
+    SET NEW.password = sha2(new.password, 256);
+END;//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER hash_pass_update BEFORE UPDATE ON users FOR EACH ROW
 BEGIN
     SET NEW.password = sha2(new.password, 256);
 END;//
