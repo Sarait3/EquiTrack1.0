@@ -67,7 +67,7 @@ public class CheckoutService extends PageBuilder {
 		.addInput("date", "Checkout Date:", "checkoutDate", Date.valueOf(LocalDate.now()).toString(), true)
 		.addRequiredInput("date", "Return Date:", "returnDate");
 		
-		String html = builder.createForm();
+		String html = builder.createForm(true, false);
 
 		return html;
 	}

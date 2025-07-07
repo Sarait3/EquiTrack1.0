@@ -36,6 +36,7 @@ public class EditEquipmentBuilder extends PageBuilder {
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
 		String status = equipment.isAvailableString();
+		FormBuilder builder = new FormBuilder();
 
 		if (user.getRole().equalsIgnoreCase("Admin")) {
 			html.append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8'>")
@@ -59,35 +60,49 @@ public class EditEquipmentBuilder extends PageBuilder {
 					.append("<div class='equipment-id'>ID: " + equipment.getId() + "</div>")
 					.append("<span class='status-tag status-" + status + "'>" + status.toUpperCase() + "</span>")
 					.append("</div></div></div>");
-
-			html.append("<form class= 'edit-form' action='EditEquipment' method='POST' enctype='multipart/form-data'>")
-					.append("<input type='hidden' name='id' value='").append(equipment.getId()).append("'>")
-
-					.append("<label for='name'>Name:</label>")
-					.append("<input type='text' id='name' name='name' value='").append(equipment.getName())
-					.append("' required>")
-
-					.append("<label for='location'>Location:</label>")
-					.append("<input type='text' id='location' name='location' value='").append(equipment.getLocation())
-					.append("' required>")
-
-					.append("<label for='image'>Image:</label>")
-					.append("<input type='file' id='imageFile' name='imageFile' accept='image/*'>")
-
-					.append("<label for='isAvailable'>Status:</label>")
+			
+			builder.setAction("EditEquipment")
+			.addHiddenInput("id", equipment.getId())
+			.addRequiredInput("text", "Name:", "name", equipment.getName())
+			.addRequiredInput("text", "Location:", "location", equipment.getLocation())
+			.addFileInput("Image:", "imageFile", "image/*")
+			.addCustomLine(new StringBuilder().append("<label for='isAvailable'>Status:</label>")
 					.append("<select id='isAvailable' name='isAvailable'>").append("<option value='true' ")
 					.append(equipment.isAvailable() ? "selected" : "").append(">Available</option>")
 					.append("<option value='false' ").append(!equipment.isAvailable() ? "selected" : "")
-					.append(">Unavailable</option>").append("</select>")
+					.append(">Unavailable</option>").append("</select>").toString())
+			.addInput("textarea", "Notes:", "notes", equipment.getNotes() != null ? equipment.getNotes() : "");
+			
+			html.append(builder.createForm(false, true));
 
-					.append("<label for='notes'>Notes:</label>").append("<textarea id='notes' name='notes'>")
-					.append(equipment.getNotes() != null ? equipment.getNotes() : "").append("</textarea>")
-
-					.append("<div class='form-buttons'><button type='submit'>Save Changes</button>")
-					.append("<a href='DetailView?id=").append(equipment.getId())
-					.append("' class='back-btn'>Cancel</a></div>").append("</form>").append("</div>");
-
-			html.append("</div></div>");
+//			html.append("<form class= 'edit-form' action='EditEquipment' method='POST' enctype='multipart/form-data'>")
+//					.append("<input type='hidden' name='id' value='").append(equipment.getId()).append("'>")
+//
+//					.append("<label for='name'>Name:</label>")
+//					.append("<input type='text' id='name' name='name' value='").append(equipment.getName())
+//					.append("' required>")
+//
+//					.append("<label for='location'>Location:</label>")
+//					.append("<input type='text' id='location' name='location' value='").append(equipment.getLocation())
+//					.append("' required>")
+//
+//					.append("<label for='image'>Image:</label>")
+//					.append("<input type='file' id='imageFile' name='imageFile' accept='image/*'>")
+//
+//					.append("<label for='isAvailable'>Status:</label>")
+//					.append("<select id='isAvailable' name='isAvailable'>").append("<option value='true' ")
+//					.append(equipment.isAvailable() ? "selected" : "").append(">Available</option>")
+//					.append("<option value='false' ").append(!equipment.isAvailable() ? "selected" : "")
+//					.append(">Unavailable</option>").append("</select>")
+//
+//					.append("<label for='notes'>Notes:</label>").append("<textarea id='notes' name='notes'>")
+//					.append(equipment.getNotes() != null ? equipment.getNotes() : "").append("</textarea>")
+//
+//					.append("<div class='form-buttons'><button type='submit'>Save Changes</button>")
+//					.append("<a href='DetailView?id=").append(equipment.getId())
+//					.append("' class='back-btn'>Cancel</a></div>").append("</form>").append("</div>");
+//
+//			html.append("</div></div>");
 			html.append("</body></html>");
 		} else
 			html.append("<!DOCTYPE html><html><head><title>Access Denied</title></head><body>")
