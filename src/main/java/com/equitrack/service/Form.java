@@ -7,9 +7,8 @@ import java.util.ArrayList;
  * in an html form.
  */
 public class Form {
-	private String formTitle, formAction, formMethod, errorMessage;
-	private ArrayList<String> inputs;
-	private boolean hasSubmit, hasReset;
+	private String formTitle, formAction, formMethod, errorMessage, style;
+	private ArrayList<String> inputs, buttons;
 	
 	/**
 	 * Constructs a Form object with null fields and default values.
@@ -18,9 +17,8 @@ public class Form {
 		this.formTitle = null;
 		this.formAction = null;
 		this.formMethod = null;
-		this.hasSubmit = true;
-		this.hasReset = false;
 		this.inputs = new ArrayList<>();
+		this.buttons = new ArrayList<>();
 	}
 
 	public String getFormTitle() {
@@ -54,21 +52,13 @@ public class Form {
 	public void addInput(String input) {
 		this.inputs.add(input);
 	}
-
-	public boolean getHasSubmit() {
-		return hasSubmit;
+	
+	public ArrayList<String> getButtons() {
+		return buttons;
 	}
-
-	public void setHasSubmit(boolean hasSubmit) {
-		this.hasSubmit = hasSubmit;
-	}
-
-	public boolean getHasReset() {
-		return hasReset;
-	}
-
-	public void setHasReset(boolean hasReset) {
-		this.hasReset = hasReset;
+	
+	public void addButton(String button) {
+		this.buttons.add(button);
 	}
 
 	public String getErrorMessage() {
@@ -77,5 +67,13 @@ public class Form {
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+
+	public String getStyle() {
+		return style;
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
 	}
 }

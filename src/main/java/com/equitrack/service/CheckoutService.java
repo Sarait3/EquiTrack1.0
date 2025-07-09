@@ -1,9 +1,9 @@
 package com.equitrack.service;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 import com.equitrack.dao.EquipmentDao;
+import com.equitrack.dao.RequestDao;
 import com.equitrack.model.*;
 
 /**
@@ -13,63 +13,67 @@ import com.equitrack.model.*;
 public class CheckoutService extends PageBuilder {
 	private User user;
 	private String itemId;
-	private EquipmentDao dao;
+	private EquipmentDao equipmentDao;
+	private RequestDao requestDao;
 
 	public CheckoutService(User user, String itemId) {
 		this.user = user;
 		this.itemId = itemId;
-		dao = new EquipmentDao();
+		equipmentDao = new EquipmentDao();
+		requestDao = new RequestDao();
 	}
 
-	/**
-	 * Generates an HTML form for checking out a specific equipment item
-	 *
-	 * @return A string containing the HTML for the checkout form
-	 */
 	public String buildPage() {
-		Equipment equipment = dao.getEquipment(this.itemId);
-//		String html = String.format(
-//				"<!DOCTYPE html>\r\n" + "<html lang='en'>\r\n" + "\r\n" + "<head>\r\n"
-//						+ "    <meta charset='UTF-8'>\r\n"
-//						+ "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n"
-//						+ "    <title>Checkout</title>\r\n" + "    <link rel='stylesheet' href='css/style.css'>\r\n"
-//						+ "</head>\r\n" + "\r\n" + "<body>\r\n" + "    <div class='header'>\r\n"
-//						+ "        <h1>Checkout %s</h1>\r\n" + "        <div class='header-content'>\r\n"
-//						+ "        </div>\r\n" + "    </div>\r\n"
-//						+ "    <form class='container-detail edit-form' action='CheckoutForm' method='POST'>\r\n"
-//						+ "        <label for='itemName'>Item Name: </label>\r\n"
-//						+ "        <input type='text' readonly name='itemName' id='itemName' value='%s'>\r\n"
-//						+ "        <label for='itemId'>Item ID: </label>\r\n"
-//						+ "        <input type='text' readonly name='itemId' id='itemId' value='%s'>\r\n"
-//						+ "        <label for='userFName'>Employee First Name: </label>\r\n"
-//						+ "        <input type='text' readonly name='userFName' id='userFName' value='%s'>\r\n"
-//						+ "        <label for='userLName'>Employee Last Name: </label>\r\n"
-//						+ "        <input type='text' readonly name='userLName' id='userLName' value='%s'>\r\n"
-//						+ "        <label for='userId'>Employee ID: </label>\r\n"
-//						+ "        <input type='text' readonly name='userId' id='userId' value='%s'>\r\n"
-//						+ "        <label for='checkoutDate'>Checkout Date: </label>\r\n"
-//						+ "        <input type='date' readonly name='checkoutDate' id='checkoutDate' value='%s'>\r\n"
-//						+ "        <label for='returnDate'>Return Date: </label>\r\n"
-//						+ "        <input type='date' required name='returnDate' id='returnDate' value=''>\r\n"
-//						+ "        <button type='submit'>Submit</button>\r\n" + "    </form>\r\n" + "</body>\r\n"
-//						+ "\r\n" + "</html>",
-//				equipment.getName(), equipment.getName(), equipment.getId().toString(), user.getFName(),
-//				user.getLName(), Integer.toString(user.getId()), Date.valueOf(LocalDate.now()).toString());
-		
-		FormBuilder builder = new FormBuilder();
-		
-		builder.setTitle("Checkout").setAction("CheckoutForm").setMethod("post")
-		.addInput("text", "Item Name:", "itemName", equipment.getName(), true)
-		.addInput("text", "Item ID:", "itemId", equipment.getId(), true)
-		.addInput("text", "Employee First Name:", "userFName", user.getFName(),true)
-		.addInput("text", "Employee Last Name:", "userLName", user.getLName(), true)
-		.addInput("text", "Employee ID:", "userId", Integer.toString(user.getId()), true)
-		.addInput("date", "Checkout Date:", "checkoutDate", Date.valueOf(LocalDate.now()).toString(), true)
-		.addRequiredInput("date", "Return Date:", "returnDate");
-		
-		String html = builder.createForm(true, false);
+		Equipment equipment = equipmentDao.getEquipment(this.itemId);
 
-		return html;
+		StringBuilder html = new StringBuilder();
+		html.append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8'>")
+				.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>")
+				.append("<title>Checkout Request</title>").append("<link rel='stylesheet' href='css/style.css'>")
+				.append("</head><body>");
+
+		html.append("<input type='checkbox' id='sidebar-toggle' hidden>").append("<div class='sidebar'><nav><ul>")
+				.append("<li><a href='ListView'>Equipment List</a></li>");
+		if (user.getRole().equalsIgnoreCase("Regular")) {
+			html.append("<li><a href='RequestsList'>My Checkout Requests</a></li>").append("</ul></nav></div>");
+		} else {
+			html.append("<li><a href='RequestsList'>Checkout Requests</a></li>").append("</ul></nav></div>");
+		}
+		html.append("<div class='header'><div class='header-content'>");
+
+		html.append("<label for='sidebar-toggle' class='sidebar-button'>&#9776;</label>");
+
+		html.append("<a href='DetailView?id=").append(equipment.getId())
+				.append("' class='back-btn'>&larr; Back to Equipment Details</a>").append("<h1>Checkout Request</h1>")
+				.append("<div class='user-info'><img src='images/user-icon.png' alt='User Icon' class='user-icon'>")
+				.append("<span class='username'>" + user.getFName() + " " + user.getLName() + "</span>")
+				.append("<a href='Logout' class='back-btn'>Logout</a></div></div></div>");
+
+		html.append("<div class='container-detail'><div class='equipment-detail'>")
+				.append("<div class='detail-header'><div class='equipment-info'>")
+				.append("<img src='" + equipment.getImagePath() + "' alt='" + equipment.getName()
+						+ "' class='equipment-image'>")
+				.append("<div class='equipment-details'>")
+				.append("<div class='equipment-title'>" + equipment.getName() + "</div>")
+				.append("<div class='equipment-id'>ID: " + equipment.getId() + "</div>")
+				// add availability
+				.append("</div></div></div>");
+
+		FormBuilder builder = new FormBuilder();
+
+		builder.setTitle("Checkout").setAction("CheckoutForm").setMethod("post")
+				.addHiddenInput("itemId", equipment.getId()).addRequiredInput("date", "Checkout Date:", "checkoutDate")
+				.addRequiredInput("date", "Return Date:", "returnDate")
+				.addRequiredInput("text", "Location:", "location")
+				.addRequiredInput("text", "Explain why you need this item:", "notes").removeDefaultSubmit()
+				.addCustomLine("<div class='form-buttons'><button type='submit'>Submit</button>"
+						+ "<a href='DetailView?id=" + equipment.getId() + "' class='back-btn'>Cancel</a></div>");
+
+		html.append(builder.createForm(false, false));
+
+		System.out.println(html.toString());
+
+		return html.toString();
 	}
 
 	/**
@@ -77,21 +81,19 @@ public class CheckoutService extends PageBuilder {
 	 * availability status, logging the checkout details, and saving changes in the
 	 * database.
 	 *
-	 * @param itemId       The ID of the equipment being checked out
-	 * @param userId       The ID of the user checking out the equipment
+	 * @param itemId            The ID of the equipment being checked out
+	 * @param userId            The ID of the user checking out the equipment
 	 * @param checkoutDate The date the equipment is checked out
-	 * @param returnDate   The expected return date
+	 * @param returnDate    The expected return date
 	 */
-	public void checkoutItem(String itemId, int userId, Date checkoutDate, Date returnDate) {
-		Equipment equipment = dao.getEquipment(itemId);
-		
-		if (equipment.isAvailable()) {
-			equipment.setAvailbale(false);
-		}
-		equipment.setReturnDate(returnDate.toLocalDate());
+	public void requestCheckout(String itemId, int userId, String location, String notes, LocalDate checkoutDate,
+			LocalDate returnDate) {
+		Equipment equipment = equipmentDao.getEquipment(itemId);
 
-		dao.logCheckout(itemId, userId, checkoutDate, returnDate);
+		Request request = new Request(userId, itemId, location, notes, checkoutDate, returnDate);
+		if (user.getRole().equalsIgnoreCase("Admin") || user.getRole().equalsIgnoreCase("Manager"))
+			request.approve();
+		requestDao.createRequest(request);
 
-		dao.updateEquipment(equipment);
 	}
 }

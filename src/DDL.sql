@@ -31,12 +31,27 @@ DELIMITER ;
 CREATE TABLE equipment (
 	id VARCHAR(36) PRIMARY KEY,
     itemName TEXT,
-    isAvailable TEXT,
+    isOperational TEXT,
     location TEXT,
     imagePath TEXT,
     notes TEXT,
     returnDate DATE
 );
+
+CREATE TABLE requests (
+    id VARCHAR(36) PRIMARY KEY,
+    userId INT NOT NULL,
+    equipmentId VARCHAR(36) NOT NULL,
+    status TEXT NOT NULL,
+    location TEXT NOT NULL,
+    notes TEXT,
+    requestDate DATE NOT NULL,
+    checkoutDate DATE NOT NULL,
+    returnDate DATE NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (equipmentId) REFERENCES equipment(id)
+);
+
 
 CREATE TABLE checkoutLog (
 	id int PRIMARY KEY AUTO_INCREMENT,
@@ -55,9 +70,9 @@ INSERT INTO users (userRole, fName, lName, email, password) VALUES
 ('Regular', 'Bob', 'Smith', 'bob@example.com', 'bobpass'),
 ('Regular', 'Charlie', 'Weasley', 'charlie@example.com', 'charliepass');
 
-INSERT INTO equipment (id, itemName, isAvailable, location, imagePath, notes, returnDate) VALUES
-(UUID(), 'Crane', 'available', 'Warehouse A', 'images/crane1.jpg', 'Large crane for high-reach tasks.', NULL),
-(UUID(), 'Excavator', 'unavailable', 'Site A', 'images/excavator1.jpg', 'Currently in use for trenching.', '2025-06-30'),
-(UUID(), 'Loader', 'available', 'Warehouse B', 'images/loader1.jpg', 'Compact loader with new tires.', NULL),
-(UUID(), 'Concrete Mixer', 'available', 'Warehouse A', 'images/mixer1.jpg', 'Ready for concrete pour.', NULL),
-(UUID(), 'Welding Machine', 'unavailable', 'Site B', 'images/welder1.jpg', 'Currently in use for steel frame welding.', '2025-07-02');
+INSERT INTO equipment (id, itemName, isOperational, location, imagePath, notes, returnDate) VALUES
+(UUID(), 'Crane', 'operational', 'Warehouse A', 'images/crane1.jpg', 'Large crane for high-reach tasks.', NULL),
+(UUID(), 'Excavator', 'out of service', 'Site A', 'images/excavator1.jpg', 'Currently in use for trenching.', '2025-06-30'),
+(UUID(), 'Loader', 'operational', 'Warehouse B', 'images/loader1.jpg', 'Compact loader with new tires.', NULL),
+(UUID(), 'Concrete Mixer', 'operational', 'Warehouse A', 'images/mixer1.jpg', 'Ready for concrete pour.', NULL),
+(UUID(), 'Welding Machine', 'out of service', 'Site B', 'images/welder1.jpg', 'Currently in use for steel frame welding.', '2025-07-02');

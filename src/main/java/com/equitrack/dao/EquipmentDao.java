@@ -22,7 +22,7 @@ public class EquipmentDao {
 	// Constants for equipment table column names
 	private static final String equipmentColId = "id";
 	private static final String equipmentColName = "itemName";
-	private static final String equipmentColIsAvailable = "isAvailable";
+	private static final String equipmentColIsOperational = "isOperational";
 	private static final String equipmentColLocation = "location";
 	private static final String equipmentColImagePath = "imagePath";
 	private static final String equipmentColNotes = "notes";
@@ -46,7 +46,7 @@ public class EquipmentDao {
 
 			String sql = "SELECT * FROM equipment";
 			Map<UUID, Equipment> equipmentList = new HashMap<>();
-			String id = null, name, location, imagePath, notes, isAvailable;
+			String id = null, name, location, imagePath, notes, isOperational;
 			LocalDate returnDate;
 
 			try (Connection conn = DBConnection.getConnection();
@@ -56,7 +56,7 @@ public class EquipmentDao {
 				while (results.next()) {
 					id = results.getString(equipmentColId);
 					name = results.getString(equipmentColName);
-					isAvailable = results.getString(equipmentColIsAvailable);
+					isOperational = results.getString(equipmentColIsOperational);
 					location = results.getString(equipmentColLocation);
 					imagePath = results.getString(equipmentColImagePath);
 					notes = results.getString(equipmentColNotes);
@@ -64,7 +64,7 @@ public class EquipmentDao {
 							: results.getDate(equipmentColReturnDate).toLocalDate();
 
 					equipmentList.put(UUID.fromString(id),
-							new Equipment(id, name, isAvailable, location, imagePath, notes, returnDate));
+							new Equipment(id, name, isOperational, location, imagePath, notes, returnDate));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -91,7 +91,7 @@ public class EquipmentDao {
 
 			Equipment equipment = null;
 
-			String name, location, imagePath, notes, isAvailable;
+			String name, location, imagePath, notes, isOperational;
 			LocalDate returnDate;
 
 			try (Connection conn = DBConnection.getConnection();
@@ -102,14 +102,14 @@ public class EquipmentDao {
 					while (results.next()) {
 						id = results.getString(equipmentColId);
 						name = results.getString(equipmentColName);
-						isAvailable = results.getString(equipmentColIsAvailable);
+						isOperational = results.getString(equipmentColIsOperational);
 						location = results.getString(equipmentColLocation);
 						imagePath = results.getString(equipmentColImagePath);
 						notes = results.getString(equipmentColNotes);
 						returnDate = results.getDate(equipmentColReturnDate) == null ? null
 								: results.getDate(equipmentColReturnDate).toLocalDate();
 
-						equipment = new Equipment(id, name, isAvailable, location, imagePath, notes, returnDate);
+						equipment = new Equipment(id, name, isOperational, location, imagePath, notes, returnDate);
 					}
 				}
 			} catch (Exception e) {
@@ -135,7 +135,7 @@ public class EquipmentDao {
 
 			String sql = String.format(
 					"INSERT INTO equipment (%s, %s, %s, %s, %s, %s, %s) " + "VALUES (?, ?, ?, ?, ?, ?, ?)",
-					equipmentColId, equipmentColName, equipmentColIsAvailable, equipmentColLocation,
+					equipmentColId, equipmentColName, equipmentColIsOperational, equipmentColLocation,
 					equipmentColImagePath, equipmentColNotes, equipmentColReturnDate);
 
 			try (Connection conn = DBConnection.getConnection();
@@ -143,7 +143,7 @@ public class EquipmentDao {
 
 				statement.setString(1, equipment.getId());
 				statement.setString(2, equipment.getName());
-				statement.setString(3, equipment.isAvailableString());
+				statement.setString(3, equipment.isOperationalString());
 				statement.setString(4, equipment.getLocation());
 				statement.setString(5, equipment.getImagePath());
 				statement.setString(6, equipment.getNotes());
@@ -173,7 +173,7 @@ public class EquipmentDao {
 		try {
 			MyLock.writeLock.lock();
 
-			String sql = "UPDATE equipment SET " + equipmentColName + " = ?, " + equipmentColIsAvailable + " = ?, "
+			String sql = "UPDATE equipment SET " + equipmentColName + " = ?, " + equipmentColIsOperational + " = ?, "
 					+ equipmentColLocation + " = ?, " + equipmentColImagePath + " = ?, " + equipmentColNotes + " = ?, "
 					+ equipmentColReturnDate + " = ? " + "WHERE " + equipmentColId + " = ?";
 
@@ -181,7 +181,7 @@ public class EquipmentDao {
 					PreparedStatement statement = conn.prepareStatement(sql)) {
 
 				statement.setString(1, equipment.getName());
-				statement.setString(2, equipment.isAvailableString());
+				statement.setString(2, equipment.isOperationalString());
 				statement.setString(3, equipment.getLocation());
 				statement.setString(4, equipment.getImagePath());
 				statement.setString(5, equipment.getNotes());

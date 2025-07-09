@@ -59,14 +59,14 @@ public class DetailViewServlet extends HttpServlet {
 			// Delete the equipment and show confirmation
 			equipmentDao.deleteEquipment(equipmentId);
 			String message = "Equipment deleted successfully";
-			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message);
+			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView");
 			String html = builder.buildPage();
 			response.setContentType("text/html");
 			response.getWriter().write(html);
 			return;
-		} else if ("return".equals(action)) {
-			// Mark equipment as available and update
-			equipment.setAvailbale(true);
+		} else if ("backInService".equals(action)) {
+			// Mark equipment as operational and update
+			equipment.setOperational(true);
 			equipmentDao.updateEquipment(equipment);
 			response.sendRedirect("DetailView?id=" + equipmentId);
 		} else if ("checkout".equals(action)) {

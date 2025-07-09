@@ -34,7 +34,8 @@ public class DetailViewBuilder extends PageBuilder {
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
-		String status = equipment.isAvailableString();
+		String status = equipment.isOperationalString();
+		FormBuilder builder = new FormBuilder();
 
 		html.append("<!DOCTYPE html>").append("<html lang=\"en\"><head>").append("<meta charset=\"UTF-8\">")
 				.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
@@ -60,10 +61,13 @@ public class DetailViewBuilder extends PageBuilder {
 				.append("<div class='detail-grid'>")
 				.append("<div class='detail-item'><div class='item-label'>Location</div><div class='item-value'>"
 						+ equipment.getLocation() + "</div></div>");
-		if (!equipment.isAvailable() && equipment.getReturnDate() != null)
+		
+		if (!equipment.isOperational() && equipment.getReturnDate() != null) {
 			html.append("<div class='detail-item'><div class='item-label'>Return Date</div><div class='item-value'>")
 					.append(equipment.getReturnDate() + "</div></div>");
+		}
 		html.append("</div>");
+		
 		if (equipment.getNotes() != null && !equipment.getNotes().trim().isEmpty()) {
 			html.append("<div class='notes-section'>").append("<div class='notes-title'>NOTES</div>")
 					.append("<div class='notes-content'>").append(equipment.getNotes()).append("</div>")
@@ -71,21 +75,21 @@ public class DetailViewBuilder extends PageBuilder {
 		}
 
 		if (user.getRole().equalsIgnoreCase("Admin")) {
-			html.append(
-					"<div class='actions-section'><div class='actions-title'>Actions</div><div class='action-buttons'>")
-					.append("<form method='GET' action='DetailView'>").append("<input type='hidden' name='id' value='")
-					.append(equipment.getId()).append("'>").append("<a href='EditEquipment?id=")
-					.append(equipment.getId()).append("' class='action-btn btn-edit'>Edit Equipment</a>");
-			if (equipment.isAvailable())
-				html.append(
-						"<button type='submit' name='action' value='checkout' class='action-btn btn-checkout'>Check out</button>");
-			else
-				html.append(
-						"<button type='submit' name='action' value='return' class='action-btn btn-return'>Return</button>");
-			html.append(
-					"<button type='submit' name='action' value='delete' class='action-btn btn-delete'>Delete Equipment</button>")
-					.append("</form></div></div></div>");
-		} else if (equipment.isAvailable())
+			html.append("<div class='actions-section'><div class='actions-title'>Actions</div><div class='action-buttons'>");
+			
+			builder.setMethod("get").setAction("DetailView").removeDefaultSubmit()
+			.addHiddenInput("id", equipment.getId())
+			.addCustomButton("Edit Equipment", "EditEquipment?id=" + equipment.getId(), "action-btn btn-edit");
+			
+			if (equipment.isOperational()) 
+				builder.addCustomSubmit("Check Out", "action", "checkout", "action-btn btn-checkout");
+			else 
+				builder.addCustomSubmit("Return", "action", "return", "action-btn btn-return");
+			
+			builder.addCustomSubmit("Delete", "action", "delete", "action-btn btn-delete");
+			html.append(builder.createForm(false, false));
+			
+		} else if (equipment.isOperational()) 
 			html.append("<h2>Contact Admin to request this equipment: (613) 111-1111</h2>");
 
 		html.append("</div></div>");
@@ -93,5 +97,4 @@ public class DetailViewBuilder extends PageBuilder {
 
 		return html.toString();
 	}
-
 }

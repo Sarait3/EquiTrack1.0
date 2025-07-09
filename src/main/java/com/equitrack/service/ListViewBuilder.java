@@ -51,13 +51,13 @@ public class ListViewBuilder extends PageBuilder {
 				.append("<div class='user-info'><img src='images/user-icon.png' alt='User Icon' class='user-icon'>")
 				.append("<span class='username'>" + user.getFName() + " " + user.getLName() + "</span>")
 				.append("<a href='Logout' class='back-btn'>Logout</a></div></div></div>");
+		
+		SearchBuilder sb = new SearchBuilder();
+		sb.setAction("ListView");
+		sb.addFilter(new String[][] {{"", "All Status"}, {"available", "Available"}, {"unavailable", "Unavailable"}});
 
-		html.append("<div class='container'>").append("<form class= 'search-form' method='GET' action='ListView'>")
-				.append("<input type='text' name='searchInput' class='search-input' placeholder='Search equipment...'>")
-				.append("<select name='statusFilter' class='filter-select'>")
-				.append("<option value=''>All Status</option>").append("<option value='available'>Available</option>")
-				.append("<option value='unavailable'>Unavailable</option>").append("</select>")
-				.append("<button type='submit' class='search-btn'>Search</button>");
+		html.append(sb.createSearch());
+		
 		if ((searchInput != null && !searchInput.trim().isEmpty())
 				|| statusFilter != null && !statusFilter.trim().isEmpty()) {
 			html.append("<a href='ListView' class='reset-btn'>View All</a>");
@@ -77,7 +77,7 @@ public class ListViewBuilder extends PageBuilder {
 					+ "margin-top: 2rem; font-style: italic;\">No results found.</div>");
 		} else {
 			for (Equipment eq : equipmentList) {
-				String status = eq.isAvailableString();
+				String status = eq.isOperationalString();
 				html.append("<a class='equipment-item' href='DetailView?id=").append(eq.getId()).append("'>")
 						.append("<img class='equipment-image' src='").append(eq.getImagePath()).append("' alt='")
 						.append(eq.getName()).append("'>").append("<div class='equipment-id'>")

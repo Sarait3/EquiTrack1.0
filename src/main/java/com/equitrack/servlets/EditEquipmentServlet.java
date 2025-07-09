@@ -96,7 +96,7 @@ public class EditEquipmentServlet extends HttpServlet {
 		equipment.setName(request.getParameter("name"));
 		equipment.setLocation(request.getParameter("location"));
 		equipment.setNotes(request.getParameter("notes"));
-		equipment.setAvailbale(Boolean.parseBoolean(request.getParameter("isAvailable")));
+		equipment.setOperational(Boolean.parseBoolean(request.getParameter("isOperational")));
 		// Handle image file upload
 		Part filePart = request.getPart("imageFile");
 		if (filePart != null && filePart.getSize() > 0) {
@@ -111,7 +111,7 @@ public class EditEquipmentServlet extends HttpServlet {
 
 		// Display confirmation page
 		String message = "Equipment updated successfully";
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message);
+		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView");
 		String html = builder.buildPage();
 		response.setContentType("text/html");
 		response.getWriter().write(html);
