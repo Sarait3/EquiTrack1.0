@@ -2,6 +2,7 @@ package com.equitrack.servlets;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -60,18 +61,23 @@ public class CheckoutFormServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		HttpSession session = request.getSession();
+		User user = (User) session.getAttribute("user");
+		int userId = user.getId();
+		
 		// Retrieve form parameters
 		String itemId = request.getParameter("itemId");
-		int userId = Integer.valueOf(request.getParameter("userId"));
-		Date checkoutDate = Date.valueOf(request.getParameter("checkoutDate"));
-		Date returnDate = Date.valueOf(request.getParameter("returnDate"));
-		CheckoutService checkout = new CheckoutService((User) request.getSession().getAttribute("user"), itemId);
+		String location = request.getParameter("location");
+		String notes = request.getParameter("notes");
+		LocalDate checkoutDate = LocalDate.parse(request.getParameter("checkoutDate"));
+		LocalDate returnDate = LocalDate.parse(request.getParameter("returnDate"));
+		CheckoutService checkout = new CheckoutService(user, itemId);
 
 		// Log checkout in the system
-		checkout.checkoutItem(itemId, userId, checkoutDate, returnDate);
+		checkout.requestCheckout(itemId, userId, location, notes, checkoutDate, returnDate);
 
 		// Display confirmation page
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder("Checkout Successful");
+		ConfirmationPageBuilder builder = new ConfirmationPageBuilder("Checkout Request Sybmitted Successfully", "ListView");
 		String html = builder.buildPage();
 		response.setContentType("text/html");
 		response.getWriter().write(html);

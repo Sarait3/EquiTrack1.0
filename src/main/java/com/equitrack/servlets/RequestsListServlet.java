@@ -13,26 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 import com.equitrack.model.*;
 
 import com.equitrack.service.ListViewBuilder;
-
+import com.equitrack.service.RequestsListBuilder;
 import com.equitrack.dao.*;
 
-/**
- * This servlet handles displaying the list of equipment It supports search and
- * status-based filtering
- * 
- */
-@WebServlet("/ListView")
-public class ListViewServlet extends HttpServlet {
 
-	/**
-	 * Handles GET requests to display the list of equipment Applies optional
-	 * filters for search keywords and availability status
-	 *
-	 * @param request  the HttpServletRequest object
-	 * @param response the HttpServletResponse object
-	 * @throws ServletException
-	 * @throws IOException
-	 */
+@WebServlet("/RequestsList")
+public class RequestsListServlet extends HttpServlet {
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -49,9 +36,17 @@ public class ListViewServlet extends HttpServlet {
 			request.getSession().setAttribute("user", user);
 		}
 
-		// Retrieve all equipment from the database
-		EquipmentDao equipmentDao = new EquipmentDao();
-		ArrayList<Equipment> equipmentList = new ArrayList<>(equipmentDao.getAllEquipment().values());
+		// Retrieve all requests from the database
+		RequestDao requestDao = new RequestDao();
+		ArrayList<Request> requestsList;
+		
+		if (user.getRole().equalsIgnoreCase("Regular")) {
+			requestsList = new ArrayList<>(requestDao.getRequestsByUserId(user.getId()).values());
+		}
+		else {
+			requestsList = new ArrayList<>(requestDao.getAllRequests().values());
+		}
+		
 
 		// Get filter inputs from request
 		String searchInput = request.getParameter("searchInput");
@@ -60,30 +55,30 @@ public class ListViewServlet extends HttpServlet {
 		// Apply search filter if not null
 		if (searchInput != null && !searchInput.trim().isEmpty()) {
 			String lowerSearch = searchInput.toLowerCase();
-			ArrayList<Equipment> filteredList = new ArrayList<>();
-			for (Equipment eq : equipmentList) {
-				if (eq.getName().toLowerCase().contains(lowerSearch) || eq.getId().toLowerCase().contains(lowerSearch)
-						|| eq.getLocation().toLowerCase().contains(lowerSearch)) {
-					filteredList.add(eq);
+			ArrayList<Request> filteredList = new ArrayList<>();
+			for (Request req : requestsList) {
+				User reqUser = requestDao.getUserForRequest(req.getId());
+				Equipment reqEquipment = requestDao.getEquipmentForRequest(req.getId());
+				if (req.getId().toLowerCase().contains(lowerSearch) || reqUser.getFName().toLowerCase().contains(lowerSearch) || reqUser.getLName().toLowerCase().contains(lowerSearch)
+						|| reqEquipment.getName().toLowerCase().contains(lowerSearch)) {
+					filteredList.add(req);
 				}
 			}
-			equipmentList = filteredList;
+			requestsList = filteredList;
 		}
 
 		// Apply status filter if not null
 		if (statusFilter != null && !statusFilter.trim().isEmpty()) {
-			boolean operational = statusFilter.equalsIgnoreCase("operational");
-			ArrayList<Equipment> filteredList = new ArrayList<>();
-			for (Equipment eq : equipmentList) {
-				if (eq.isOperational() == operational) {
-					filteredList.add(eq);
+			ArrayList<Request> filteredList = new ArrayList<>();
+			for (Request req : requestsList) {
+				if (req.getStatus().equalsIgnoreCase(statusFilter)) {
+					filteredList.add(req);
 				}
 			}
-			equipmentList = filteredList;
+			requestsList = filteredList;
 		}
 
-		// Display the list of equipment
-		ListViewBuilder builder = new ListViewBuilder(user, equipmentList, searchInput, statusFilter);
+		RequestsListBuilder builder = new RequestsListBuilder(user, requestsList, searchInput, statusFilter);
 		String html = builder.buildPage();
 
 		response.setContentType("text/html");

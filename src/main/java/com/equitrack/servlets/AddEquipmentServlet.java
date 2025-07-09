@@ -76,7 +76,7 @@ public class AddEquipmentServlet extends HttpServlet {
 		String name = request.getParameter("name");
 		String location = request.getParameter("location");
 		String notes = request.getParameter("notes");
-		boolean isAvailable = Boolean.parseBoolean(request.getParameter("isAvailable"));
+		boolean isOperational = Boolean.parseBoolean(request.getParameter("isOperational"));
 
 		// Handle file upload (equipment image)
 		Part filePart = request.getPart("imageFile");
@@ -87,12 +87,12 @@ public class AddEquipmentServlet extends HttpServlet {
 		}
 
 		// Create and save the equipment in the database
-		Equipment equipment = new Equipment(name, isAvailable, location, imagePath, notes, null);
+		Equipment equipment = new Equipment(name, isOperational, location, imagePath, notes, null);
 		dao.createEquipment(equipment);
 
 		// Show confirmation page
 		String message = "Equipment created successfully";
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message);
+		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView");
 		String html = builder.buildPage();
 
 		response.setContentType("text/html");

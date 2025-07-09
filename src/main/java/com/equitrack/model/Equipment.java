@@ -5,20 +5,20 @@ import java.util.UUID;
 
 /**
  * This class represents a piece of equipment in the app. It stores basic
- * details like name, location, image, availability, notes, and return date.
+ * details like name, location, image, operability, notes, and return date.
  */
 public class Equipment {
 	private String id, name, location, imagePath, notes;
-	private boolean isAvailable;
+	private boolean isOperational;
 	private LocalDate returnDate;
 
 	/**
-	 * Creates a new available equipment item with a generated ID
+	 * Creates a new operational equipment item with a generated ID
 	 */
 	public Equipment(String name, String imagePath, String notes, LocalDate returnDate) {
 		this.id = UUID.randomUUID().toString();
 		this.name = name;
-		this.isAvailable = true;
+		this.isOperational = true;
 		this.imagePath = imagePath;
 		this.notes = notes;
 		this.setReturnDate(returnDate);
@@ -27,11 +27,11 @@ public class Equipment {
 	/**
 	 * Creates a new equipment item with all fields provided
 	 */
-	public Equipment(String name, boolean isAvailable, String location, String imagePath, String notes,
+	public Equipment(String name, boolean isOperational, String location, String imagePath, String notes,
 			LocalDate returnDate) {
 		this.id = UUID.randomUUID().toString();
 		this.name = name;
-		this.isAvailable = isAvailable;
+		this.isOperational = isOperational;
 		this.location = location;
 		this.imagePath = imagePath;
 		this.notes = notes;
@@ -39,9 +39,9 @@ public class Equipment {
 	}
 
 	/**
-	 * Creates a new equipment item with availability given as a string.
+	 * Creates a new equipment item with operability given as a string.
 	 */
-	public Equipment(String name, String isAvailable, String location, String imagePath, String notes,
+	public Equipment(String name, String isOperational, String location, String imagePath, String notes,
 			LocalDate returnDate) {
 		this.id = UUID.randomUUID().toString();
 		this.name = name;
@@ -49,17 +49,17 @@ public class Equipment {
 		this.imagePath = imagePath;
 		this.notes = notes;
 		this.setReturnDate(returnDate);
-		setAvailableString(isAvailable);
+		setOperationalString(isOperational);
 	}
 
 	/**
-	 * Creates an equipment item with a given ID and boolean availability
+	 * Creates an equipment item with a given ID and boolean operability
 	 */
-	public Equipment(String id, String name, boolean isAvailable, String location, String imagePath, String notes,
+	public Equipment(String id, String name, boolean isOperational, String location, String imagePath, String notes,
 			LocalDate returnDate) {
 		this.id = id;
 		this.name = name;
-		this.isAvailable = isAvailable;
+		this.isOperational = isOperational;
 		this.location = location;
 		this.imagePath = imagePath;
 		this.notes = notes;
@@ -67,9 +67,9 @@ public class Equipment {
 	}
 
 	/**
-	 * Creates an equipment item with a given ID and availability as a string
+	 * Creates an equipment item with a given ID and operability as a string
 	 */
-	public Equipment(String id, String name, String isAvailable, String location, String imagePath, String notes,
+	public Equipment(String id, String name, String isOperational, String location, String imagePath, String notes,
 			LocalDate returnDate) {
 		this.id = id;
 		this.name = name;
@@ -77,7 +77,7 @@ public class Equipment {
 		this.imagePath = imagePath;
 		this.notes = notes;
 		this.setReturnDate(returnDate);
-		setAvailableString(isAvailable);
+		setOperationalString(isOperational);
 	}
 
 	/** Returns the equipment ID */
@@ -101,23 +101,23 @@ public class Equipment {
 	}
 
 	/** Returns true if the equipment is available, false otherwise */
-	public boolean isAvailable() {
-		return this.isAvailable;
+	public boolean isOperational() {
+		return this.isOperational;
 	}
 
-	/** Returns availability as a String: "Available" or "Unavailable" */
-	public String isAvailableString() {
-		return this.isAvailable() ? "available" : "unavailable";
+	/** Returns operability as a String: "Operational" or "Out Of Service" */
+	public String isOperationalString() {
+		return this.isOperational() ? "operational" : "out of service";
 	}
 
-	/** Sets availability using a boolean */
-	public void setAvailbale(boolean isAvailable) {
-		this.isAvailable = isAvailable;
+	/** Sets operability using a boolean */
+	public void setOperational(boolean isOperational) {
+		this.isOperational = isOperational;
 	}
 
-	/** Sets availability using a String: "Available" or "Unavailable" */
-	public void setAvailableString(String isAvailableString) {
-		this.isAvailable = isAvailableString.equalsIgnoreCase("available") ? true : false;
+	/** Sets operability using a String: "Operational" or "Out Of Service" */
+	public void setOperationalString(String isOperationalString) {
+		this.isOperational = isOperationalString.equalsIgnoreCase("operational") ? true : false;
 	}
 
 	/** Returns the location of the equipment */
