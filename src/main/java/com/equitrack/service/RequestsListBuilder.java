@@ -28,51 +28,56 @@ public class RequestsListBuilder extends PageBuilder {
 		UserDao userDao = new UserDao();
 
 		html.append("<!DOCTYPE html><html lang=\"en\"><head>")
-				.append("<meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>")
-				.append("<title>Requests List</title>").append("<link rel='stylesheet' href='css/style.css'>")
-				.append("</head><body>");
+			.append("<meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>")
+			.append("<title>Requests List</title>")
+			.append("<link rel='stylesheet' href='css/style.css'>")
+			.append("</head><body>");
 
-		html.append("<input type='checkbox' id='sidebar-toggle' hidden>").append("<div class='sidebar'><nav><ul>")
-				.append("<li><a href='ListView'>Equipment List</a></li>");
+		html.append("<input type='checkbox' id='sidebar-toggle' hidden>")
+			.append("<div class='sidebar'><nav><ul>")
+			.append("<li><a href='ListView'>Equipment List</a></li>");
+		
 		if (user.getRole().equalsIgnoreCase("Regular")) {
-			html.append("<li><a href='RequestsList'>My Checkout Requests</a></li>").append("</ul></nav></div>");
+			html.append("<li><a href='RequestsList'>My Checkout Requests</a></li>");
 		} else {
-			html.append("<li><a href='RequestsList'>Checkout Requests</a></li>").append("</ul></nav></div>");
+			html.append("<li><a href='RequestsList'>Checkout Requests</a></li>");
 		}
+		html.append("</ul></nav></div>");
 
-		html.append("<div class='header'><div class='header-content'>");
+		html.append("<div class='header'><div class='header-content'>")
+			.append("<label for='sidebar-toggle' class='sidebar-button'>&#9776;</label>")
+			.append("<h1><a href='ListView' style='color: inherit; text-decoration: none;'>Checkout Requests List</a></h1>")
+			.append("<div class='user-info'><img src='images/user-icon.png' alt='User Icon' class='user-icon'>")
+			.append("<span class='username'>" + user.getFName() + " " + user.getLName() + "</span>")
+			.append("<a href='Logout' class='back-btn'>Logout</a></div></div></div>");
 
-		html.append("<label for='sidebar-toggle' class='sidebar-button'>&#9776;</label>");
+		html.append("<div class='container'>");
 
-		html.append(
-				"<h1><a href='ListView' style='color: inherit; text-decoration: none;'>Checkout Requests List</a></h1>")
-				.append("<div class='user-info'><img src='images/user-icon.png' alt='User Icon' class='user-icon'>")
-				.append("<span class='username'>" + user.getFName() + " " + user.getLName() + "</span>")
-				.append("<a href='Logout' class='back-btn'>Logout</a></div></div></div>");
+		html.append("<div class='search-bar'>")
+			.append("<form class='search-form' method='GET' action='RequestsList'>")
+			.append("<input type='text' name='searchInput' class='search-input' placeholder='Search requests...' value='")
+			.append(searchInput != null ? searchInput : "").append("'>");
 
-		// Form
-		html.append("<div class='container'>").append("<form class='search-form' method='GET' action='RequestsList'>")
-				.append("<input type='text' name='searchInput' class='search-input' placeholder='Search request...' value=\"")
-				.append(searchInput != null ? searchInput : "").append("\">")
-				.append("<select name='statusFilter' class='filter-select'>").append("<option value=''")
-				.append("".equals(statusFilter) ? " selected" : "").append(">All Status</option>")
-				.append("<option value='pending'").append("pending".equals(statusFilter) ? " selected" : "")
-				.append(">Pending</option>").append("<option value='approved'")
-				.append("approved".equals(statusFilter) ? " selected" : "").append(">Approved</option>")
-				.append("<option value='declined'").append("declined".equals(statusFilter) ? " selected" : "")
-				.append(">Declined</option>").append("</select>")
-				.append("<button type='submit' class='search-btn'>Search</button>");
+		html.append("<select name='statusFilter' class='search-input'>")
+			.append("<option value=''").append("".equals(statusFilter) ? " selected" : "").append(">All Status</option>")
+			.append("<option value='pending'").append("pending".equals(statusFilter) ? " selected" : "").append(">Pending</option>")
+			.append("<option value='approved'").append("approved".equals(statusFilter) ? " selected" : "").append(">Approved</option>")
+			.append("<option value='declined'").append("declined".equals(statusFilter) ? " selected" : "").append(">Declined</option>")
+			.append("</select>");
+
+		html.append("<button type='submit' class='search-btn'>Search</button>");
 
 		if ((searchInput != null && !searchInput.trim().isEmpty())
 				|| (statusFilter != null && !statusFilter.trim().isEmpty())) {
 			html.append("<a href='RequestsList' class='reset-btn'>View All</a>");
 		}
-		html.append("</form>");
+
+		html.append("</form></div>");
 
 		html.append("<div class='requests-list'><div class='requests-header'>")
-				.append("<div>User Name</div><div>Equipment ID</div><div>Equipment Name</div><div>Location</div>")
-				.append("<div>Checkout Date</div><div>Return Date</div><div>Status</div>")
-				.append("</div><div id='requests'>");
+			.append("<div>User Name</div><div>Equipment ID</div><div>Equipment Name</div><div>Location</div>")
+			.append("<div>Checkout Date</div><div>Return Date</div><div>Status</div>")
+			.append("</div><div id='requests'>");
 
 		if (requestsList.isEmpty()) {
 			html.append("<div style='color: #666; text-align: center; font-size: 1.2rem; padding: 1.5rem; "
@@ -84,15 +89,15 @@ public class RequestsListBuilder extends PageBuilder {
 				Equipment eq = equipmentDao.getEquipment(request.getEquipmentId());
 
 				html.append("<a class='request-item' href='RequestDetail?id=").append(request.getId()).append("'>")
-						.append("<div class='user-name'>").append(reqUser.getFName()).append(" ")
-						.append(reqUser.getLName()).append("</div>").append("<div class='equipment-id'>")
-						.append(eq.getId().substring(0, 8)).append("</div>").append("<div class='equipment-name'>")
-						.append(eq.getName()).append("</div>").append("<div class='equipment-location'>")
-						.append(request.getLocation()).append("</div>").append("<div class='checkout-date'>")
-						.append(request.getCheckoutDate()).append("</div>").append("<div class='return-date'>")
-						.append(request.getReturnDate()).append("</div>")
-						.append("<div class='status-cell'><span class='status-tag status-").append(status).append("'>")
-						.append(status.toUpperCase()).append("</span></div>").append("</a>");
+					.append("<div class='user-name'>").append(reqUser.getFName()).append(" ").append(reqUser.getLName()).append("</div>")
+					.append("<div class='equipment-id'>").append(eq.getId().substring(0, 8)).append("</div>")
+					.append("<div class='equipment-name'>").append(eq.getName()).append("</div>")
+					.append("<div class='equipment-location'>").append(request.getLocation()).append("</div>")
+					.append("<div class='checkout-date'>").append(request.getCheckoutDate()).append("</div>")
+					.append("<div class='return-date'>").append(request.getReturnDate()).append("</div>")
+					.append("<div class='status-cell'><span class='status-tag status-").append(status).append("'>")
+					.append(status.toUpperCase()).append("</span></div>")
+					.append("</a>");
 			}
 		}
 

@@ -6,17 +6,18 @@ import java.util.HashMap;
  * Simplifies and standardizes the creation of html forms.
  */
 public class FormBuilder {
-	private Form form;
-	private boolean hasAction, defaultMethod;
+	protected Form form;
+	private boolean hasAction, defaultSubmit, defaultMethod;
 
 	/**
 	 * Instantiates a new Form to be created when a FormBuilder
 	 * Object is created.
 	 */
 	public FormBuilder() {
-		form = new Form();
-		hasAction = false;
-		defaultMethod = true;
+		this.form = new Form();
+		this.hasAction = false;
+		this.defaultSubmit = true;
+		this.defaultMethod = true;
 	}
 
 	/**
@@ -175,14 +176,35 @@ public class FormBuilder {
 
 		return this;
 	}
+	
+	public FormBuilder setStyle(String style) {
+		form.setStyle(style);
+		return this;
+	}
 
 	/**
 	 * Removes the submit button from the form.
 	 * @return
 	 */
-	public FormBuilder removeSubmit() {
-		form.setHasSubmit(false);
+	public FormBuilder removeDefaultSubmit() {
+		this.defaultSubmit = false;
 
+		return this;
+	}
+	
+	public FormBuilder addCustomSubmit(String name, String id, String value, String buttonClass) {
+		form.addButton(String.format("<button type='submit' name='%s' id='%s' value='%s' class='%s'>%s</button>", 
+				id, id, value, buttonClass, name));
+		
+		this.removeDefaultSubmit();
+		
+		return this;
+	}
+	
+	public FormBuilder addCustomButton(String name, String destination, String buttonClass) {
+		form.addButton(String.format("<a href='%s' class='%s'>%s</a>", destination, buttonClass, name));
+		this.removeDefaultSubmit();
+		
 		return this;
 	}
 
@@ -191,8 +213,15 @@ public class FormBuilder {
 	 * @return
 	 */
 	public FormBuilder addReset() {
-		form.setHasReset(true);
+		
+		form.addButton("<button type='reset'>Reset</button>");
 
+		return this;
+	}
+	
+	public FormBuilder addCancel(String destination, String name) {
+		form.addButton(String.format("<a href='%s' class='back-btn'>Cancel</a>", destination, name));
+		
 		return this;
 	}
 
@@ -211,7 +240,7 @@ public class FormBuilder {
 	 * Adds a select and its options to the form.
 	 * @param name		The name to be printed in the label
 	 * @param id		The internal name and id of the select tag
-	 * @param options	A HashMap representing the options in the select. format should be {value : text}
+	 * @param options	A 2d Array representing the options in the select. format should be {value, text}
 	 * @return
 	 */
 	public FormBuilder addSelect(String name, String id, String[][] options) {
@@ -255,6 +284,9 @@ public class FormBuilder {
 		String formAction = this.hasAction ? form.getFormAction() : "";
 		String formMethod = this.defaultMethod ? "method='post'" : form.getFormMethod();
 		String multipart = isMultipart ? "enctype='multipart/form-data'" : "";
+		String style = form.getStyle() != null ? String.format("style='%s'", form.getStyle()) : "";
+		
+		if (this.defaultSubmit) form.addButton("<button type='submit'>Submit</button>");
 		
 		if (generateHead) {
 			sb.append("<!DOCTYPE html><html lang='en'><head>")
@@ -281,10 +313,13 @@ public class FormBuilder {
 			sb.append(input);
 		}
 
-		sb.append("<div class='form-buttons'>")
-		.append(form.getHasSubmit() ? "<button type='submit'>Submit</button>" : "")
-		.append(form.getHasReset() ? "<button type='reset'>Reset</button>" : "")
-		.append("</div></form>")
+		sb.append("<div class='form-buttons'>");
+		
+		for (String button : form.getButtons()) {
+			sb.append(button);
+		}
+
+		sb.append("</div></form>")
 		.append(errorMessage);
 		
 		if (generateHead) {

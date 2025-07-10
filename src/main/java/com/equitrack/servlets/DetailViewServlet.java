@@ -15,24 +15,10 @@ import com.equitrack.model.User;
 import com.equitrack.service.ConfirmationPageBuilder;
 import com.equitrack.service.DetailViewBuilder;
 
-/**
- * Servlet that handles displaying the detail view for a specific equipment item
- * Based on the user role and action requested, it can also perform actions such
- * as deleting, returning, checking out, or redirecting to edit equipment form
- * 
- */
 @WebServlet("/DetailView")
 public class DetailViewServlet extends HttpServlet {
 
-	/**
-	 * Handles GET requests to display detailed information about a piece of
-	 * equipment Supports admin actions like delete, return, checkout, and edit
-	 *
-	 * @param request  the HttpServletRequest object containing client request data
-	 * @param response the HttpServletResponse object used to respond to the client
-	 * @throws ServletException
-	 * @throws IOException
-	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -42,21 +28,20 @@ public class DetailViewServlet extends HttpServlet {
 			response.sendRedirect("Login");
 			return;
 		} else {
-			// Refresh user from DB to reflect latest data
+			// Refresh user from DB
 			UserDao userDao = new UserDao();
 			user = userDao.getUserById(user.getId());
 			request.getSession().setAttribute("user", user);
 		}
 
-		// Retrieve equipment by ID
+		// Get equipment by ID
 		EquipmentDao equipmentDao = new EquipmentDao();
 		String equipmentId = request.getParameter("id");
 		Equipment equipment = equipmentDao.getEquipment(equipmentId);
 
-		// Process optional action parameter
+		// Handle actions
 		String action = request.getParameter("action");
 		if ("delete".equals(action)) {
-			// Delete the equipment and show confirmation
 			equipmentDao.deleteEquipment(equipmentId);
 			String message = "Equipment deleted successfully";
 			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView", true);
@@ -65,23 +50,22 @@ public class DetailViewServlet extends HttpServlet {
 			response.getWriter().write(html);
 			return;
 		} else if ("backInService".equals(action)) {
-			// Mark equipment as operational and update
 			equipment.setOperational(true);
 			equipmentDao.updateEquipment(equipment);
 			response.sendRedirect("DetailView?id=" + equipmentId);
+			return;
 		} else if ("checkout".equals(action)) {
-			// Redirect to checkout form
 			response.sendRedirect("CheckoutForm?id=" + equipmentId);
+			return;
 		} else if ("edit".equals(action)) {
-			// Redirect to edit form
-			response.sendRedirect("EditEquipment");
+			response.sendRedirect("EditEquipment?id=" + equipmentId);
+			return;
 		}
 
-		// Display equipment details
+		// Default: show details
 		DetailViewBuilder builder = new DetailViewBuilder(user, equipment);
 		String html = builder.buildPage();
 		response.setContentType("text/html");
 		response.getWriter().write(html);
-
 	}
 }

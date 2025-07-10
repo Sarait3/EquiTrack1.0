@@ -64,6 +64,7 @@ public class RequestDao {
 		}
 	}
 
+
 	public Map<UUID, Request> getRequestsByUserId(int userId) {
 		try {
 			MyLock.readLock.lock();
@@ -255,6 +256,7 @@ public class RequestDao {
 
 		return upcoming;
 	}
+
 
 	public boolean updateRequest(Request request) {
 		try {

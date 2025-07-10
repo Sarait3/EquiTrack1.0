@@ -3,35 +3,15 @@ package com.equitrack.service;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
 
-/**
- * Builds the HTML page for editing equipment form Only users with the 'Admin'
- * role are allowed to access this page, If a non-admin user tries to access the
- * page, an "Access Denied" message is shown.
- *
- */
 public class EditEquipmentBuilder extends PageBuilder {
-	/** The current logged-in user */
 	private User user;
-
-	/** The equipment to be edited */
 	private Equipment equipment;
 
-	/**
-	 * Constructs an EditEquipmentBuilder with the specified user and equipment
-	 *
-	 * @param user      the user currently logged in
-	 * @param equipment the equipment to be edited
-	 */
 	public EditEquipmentBuilder(User user, Equipment equipment) {
 		this.user = user;
 		this.equipment = equipment;
 	}
 
-	/**
-	 * Builds and returns the HTML content for the edit equipment page
-	 *
-	 * @return the generated HTML page as a String
-	 */
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
@@ -70,17 +50,20 @@ public class EditEquipmentBuilder extends PageBuilder {
 					.append("<span class='status-tag status-" + status + "'>" + status.toUpperCase() + "</span>")
 					.append("</div></div></div>");
 
-			builder.setAction("EditEquipment").addHiddenInput("id", equipment.getId())
+			builder.setAction("EditEquipment")
+					.addHiddenInput("id", equipment.getId())
 					.addRequiredInput("text", "Name:", "name", equipment.getName())
 					.addRequiredInput("text", "Location:", "location", equipment.getLocation())
 					.addFileInput("Image:", "imageFile", "image/*")
-					.addCustomLine(new StringBuilder().append("<label for='isOperational'>Status:</label>")
-							.append("<select id='isOperational' name='isOperational'>").append("<option value='true' ")
-							.append(equipment.isOperational() ? "selected" : "").append(">Operational</option>")
-							.append("<option value='false' ").append(!equipment.isOperational() ? "selected" : "")
-							.append(">Out Of Service</option>").append("</select>").toString())
+					.addCustomLine(new StringBuilder()
+							.append("<label for='isOperational'>Status:</label>")
+							.append("<select id='isOperational' name='isOperational'>")
+							.append("<option value='true' ").append(equipment.isOperational() ? "selected" : "").append(">Operational</option>")
+							.append("<option value='false' ").append(!equipment.isOperational() ? "selected" : "").append(">Out Of Service</option>")
+							.append("</select>")
+							.toString())
 					.addInput("textarea", "Notes:", "notes", equipment.getNotes() != null ? equipment.getNotes() : "")
-					.removeSubmit()
+					.removeDefaultSubmit()
 					.addCustomLine("<div class='form-buttons'><button type='submit'>Save Changes</button>"
 							+ "<a href='DetailView?id=" + equipment.getId() + "' class='back-btn'>Cancel</a></div>");
 
@@ -88,14 +71,17 @@ public class EditEquipmentBuilder extends PageBuilder {
 
 			html.append("</body></html>");
 		} else {
-			html.append("<!DOCTYPE html><html lang='en'><head>").append(
-					"<meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>")
-					.append("<title>Confirmation</title>").append("<link rel='stylesheet' href='css/style.css'>")
-					.append("</head><body>").append("<div class='header'>").append("<div class='header-content'>")
-					.append("<a href='ListView' class='back-btn'>&larr; Back to List</a>").append("<h1>Success!</h1>")
-					.append("</div></div>").append("<div class='container'><div class='empty-state'>")
-					.append("<h3 style='color:red;'>Access Denied</h3>");
-
+			html.append("<!DOCTYPE html><html lang='en'><head>")
+					.append("<meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>")
+					.append("<title>Confirmation</title>")
+					.append("<link rel='stylesheet' href='css/style.css'>")
+					.append("</head><body>")
+					.append("<div class='header'><div class='header-content'>")
+					.append("<a href='ListView' class='back-btn'>&larr; Back to List</a>")
+					.append("<h1>Success!</h1></div></div>")
+					.append("<div class='container'><div class='empty-state'>")
+					.append("<h3 style='color:red;'>Access Denied</h3>")
+					.append("</div></div></body></html>");
 		}
 		return html.toString();
 	}

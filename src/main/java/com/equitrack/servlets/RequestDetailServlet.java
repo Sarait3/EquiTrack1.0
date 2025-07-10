@@ -7,20 +7,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.equitrack.dao.EquipmentDao;
 import com.equitrack.dao.RequestDao;
 import com.equitrack.dao.UserDao;
-import com.equitrack.model.Equipment;
 import com.equitrack.model.Request;
 import com.equitrack.model.User;
-
 import com.equitrack.service.ConfirmationPageBuilder;
-import com.equitrack.service.DetailViewBuilder;
 import com.equitrack.service.RequestDetailBuilder;
 
 @WebServlet("/RequestDetail")
 public class RequestDetailServlet extends HttpServlet {
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -30,20 +27,19 @@ public class RequestDetailServlet extends HttpServlet {
 			response.sendRedirect("Login");
 			return;
 		} else {
-			// Refresh user from DB to reflect latest data
+			// Refresh user data from DB
 			UserDao userDao = new UserDao();
 			user = userDao.getUserById(user.getId());
 			request.getSession().setAttribute("user", user);
 		}
 
-		// Retrieve request by ID
+		// Fetch request
 		RequestDao requestDao = new RequestDao();
 		String requestId = request.getParameter("id");
 		Request req = requestDao.getRequest(requestId);
 
 		String action = request.getParameter("action");
-		if ("approve".equals(action)) {
-
+		if ("approve".equalsIgnoreCase(action)) {
 			if (req.approve()) {
 				requestDao.updateRequest(req);
 				String message = "Request approved successfully";
@@ -58,9 +54,9 @@ public class RequestDetailServlet extends HttpServlet {
 				response.setContentType("text/html");
 				response.getWriter().write(html);
 			}
-
 			return;
-		} else if ("decline".equals(action)) {
+
+		} else if ("decline".equalsIgnoreCase(action)) {
 			req.decline();
 			requestDao.updateRequest(req);
 			String message = "Request declined successfully";
@@ -71,11 +67,10 @@ public class RequestDetailServlet extends HttpServlet {
 			return;
 		}
 
-		// Display request details
+		// No action, show request details
 		RequestDetailBuilder builder = new RequestDetailBuilder(user, req);
 		String html = builder.buildPage();
 		response.setContentType("text/html");
 		response.getWriter().write(html);
-
 	}
 }

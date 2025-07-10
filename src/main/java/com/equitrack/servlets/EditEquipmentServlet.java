@@ -21,7 +21,7 @@ import com.equitrack.service.EditEquipmentBuilder;
 /**
  * Servlet that handles editing of existing equipment
  * 
- * Only users with the 'Admin' role are allowed to access this functionality
+ * Only users with the 'Admin' and 'Manager' role are allowed to access this functionality
  * 
  */
 @WebServlet("/EditEquipment")
@@ -111,7 +111,9 @@ public class EditEquipmentServlet extends HttpServlet {
 
 		// Display confirmation page
 		String message = "Equipment updated successfully";
+
 		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView", true);
+
 		String html = builder.buildPage();
 		response.setContentType("text/html");
 		response.getWriter().write(html);
