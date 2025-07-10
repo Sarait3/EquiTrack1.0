@@ -63,48 +63,45 @@ public class RequestDao {
 			MyLock.readLock.unlock();
 		}
 	}
-	
+
 	public Map<UUID, Request> getRequestsByUserId(int userId) {
-	    try {
-	        MyLock.readLock.lock();
+		try {
+			MyLock.readLock.lock();
 
-	        String sql = "SELECT * FROM requests WHERE " + requestColUserId + " = ?";
-	        Map<UUID, Request> userRequests = new HashMap<>();
+			String sql = "SELECT * FROM requests WHERE " + requestColUserId + " = ?";
+			Map<UUID, Request> userRequests = new HashMap<>();
 
-	        try (Connection conn = DBConnection.getConnection();
-	             PreparedStatement statement = conn.prepareStatement(sql)) {
+			try (Connection conn = DBConnection.getConnection();
+					PreparedStatement statement = conn.prepareStatement(sql)) {
 
-	            statement.setInt(1, userId);
-	            try (ResultSet results = statement.executeQuery()) {
-	                while (results.next()) {
-	                    String id = results.getString(requestColId);
-	                    String equipmentId = results.getString(requestColEquipmentId);
-	                    String status = results.getString(requestColStatus);
-	                    String location = results.getString(requestColLocation);
-	                    String notes = results.getString(requestColNotes);
-	                    LocalDate requestDate = results.getDate(requestColRequestDate).toLocalDate();
-	                    LocalDate checkoutDate = results.getDate(requestColCheckoutDate).toLocalDate();
-	                    LocalDate returnDate = results.getDate(requestColReturnDate).toLocalDate();
+				statement.setInt(1, userId);
+				try (ResultSet results = statement.executeQuery()) {
+					while (results.next()) {
+						String id = results.getString(requestColId);
+						String equipmentId = results.getString(requestColEquipmentId);
+						String status = results.getString(requestColStatus);
+						String location = results.getString(requestColLocation);
+						String notes = results.getString(requestColNotes);
+						LocalDate requestDate = results.getDate(requestColRequestDate).toLocalDate();
+						LocalDate checkoutDate = results.getDate(requestColCheckoutDate).toLocalDate();
+						LocalDate returnDate = results.getDate(requestColReturnDate).toLocalDate();
 
-	                    Request request = new Request(
-	                        id, userId, equipmentId, status, location, notes,
-	                        requestDate, checkoutDate, returnDate
-	                    );
+						Request request = new Request(id, userId, equipmentId, status, location, notes, requestDate,
+								checkoutDate, returnDate);
 
-	                    userRequests.put(UUID.fromString(id), request);
-	                }
-	            }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
+						userRequests.put(UUID.fromString(id), request);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-	        return userRequests;
+			return userRequests;
 
-	    } finally {
-	        MyLock.readLock.unlock();
-	    }
+		} finally {
+			MyLock.readLock.unlock();
+		}
 	}
-
 
 	public Request getRequest(String id) {
 		try {
@@ -182,7 +179,7 @@ public class RequestDao {
 			MyLock.writeLock.unlock();
 		}
 	}
-	
+
 	public User getUserForRequest(String requestId) {
 		try {
 			MyLock.readLock.lock();
@@ -211,6 +208,20 @@ public class RequestDao {
 		return null;
 	}
 
+	public boolean hasDateConflict(String equipmentId, LocalDate start, LocalDate end) {
+		String sql = "SELECT COUNT(*) FROM requests WHERE equipmentId = ? AND status = 'approved' AND NOT (returnDate < ? OR checkoutDate > ?)";
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, equipmentId);
+			stmt.setDate(2, Date.valueOf(start));
+			stmt.setDate(3, Date.valueOf(end));
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next())
+				return rs.getInt(1) > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	public boolean updateRequest(Request request) {
 		try {

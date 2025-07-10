@@ -59,7 +59,7 @@ public class DetailViewServlet extends HttpServlet {
 			// Delete the equipment and show confirmation
 			equipmentDao.deleteEquipment(equipmentId);
 			String message = "Equipment deleted successfully";
-			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView");
+			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView", true);
 			String html = builder.buildPage();
 			response.setContentType("text/html");
 			response.getWriter().write(html);

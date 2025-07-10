@@ -3,6 +3,8 @@ package com.equitrack.model;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.equitrack.dao.RequestDao;
+
 public class Request {
     private String id, equipmentId, location, notes, status;
     int userId;
@@ -36,8 +38,14 @@ public class Request {
         this.status = Request_Status.PENDING.name();
     }
 
-    public void approve() {
-        this.status = Request_Status.APPROVED.name();
+    public Boolean approve() {
+    	RequestDao dao = new RequestDao();
+    	if (dao.hasDateConflict(this.equipmentId, this.checkoutDate, this.returnDate))
+    		return false;
+    	else {
+    		this.status = Request_Status.APPROVED.name();
+    		return true;
+    	}
     }
 
     public void decline() {

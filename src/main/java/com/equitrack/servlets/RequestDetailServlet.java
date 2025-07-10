@@ -21,7 +21,6 @@ import com.equitrack.service.RequestDetailBuilder;
 @WebServlet("/RequestDetail")
 public class RequestDetailServlet extends HttpServlet {
 
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -44,20 +43,28 @@ public class RequestDetailServlet extends HttpServlet {
 
 		String action = request.getParameter("action");
 		if ("approve".equals(action)) {
-			
-			req.approve();
-			requestDao.updateRequest(req);
-			String message = "Request approved successfully";
-			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "RequestsList");
-			String html = builder.buildPage();
-			response.setContentType("text/html");
-			response.getWriter().write(html);
+
+			if (req.approve()) {
+				requestDao.updateRequest(req);
+				String message = "Request approved successfully";
+				ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "RequestsList", true);
+				String html = builder.buildPage();
+				response.setContentType("text/html");
+				response.getWriter().write(html);
+			} else {
+				String message = "This item is not available for the selected dates";
+				ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "RequestsList", false);
+				String html = builder.buildPage();
+				response.setContentType("text/html");
+				response.getWriter().write(html);
+			}
+
 			return;
 		} else if ("decline".equals(action)) {
 			req.decline();
 			requestDao.updateRequest(req);
 			String message = "Request declined successfully";
-			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "RequestsList");
+			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "RequestsList", true);
 			String html = builder.buildPage();
 			response.setContentType("text/html");
 			response.getWriter().write(html);

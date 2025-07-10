@@ -19,7 +19,7 @@ public class EditEquipmentBuilder extends PageBuilder {
 	/**
 	 * Constructs an EditEquipmentBuilder with the specified user and equipment
 	 *
-	 * @param user the user currently logged in
+	 * @param user      the user currently logged in
 	 * @param equipment the equipment to be edited
 	 */
 	public EditEquipmentBuilder(User user, Equipment equipment) {
@@ -54,9 +54,8 @@ public class EditEquipmentBuilder extends PageBuilder {
 
 			html.append("<label for='sidebar-toggle' class='sidebar-button'>&#9776;</label>");
 
-			html.append("<a href='DetailView?id=")
-					.append(equipment.getId()).append("' class='back-btn'>&larr; Back to Equipment Details</a>")
-					.append("<h1>Edit Equipment</h1>")
+			html.append("<a href='DetailView?id=").append(equipment.getId())
+					.append("' class='back-btn'>&larr; Back to Equipment Details</a>").append("<h1>Edit Equipment</h1>")
 					.append("<div class='user-info'><img src='images/user-icon.png' alt='User Icon' class='user-icon'>")
 					.append("<span class='username'>" + user.getFName() + " " + user.getLName() + "</span>")
 					.append("<a href='Logout' class='back-btn'>Logout</a></div></div></div>");
@@ -88,16 +87,15 @@ public class EditEquipmentBuilder extends PageBuilder {
 			html.append(builder.createForm(false, true));
 
 			html.append("</body></html>");
-		} else { 
-			html.append("<!DOCTYPE html><html lang='en'><head>")
-				.append("<meta charset='UTF-8'>")
-				.append("<title>Access Denied</title>")
-				.append("<link rel='stylesheet' href='css/style.css'>")
-				.append("</head><body>")
-				.append("<div class='container-detail'><h2>Access Denied</h2>")
-				.append("<p>You do not have permission to view this page.</p>")
-				.append("<a href='ListView' class='back-btn'>&larr; Back to List</a></div>")
-				.append("</body></html>");
+		} else {
+			html.append("<!DOCTYPE html><html lang='en'><head>").append(
+					"<meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>")
+					.append("<title>Confirmation</title>").append("<link rel='stylesheet' href='css/style.css'>")
+					.append("</head><body>").append("<div class='header'>").append("<div class='header-content'>")
+					.append("<a href='ListView' class='back-btn'>&larr; Back to List</a>").append("<h1>Success!</h1>")
+					.append("</div></div>").append("<div class='container'><div class='empty-state'>")
+					.append("<h3 style='color:red;'>Access Denied</h3>");
+
 		}
 		return html.toString();
 	}

@@ -71,16 +71,14 @@ public class AddEquipmentBuilder extends PageBuilder {
 			html.append("</body></html>");
 
 		} else {
-			// Access denied page
 			html.append("<!DOCTYPE html><html lang='en'><head>")
-				.append("<meta charset='UTF-8'>")
-				.append("<title>Access Denied</title>")
-				.append("<link rel='stylesheet' href='css/style.css'>")
-				.append("</head><body>")
-				.append("<div class='container-detail'><h2>Access Denied</h2>")
-				.append("<p>You do not have permission to view this page.</p>")
-				.append("<a href='ListView' class='back-btn'>&larr; Back to List</a></div>")
-				.append("</body></html>");
+			.append("<meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>")
+			.append("<title>Confirmation</title>").append("<link rel='stylesheet' href='css/style.css'>")
+			.append("</head><body>").append("<div class='header'>").append("<div class='header-content'>")
+			.append("<a href='ListView' class='back-btn'>&larr; Back to List</a>").append("<h1>Success!</h1>")
+			.append("</div></div>").append("<div class='container'><div class='empty-state'>")
+			.append("<h3 style='color:red;'>Access Denied</h3>");
+
 		}
 
 		return html.toString();

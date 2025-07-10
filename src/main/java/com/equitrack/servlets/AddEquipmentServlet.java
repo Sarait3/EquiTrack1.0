@@ -92,7 +92,7 @@ public class AddEquipmentServlet extends HttpServlet {
 
 		// Show confirmation page
 		String message = "Equipment created successfully";
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView");
+		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView", true);
 		String html = builder.buildPage();
 
 		response.setContentType("text/html");

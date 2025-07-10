@@ -111,7 +111,7 @@ public class EditEquipmentServlet extends HttpServlet {
 
 		// Display confirmation page
 		String message = "Equipment updated successfully";
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView");
+		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView", true);
 		String html = builder.buildPage();
 		response.setContentType("text/html");
 		response.getWriter().write(html);

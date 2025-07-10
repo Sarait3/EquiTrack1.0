@@ -74,13 +74,20 @@ public class CheckoutFormServlet extends HttpServlet {
 		CheckoutService checkout = new CheckoutService(user, itemId);
 
 		// Log checkout in the system
-		checkout.requestCheckout(itemId, userId, location, notes, checkoutDate, returnDate);
+		if (checkout.requestCheckout(itemId, userId, location, notes, checkoutDate, returnDate)) {
+			ConfirmationPageBuilder builder = new ConfirmationPageBuilder("Checkout Request Sybmitted Successfully", "ListView", true);
+			String html = builder.buildPage();
+			response.setContentType("text/html");
+			response.getWriter().write(html);
+		}
 
-		// Display confirmation page
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder("Checkout Request Sybmitted Successfully", "ListView");
-		String html = builder.buildPage();
-		response.setContentType("text/html");
-		response.getWriter().write(html);
+		else {
+			ConfirmationPageBuilder builder = new ConfirmationPageBuilder("This item is not available for the requested dates", "ListView", false);
+			String html = builder.buildPage();
+			response.setContentType("text/html");
+			response.getWriter().write(html);
+		}
+
 	}
 
 }

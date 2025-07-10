@@ -86,14 +86,20 @@ public class CheckoutService extends PageBuilder {
 	 * @param checkoutDate The date the equipment is checked out
 	 * @param returnDate    The expected return date
 	 */
-	public void requestCheckout(String itemId, int userId, String location, String notes, LocalDate checkoutDate,
+	public boolean requestCheckout(String itemId, int userId, String location, String notes, LocalDate checkoutDate,
 			LocalDate returnDate) {
-		Equipment equipment = equipmentDao.getEquipment(itemId);
+		RequestDao dao = new RequestDao();
+		if (dao.hasDateConflict(itemId, checkoutDate, returnDate)) 
+			return false;
+		
+		else {
+			Request request = new Request(userId, itemId, location, notes, checkoutDate, returnDate);
+			if (user.getRole().equalsIgnoreCase("Admin") || user.getRole().equalsIgnoreCase("Manager"))
+				request.approve();
+			requestDao.createRequest(request);
+			return true;
+		}
 
-		Request request = new Request(userId, itemId, location, notes, checkoutDate, returnDate);
-		if (user.getRole().equalsIgnoreCase("Admin") || user.getRole().equalsIgnoreCase("Manager"))
-			request.approve();
-		requestDao.createRequest(request);
 
 	}
 }
