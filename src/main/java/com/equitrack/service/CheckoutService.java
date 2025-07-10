@@ -1,6 +1,8 @@
 package com.equitrack.service;
 
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.UUID;
 
 import com.equitrack.dao.EquipmentDao;
 import com.equitrack.dao.RequestDao;
@@ -55,9 +57,18 @@ public class CheckoutService extends PageBuilder {
 						+ "' class='equipment-image'>")
 				.append("<div class='equipment-details'>")
 				.append("<div class='equipment-title'>" + equipment.getName() + "</div>")
-				.append("<div class='equipment-id'>ID: " + equipment.getId() + "</div>")
-				// add availability
-				.append("</div></div></div>");
+				.append("<div class='equipment-id'>ID: " + equipment.getId() + "</div>").append("</div></div></div>");
+		Map<UUID, Request> upcomingRequests = requestDao.getUpcomingApprovedRequests(equipment.getId());
+		if (!upcomingRequests.isEmpty()) {
+			html.append("<div class='unavailable-box'>")
+					.append("<div class='unavailable-title'>Unavailable Dates</div>")
+					.append("<ul class='unavailable-list'>");
+			for (Request r : upcomingRequests.values()) {
+				html.append("<li>").append(r.getCheckoutDate()).append(" to ").append(r.getReturnDate())
+						.append("</li>");
+			}
+			html.append("</ul></div>");
+		}
 
 		FormBuilder builder = new FormBuilder();
 
@@ -70,8 +81,6 @@ public class CheckoutService extends PageBuilder {
 						+ "<a href='DetailView?id=" + equipment.getId() + "' class='back-btn'>Cancel</a></div>");
 
 		html.append(builder.createForm(false, false));
-
-		System.out.println(html.toString());
 
 		return html.toString();
 	}
@@ -89,9 +98,9 @@ public class CheckoutService extends PageBuilder {
 	public boolean requestCheckout(String itemId, int userId, String location, String notes, LocalDate checkoutDate,
 			LocalDate returnDate) {
 		RequestDao dao = new RequestDao();
-		if (dao.hasDateConflict(itemId, checkoutDate, returnDate)) 
+		if (dao.hasDateConflict(itemId, checkoutDate, returnDate))
 			return false;
-		
+
 		else {
 			Request request = new Request(userId, itemId, location, notes, checkoutDate, returnDate);
 			if (user.getRole().equalsIgnoreCase("Admin") || user.getRole().equalsIgnoreCase("Manager"))
@@ -99,7 +108,6 @@ public class CheckoutService extends PageBuilder {
 			requestDao.createRequest(request);
 			return true;
 		}
-
 
 	}
 }

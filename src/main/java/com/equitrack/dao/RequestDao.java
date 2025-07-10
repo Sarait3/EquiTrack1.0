@@ -223,6 +223,39 @@ public class RequestDao {
 		return false;
 	}
 
+	public Map<UUID, Request> getUpcomingApprovedRequests(String equipmentId) {
+		Map<UUID, Request> upcoming = new HashMap<>();
+		String sql = "SELECT * FROM requests WHERE equipmentId = ? AND status = 'approved' AND checkoutDate >= ?";
+
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+			LocalDate today = LocalDate.now();
+			stmt.setString(1, equipmentId);
+			stmt.setDate(2, Date.valueOf(today));
+
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				String id = rs.getString("id");
+				int userId = rs.getInt("userId");
+				String equipId = rs.getString("equipmentId");
+				String status = rs.getString("status");
+				String location = rs.getString("location");
+				String notes = rs.getString("notes");
+				LocalDate requestDate = rs.getDate("requestDate").toLocalDate();
+				LocalDate checkoutDate = rs.getDate("checkoutDate").toLocalDate();
+				LocalDate returnDate = rs.getDate("returnDate").toLocalDate();
+
+				Request request = new Request(id, userId, equipId, status, location, notes, requestDate, checkoutDate,
+						returnDate);
+				upcoming.put(UUID.fromString(id), request);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return upcoming;
+	}
+
 	public boolean updateRequest(Request request) {
 		try {
 			MyLock.writeLock.lock();
