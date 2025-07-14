@@ -104,7 +104,7 @@ public class CheckoutService extends PageBuilder {
 	 * Handles checkout request creation and optional auto-approval.
 	 * Prevents submission if requested dates conflict with existing approved requests.
 	 */
-	public boolean requestCheckout(String itemId, int userId, String location, String notes, LocalDate checkoutDate,
+	public boolean requestCheckout(String itemId, String userId, String location, String notes, LocalDate checkoutDate,
 			LocalDate returnDate) {
 		RequestDao dao = new RequestDao();
 		if (dao.hasDateConflict(itemId, checkoutDate, returnDate)) {

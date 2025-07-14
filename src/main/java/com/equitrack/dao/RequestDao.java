@@ -31,8 +31,7 @@ public class RequestDao {
 
 			String sql = "SELECT * FROM requests";
 			Map<UUID, Request> requestList = new HashMap<>();
-			String id, equipmentId, status, location, notes;
-			int userId;
+			String userId, id, equipmentId, status, location, notes;
 			LocalDate requestDate, checkoutDate, returnDate;
 
 			try (Connection conn = DBConnection.getConnection();
@@ -41,7 +40,7 @@ public class RequestDao {
 
 				while (results.next()) {
 					id = results.getString(requestColId);
-					userId = results.getInt(requestColUserId);
+					userId = results.getString(requestColUserId);
 					equipmentId = results.getString(requestColEquipmentId);
 					status = results.getString(requestColStatus);
 					location = results.getString(requestColLocation);
@@ -65,7 +64,7 @@ public class RequestDao {
 	}
 
 
-	public Map<UUID, Request> getRequestsByUserId(int userId) {
+	public Map<UUID, Request> getRequestsByUserId(String userId) {
 		try {
 			MyLock.readLock.lock();
 
@@ -75,7 +74,7 @@ public class RequestDao {
 			try (Connection conn = DBConnection.getConnection();
 					PreparedStatement statement = conn.prepareStatement(sql)) {
 
-				statement.setInt(1, userId);
+				statement.setString(1, userId);
 				try (ResultSet results = statement.executeQuery()) {
 					while (results.next()) {
 						String id = results.getString(requestColId);
@@ -111,8 +110,7 @@ public class RequestDao {
 			String sql = "SELECT * FROM requests WHERE " + requestColId + " = ?";
 
 			Request request = null;
-			int userId;
-			String equipmentId, status, location, notes;
+			String userId, equipmentId, status, location, notes;
 			LocalDate requestDate, checkoutDate, returnDate;
 
 			try (Connection conn = DBConnection.getConnection();
@@ -122,7 +120,7 @@ public class RequestDao {
 				try (ResultSet results = statement.executeQuery()) {
 					while (results.next()) {
 						id = results.getString(requestColId);
-						userId = results.getInt(requestColUserId);
+						userId = results.getString(requestColUserId);
 						equipmentId = results.getString(requestColEquipmentId);
 						status = results.getString(requestColStatus);
 						location = results.getString(requestColLocation);
@@ -159,7 +157,7 @@ public class RequestDao {
 					PreparedStatement statement = conn.prepareStatement(sql)) {
 
 				statement.setString(1, request.getId());
-				statement.setInt(2, request.getUserId());
+				statement.setString(2, request.getUserId());
 				statement.setString(3, request.getEquipmentId());
 				statement.setString(4, request.getStatus());
 				statement.setString(5, request.getLocation());
@@ -237,7 +235,7 @@ public class RequestDao {
 			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				String id = rs.getString("id");
-				int userId = rs.getInt("userId");
+				String userId = rs.getString("userId");
 				String equipId = rs.getString("equipmentId");
 				String status = rs.getString("status");
 				String location = rs.getString("location");

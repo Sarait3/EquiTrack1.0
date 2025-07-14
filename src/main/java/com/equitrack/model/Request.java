@@ -6,11 +6,10 @@ import java.util.UUID;
 import com.equitrack.dao.RequestDao;
 
 public class Request {
-	private String id, equipmentId, location, notes, status;
-	int userId;
+	private String userId, id, equipmentId, location, notes, status;
 	private LocalDate requestDate, checkoutDate, returnDate;
 
-	public Request(String id, int userId, String equipmentId, String status, String location, String notes,
+	public Request(String id, String userId, String equipmentId, String status, String location, String notes,
 			LocalDate requestDate, LocalDate checkoutDate, LocalDate returnDate) {
 		this.id = id;
 		this.userId = userId;
@@ -23,7 +22,7 @@ public class Request {
 		this.requestDate = requestDate;
 	}
 
-	public Request(int userId, String equipmentId, String location, String notes, LocalDate checkoutDate,
+	public Request(String userId, String equipmentId, String location, String notes, LocalDate checkoutDate,
 			LocalDate returnDate) {
 		this.id = UUID.randomUUID().toString();
 		this.userId = userId;
@@ -55,7 +54,7 @@ public class Request {
 		return id;
 	}
 
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
@@ -91,7 +90,7 @@ public class Request {
 		this.id = id;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 

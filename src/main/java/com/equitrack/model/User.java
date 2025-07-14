@@ -1,12 +1,13 @@
 package com.equitrack.model;
 
+import java.util.UUID;
+
 /**
  * This class represents a user in the app. A user has an ID, name, email,
  * password, and role (admin or regular user).
  */
 public class User {
-	int id;
-	String fName, lName, email, password, role;
+	String id, fName, lName, email, password, role;
 
 	/**
 	 * Creates a new User with all fields specified.
@@ -18,8 +19,17 @@ public class User {
 	 * @param email    the user's email address
 	 * @param password the user's password
 	 */
-	public User(int id, String role, String fName, String lName, String email, String password) {
+	public User(String id, String role, String fName, String lName, String email, String password) {
 		this.id = id;
+		this.role = role;
+		this.fName = fName;
+		this.lName = lName;
+		this.email = email;
+		this.password = password;
+	}
+	
+	public User(String role, String fName, String lName, String email, String password) {
+		this.id = UUID.randomUUID().toString();
 		this.role = role;
 		this.fName = fName;
 		this.lName = lName;
@@ -28,12 +38,12 @@ public class User {
 	}
 
 	/** Returns the user's ID */
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
 	/** Sets the user's ID */
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

@@ -307,7 +307,9 @@ public class FormBuilder {
 		+ formAction 
 		+ formMethod 
 		+ multipart
-		+ ">");
+		+ style
+		+ ">")
+		.append("<h1 style='text-align:center'>" + formTitle + "</h1>");
 
 		for (String input : form.getInputs()) {
 			sb.append(input);

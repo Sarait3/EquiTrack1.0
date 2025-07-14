@@ -6,7 +6,7 @@ CREATE DATABASE EquiTrack;
 USE EquiTrack;
 
 CREATE TABLE users (
-	id INT PRIMARY KEY AUTO_INCREMENT,
+	id VARCHAR(36) PRIMARY KEY,
     userRole TEXT,
     fName TEXT,
     lName TEXT,
@@ -40,7 +40,7 @@ CREATE TABLE equipment (
 
 CREATE TABLE requests (
     id VARCHAR(36) PRIMARY KEY,
-    userId INT NOT NULL,
+    userId VARCHAR(36) NOT NULL,
     equipmentId VARCHAR(36) NOT NULL,
     status TEXT NOT NULL,
     location TEXT NOT NULL,
@@ -65,10 +65,10 @@ CREATE USER 'dbUser'@'localhost' IDENTIFIED BY 'dbPassword';
 
 GRANT ALL PRIVILEGES ON EquiTrack.* TO 'dbUser'@'localhost';
 
-INSERT INTO users (userRole, fName, lName, email, password) VALUES
-('Admin', 'Sara', 'Matt', 'admin@example.com', 'adminpass'),
-('Regular', 'Bob', 'Smith', 'bob@example.com', 'bobpass'),
-('Regular', 'Charlie', 'Weasley', 'charlie@example.com', 'charliepass');
+INSERT INTO users (id, userRole, fName, lName, email, password) VALUES
+(UUID(), 'Admin', 'Sara', 'Matt', 'admin@example.com', 'adminpass'),
+(UUID(), 'Regular', 'Bob', 'Smith', 'bob@example.com', 'bobpass'),
+(UUID(), 'Regular', 'Charlie', 'Weasley', 'charlie@example.com', 'charliepass');
 
 INSERT INTO equipment (id, itemName, isOperational, location, imagePath, notes, returnDate) VALUES
 (UUID(), 'Crane', 'operational', 'Warehouse A', 'images/crane1.jpg', 'Large crane for high-reach tasks.', NULL),

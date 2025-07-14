@@ -4,7 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
+import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
 
 /**
@@ -26,8 +31,8 @@ public class UserDao {
 	 * @param userId the user ID
 	 * @return a User object if found, null otherwise
 	 */
-	public User getUserById(int userId) {
-		return getUser(userColId, Integer.toString(userId));
+	public User getUserById(String userId) {
+		return getUser(userColId, userId);
 	}
 
 	/**
@@ -61,7 +66,7 @@ public class UserDao {
 				try (ResultSet results = statement.executeQuery()) {
 
 					if (results.next()) {
-						return new User(results.getInt(userColId), results.getString(userColRole),
+						return new User(results.getString(userColId), results.getString(userColRole),
 								results.getString(userColFName), results.getString(userColLName),
 								results.getString(userColEmail), results.getString(userColPass));
 					}
@@ -75,6 +80,128 @@ public class UserDao {
 
 		} finally {
 			MyLock.readLock.unlock();
+		}
+	}
+	
+	public Map<UUID, User> getAllUsers() {
+		try {
+			MyLock.readLock.lock();
+
+			String sql = "SELECT * FROM users";
+			Map<UUID, User> userList = new HashMap<>();
+			String id = null, role, fName, lName, email, password;
+
+			try (Connection conn = DBConnection.getConnection();
+					PreparedStatement statement = conn.prepareStatement(sql);
+					ResultSet results = statement.executeQuery()) {
+
+				while (results.next()) {
+					id = results.getString(userColId);
+					role = results.getString(userColRole);
+					fName = results.getString(userColFName);
+					lName = results.getString(userColLName);
+					email = results.getString(userColEmail);
+					password = results.getString(userColPass);
+
+					userList.put(UUID.fromString(id),
+							new User(id, role, fName, lName, email, password));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return userList;
+
+		} finally {
+			MyLock.readLock.unlock();
+		}
+		
+	}
+	
+	public boolean createUser(User user) {
+		try {
+			MyLock.writeLock.lock();
+			
+			String sql = String.format(
+					"INSERT INTO users (%s, %s, %s, %s, %s, %s)"
+					+ "VALUES (?, ?, ?, ?, ?, ?)", 
+					userColId, userColRole, userColFName, userColLName, userColEmail, userColPass);
+			
+			try (Connection conn = DBConnection.getConnection();
+					PreparedStatement statement = conn.prepareStatement(sql)) {
+				
+				statement.setString(1, user.getId());
+				statement.setString(2, user.getRole());
+				statement.setString(3, user.getFName());
+				statement.setString(4, user.getLName());
+				statement.setString(5, user.getEmail());
+				statement.setString(6, user.getPassword());
+				
+				statement.execute();
+				
+				return true;
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			} 
+		
+		} finally {
+			MyLock.writeLock.unlock();
+		}
+	}
+	
+	public boolean updateUser(User user) {
+		try {
+			MyLock.writeLock.lock();
+			
+			String sql = String.format("UPDATE users SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?"
+					+ "WHERE %s = ?", 
+					userColRole, userColFName, userColLName, userColEmail, userColPass, userColId);
+			
+			try (Connection conn = DBConnection.getConnection();
+					PreparedStatement statement = conn.prepareStatement(sql)) {
+				
+				statement.setString(1, user.getRole());
+				statement.setString(2, user.getFName());
+				statement.setString(3, user.getLName());
+				statement.setString(4, user.getEmail());
+				statement.setString(5, user.getPassword());
+				statement.setString(6, user.getId());
+				
+				statement.execute();
+				
+				return true;
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		} finally {
+			MyLock.writeLock.unlock();
+		}
+	}
+	
+	public boolean deleteUser(String id) {
+		try {
+			MyLock.writeLock.unlock();
+			
+			String sql = String.format("DELETE FROM users WHERE %s = %s", userColId, id);
+			
+			try (Connection conn = DBConnection.getConnection();
+					PreparedStatement statement = conn.prepareStatement(sql)) {
+				
+				statement.execute();
+				
+				return true;
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			
+		} finally {
+			MyLock.writeLock.unlock();
 		}
 	}
 }

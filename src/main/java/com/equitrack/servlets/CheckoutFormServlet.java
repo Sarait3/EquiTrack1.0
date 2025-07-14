@@ -40,7 +40,7 @@ public class CheckoutFormServlet extends HttpServlet {
 
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
-		int userId = user.getId();
+		String userId = user.getId();
 
 		String itemId = request.getParameter("itemId");
 		String location = request.getParameter("location");
