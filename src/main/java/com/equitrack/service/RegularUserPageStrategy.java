@@ -32,6 +32,27 @@ public class RegularUserPageStrategy implements PageRoleStrategy{
 	public String buildRequestActions(User user, Request request) {
 		return "";
 	}
+	
+	@Override
+	public String buildManageAccount() {
+		FormBuilder form = new FormBuilder();
+		
+		return "<div class='action-section'>"
+				+ form.setTitle("Manage Account").addCustomButton("Change Email", "UserManagement?action=changeemail", "search-btn")
+					.addCustomButton("Change Password", "UserManagement?action=changepassword", "search-btn")
+					.createForm(false, false)
+				+ "</div>";
+	}
+
+	@Override
+	public String buildUserList() {
+		return "";
+	}
+
+	@Override
+	public String buildCreateUser() {
+		return "";
+	}
 
 
 

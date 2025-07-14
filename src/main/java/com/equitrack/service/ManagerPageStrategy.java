@@ -1,5 +1,9 @@
 package com.equitrack.service;
 
+import java.util.Map;
+import java.util.UUID;
+
+import com.equitrack.dao.UserDao;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.Request;
 import com.equitrack.model.User;
@@ -65,6 +69,48 @@ public class ManagerPageStrategy implements PageRoleStrategy{
 			.append("</form>");
 
 		return html.toString();
+	}
+	
+	@Override
+	public String buildManageAccount() {
+		FormBuilder form = new FormBuilder();
+		
+		return "<div class='action-section'>"
+				+ form.setTitle("Manage Account").addCustomButton("Change Email", "UserManagement?action=changeemail", "search-btn")
+					.addCustomButton("Change Password", "UserManagement?action=changepassword", "search-btn")
+					.createForm(false, false)
+				+ "</div>";
+	}
+	
+	@Override
+	public String buildUserList() {
+		UserDao dao = new UserDao();
+		Map<UUID, User> users = dao.getAllUsers();
+		
+		StringBuilder html = new StringBuilder();
+		
+		html.append("<div style='text-align:center' class='action-section container-detail'>")
+			.append("<h1>Manage Users</h1>")
+			.append("<table>")
+			.append("<th>Name</th><th>Actions</th>");
+		
+		for(User user : users.values()) {
+			html.append("<tr>")
+				.append(String.format("<td>%s, %s</td>", user.getLName(), user.getFName()))
+				.append(String.format("<td><a href='UserManagement?action=edituser&id=%s'>Edit User</a></td>", user.getId()))
+				.append("</tr>");
+		}
+		
+		html.append("</table>")
+			.append("</div>");
+		
+		
+		return html.toString();
+	}
+
+	@Override
+	public String buildCreateUser() {
+		return "";
 	}
 
 

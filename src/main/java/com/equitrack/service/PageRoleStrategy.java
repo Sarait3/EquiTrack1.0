@@ -6,6 +6,9 @@ import com.equitrack.model.User;
 
 public interface PageRoleStrategy {
 	public String buildSidebar();
-	String buildEquipmentActions(User user, Equipment equipment);
-	String buildRequestActions(User user, Request request);
+	public String buildEquipmentActions(User user, Equipment equipment);
+	public String buildRequestActions(User user, Request request);
+	public String buildManageAccount();
+	public String buildUserList();
+	public String buildCreateUser();
 }

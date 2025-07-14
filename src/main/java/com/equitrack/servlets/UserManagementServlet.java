@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.equitrack.model.User;
-import com.equitrack.service.UserManagement.UserManagementService;
+import com.equitrack.service.UserManagementService;
 
 /**
  * Servlet implementation class UserManagement
@@ -35,7 +35,7 @@ public class UserManagementServlet extends HttpServlet {
 //			return;
 //		}
 
-		User user = new User("admin", "Matt", "Sicard", "matt@example.com", "myPass");
+		User user = new User("regular", "Matt", "Sicard", "matt@example.com", "myPass");
 		String action = request.getParameter("action");
 
 		if (action != null) {

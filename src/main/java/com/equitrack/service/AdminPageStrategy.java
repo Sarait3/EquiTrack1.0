@@ -1,33 +1,19 @@
-package com.equitrack.service.UserManagement;
+package com.equitrack.service;
 
 import java.util.Map;
 import java.util.UUID;
 
 import com.equitrack.dao.UserDao;
 import com.equitrack.model.User;
-import com.equitrack.service.FormBuilder;
 
-public class AdminUserManagementService extends ManagerUserManagementService{
-
-	public AdminUserManagementService(User user) {
-		super(user);
-	}
+public class AdminPageStrategy extends ManagerPageStrategy implements PageRoleStrategy{
 
 	@Override
-	public String buildPage() {
-		StringBuilder html = new StringBuilder();
-		
-		html.append(page + userList() + createUser() + manageAccount());
-		
-		return html.toString();
-	}
-	
-	@Override
-	protected String userList() {
+	public String buildUserList() {
 		UserDao dao = new UserDao();
 		Map<UUID, User> users = dao.getAllUsers();
 		
-		html = new StringBuilder();
+		StringBuilder html = new StringBuilder();
 		
 		html.append("<div style='text-align:center' class='action-section container-detail'>")
 			.append("<h1>Manage Users</h1>")
@@ -49,8 +35,9 @@ public class AdminUserManagementService extends ManagerUserManagementService{
 		return html.toString();
 	}
 	
-	protected String createUser() {
-		form = new FormBuilder();
+	@Override
+	public String buildCreateUser() {
+		FormBuilder form = new FormBuilder();
 		
 		form.setTitle("Create User")
 			.addRequiredInput("text", "First Name", "fName")
@@ -66,5 +53,4 @@ public class AdminUserManagementService extends ManagerUserManagementService{
 				+ "</div>";
 		
 	}
-
 }
