@@ -14,7 +14,7 @@ import com.equitrack.dao.EquipmentDao;
 import com.equitrack.dao.UserDao;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
-
+import com.equitrack.service.AccessDeniedBuilder;
 import com.equitrack.service.ConfirmationPageBuilder;
 import com.equitrack.service.EditEquipmentBuilder;
 
@@ -51,11 +51,11 @@ public class EditEquipmentServlet extends HttpServlet {
 			request.getSession().setAttribute("currentUser", user);
 		}
 
-		// Check if user has admin access
-		if (!"Admin".equalsIgnoreCase(user.getRole())) {
-			response.sendRedirect("AccessDenied");
+	    if (user.getRole().equalsIgnoreCase("Regular")) {
+	    	response.setContentType("text/html");
+			response.getWriter().write(new AccessDeniedBuilder().buildPage());
 			return;
-		}
+	    }
 
 		EquipmentDao equipmentDao = new EquipmentDao();
 		String equipmentId = request.getParameter("id");

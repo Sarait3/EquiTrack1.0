@@ -14,7 +14,7 @@ import com.equitrack.dao.EquipmentDao;
 import com.equitrack.dao.UserDao;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
-
+import com.equitrack.service.AccessDeniedBuilder;
 import com.equitrack.service.AddEquipmentBuilder;
 import com.equitrack.service.ConfirmationPageBuilder;
 
@@ -35,6 +35,12 @@ public class AddEquipmentServlet extends HttpServlet {
 			user = dao.getUserById(user.getId());
 			request.getSession().setAttribute("user", user);
 		}
+		
+	    if (user.getRole().equalsIgnoreCase("Regular")) {
+	    	response.setContentType("text/html");
+			response.getWriter().write(new AccessDeniedBuilder().buildPage());
+			return;
+	    }
 
 		AddEquipmentBuilder builder = new AddEquipmentBuilder(user);
 		String html = builder.buildPage();

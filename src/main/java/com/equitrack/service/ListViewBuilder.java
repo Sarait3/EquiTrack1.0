@@ -9,12 +9,18 @@ public class ListViewBuilder extends PageBuilder {
 	private ArrayList<Equipment> equipmentList;
 	private String searchInput;
 	private String statusFilter;
+	private PageRoleStrategy roleStrategy;
 
 	public ListViewBuilder(User user, ArrayList<Equipment> equipmentList, String searchInput, String statusFilter) {
 		this.user = user;
 		this.equipmentList = equipmentList;
 		this.searchInput = searchInput;
 		this.statusFilter = statusFilter;
+		 if (user.getRole().equalsIgnoreCase("Regular")) {
+		        this.roleStrategy = new RegularUserPageStrategy();
+		    } else {
+		        this.roleStrategy = new ManagerPageStrategy();
+		    }
 	}
 
 	@Override
@@ -27,17 +33,7 @@ public class ListViewBuilder extends PageBuilder {
 			.append("<link rel='stylesheet' href='css/style.css'>")
 			.append("</head><body>");
 
-		html.append("<input type='checkbox' id='sidebar-toggle' hidden>")
-			.append("<div class='sidebar'><nav><ul>")
-			.append("<li><a href='ListView'>Equipment List</a></li>");
-
-		if (user.getRole().equalsIgnoreCase("Regular")) {
-			html.append("<li><a href='RequestsList'>My Checkout Requests</a></li>");
-		} else {
-			html.append("<li><a href='RequestsList'>Checkout Requests</a></li>");
-		}
-
-		html.append("</ul></nav></div>");
+		html.append(roleStrategy.buildSidebar());
 
 		html.append("<div class='header'><div class='header-content'>")
 			.append("<label for='sidebar-toggle' class='sidebar-button'>&#9776;</label>")

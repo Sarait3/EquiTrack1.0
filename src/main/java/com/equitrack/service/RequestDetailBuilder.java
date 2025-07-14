@@ -8,10 +8,16 @@ import com.equitrack.model.User;
 public class RequestDetailBuilder extends PageBuilder {
 	private User user;
 	private Request request;
+	private PageRoleStrategy roleStrategy;
 
 	public RequestDetailBuilder(User user, Request request) {
 		this.user = user;
 		this.request = request;
+		 if (user.getRole().equalsIgnoreCase("Regular")) {
+		        this.roleStrategy = new RegularUserPageStrategy();
+		    } else {
+		        this.roleStrategy = new ManagerPageStrategy();
+		    }
 	}
 
 	@Override
@@ -27,13 +33,7 @@ public class RequestDetailBuilder extends PageBuilder {
 				.append("<title>Request Details</title>").append("<link rel=\"stylesheet\" href=\"css/style.css\">")
 				.append("</head><body>");
 
-		html.append("<input type='checkbox' id='sidebar-toggle' hidden>").append("<div class='sidebar'><nav><ul>")
-				.append("<li><a href='ListView'>Equipment List</a></li>");
-		if (user.getRole().equalsIgnoreCase("Regular")) {
-			html.append("<li><a href='RequestsList'>My Checkout Requests</a></li>").append("</ul></nav></div>");
-		} else {
-			html.append("<li><a href='RequestsList'>Checkout Requests</a></li>").append("</ul></nav></div>");
-		}
+		html.append(roleStrategy.buildSidebar());
 
 		html.append("<div class='header'><div class='header-content'>");
 
@@ -69,21 +69,12 @@ public class RequestDetailBuilder extends PageBuilder {
 		if (request.getNotes() != null && !request.getNotes().trim().isEmpty()) {
 			html.append("<div class='notes-section'>").append("<div class='notes-title'>NOTES</div>")
 					.append("<div class='notes-content'>").append(request.getNotes()).append("</div>").append("</div>");
-
-			if (!user.getRole().equalsIgnoreCase("Regular") && request.getStatus().equalsIgnoreCase("pending")) {
-			html.append("<form method='GET' action='RequestDetail' style='display:inline-block;'>")
-					.append("<input type='hidden' name='id' value='").append(request.getId()).append("'>")
-					.append("<input type='hidden' name='action' value='approve'>")
-					.append("<button type='submit' class='action-btn btn-return'>Approve</button>").append("</form>");
-
-			html.append("<form method='GET' action='RequestDetail' style='display:inline-block;'>")
-					.append("<input type='hidden' name='id' value='").append(request.getId()).append("'>")
-					.append("<input type='hidden' name='action' value='decline'>")
-					.append("<button type='submit' class='action-btn btn-delete'>Decline</button>").append("</form>");
-			}
-
-			html.append("</div></div></div>");
 		}
+
+		html.append(roleStrategy.buildRequestActions(user, request));
+
+		html.append("</div></div></div>");
+		
 
 		html.append("</div></div>");
 		html.append("</body></html>");

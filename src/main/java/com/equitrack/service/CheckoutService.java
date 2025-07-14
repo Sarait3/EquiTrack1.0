@@ -17,12 +17,18 @@ public class CheckoutService extends PageBuilder {
 	private String itemId;
 	private EquipmentDao equipmentDao;
 	private RequestDao requestDao;
+	private PageRoleStrategy roleStrategy;
 
 	public CheckoutService(User user, String itemId) {
 		this.user = user;
 		this.itemId = itemId;
 		equipmentDao = new EquipmentDao();
 		requestDao = new RequestDao();
+		 if (user.getRole().equalsIgnoreCase("Regular")) {
+		        this.roleStrategy = new RegularUserPageStrategy();
+		    } else {
+		        this.roleStrategy = new ManagerPageStrategy();
+		    }
 	}
 
 	public String buildPage() {
@@ -36,15 +42,8 @@ public class CheckoutService extends PageBuilder {
 			.append("<link rel='stylesheet' href='css/style.css'>")
 			.append("</head><body>");
 
-		html.append("<input type='checkbox' id='sidebar-toggle' hidden>")
-			.append("<div class='sidebar'><nav><ul>")
-			.append("<li><a href='ListView'>Equipment List</a></li>");
+		html.append(roleStrategy.buildSidebar());
 
-		if (user.getRole().equalsIgnoreCase("Regular")) {
-			html.append("<li><a href='RequestsList'>My Checkout Requests</a></li>");
-		} else {
-			html.append("<li><a href='RequestsList'>Checkout Requests</a></li>");
-		}
 
 		html.append("</ul></nav></div>")
 			.append("<div class='header'><div class='header-content'>")

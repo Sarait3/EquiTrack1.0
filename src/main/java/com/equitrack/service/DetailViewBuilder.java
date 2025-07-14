@@ -13,6 +13,7 @@ public class DetailViewBuilder extends PageBuilder {
 	private User user;
 	/** The equipment whose details are being displayed */
 	private Equipment equipment;
+	private PageRoleStrategy roleStrategy;
 
 	/**
 	 * Constructs a DetailViewBuilder with a specified user and equipment
@@ -23,6 +24,11 @@ public class DetailViewBuilder extends PageBuilder {
 	public DetailViewBuilder(User user, Equipment equipment) {
 		this.user = user;
 		this.equipment = equipment;
+		 if (user.getRole().equalsIgnoreCase("Regular")) {
+		        this.roleStrategy = new RegularUserPageStrategy();
+		    } else {
+		        this.roleStrategy = new ManagerPageStrategy();
+		    }
 	}
 
 	/**
@@ -41,22 +47,10 @@ public class DetailViewBuilder extends PageBuilder {
 				.append("<title>Equipment Details</title>").append("<link rel=\"stylesheet\" href=\"css/style.css\">")
 				.append("</head><body>");
 
-		html.append("<input type='checkbox' id='sidebar-toggle' hidden>");
-
-		html.append("<input type='checkbox' id='sidebar-toggle' hidden>").append("<div class='sidebar'><nav><ul>")
-				.append("<li><a href='ListView'>Equipment List</a></li>");
-		if (user.getRole().equalsIgnoreCase("Regular")) {
-			html.append("<li><a href='RequestsList'>My Checkout Requests</a></li>").append("</ul></nav></div>");
-		} else {
-			html.append("<li><a href='RequestsList'>Checkout Requests</a></li>").append("</ul></nav></div>");
-		}
+		html.append(roleStrategy.buildSidebar());
 
 		html.append("<div class='header'><div class='header-content'>");
-
-		if (!user.getRole().equalsIgnoreCase("Regular")) {
-			html.append("<label for='sidebar-toggle' class='sidebar-button'>&#9776;</label>");
-		}
-
+		html.append("<label for='sidebar-toggle' class='sidebar-button'>&#9776;</label>");
 		html.append("<a href='ListView' class='back-btn'>&larr; Back to List</a><h1>Equipment Details</h1>")
 				.append("<div class='user-info'><img src='images/user-icon.png' alt='User Icon' class='user-icon'>")
 				.append("<span class='username'>" + user.getFName() + " " + user.getLName() + "</span>")
@@ -86,41 +80,7 @@ public class DetailViewBuilder extends PageBuilder {
 					.append("</div>");
 		}
 
-		if (user.getRole().equalsIgnoreCase("Regular")) {
-			if (equipment.isOperational()) {
-				html.append(
-						"<div class='actions-section'><div class='actions-title'>Actions</div><div class='action-buttons'>")
-						.append("<form method='GET' action='CheckoutForm'>")
-						.append("<input type='hidden' name='id' value='").append(equipment.getId()).append("'>")
-						.append("<button type='submit' name='action' value='checkout' class='action-btn btn-checkout'>Request Check out</button>")
-						.append("</form></div></div></div>");
-			}
-		} else {
-			html.append(
-					"<div class='actions-section'><div class='actions-title'>Actions</div><div class='action-buttons'>")
-					.append("<a href='EditEquipment?id=").append(equipment.getId())
-					.append("' class='action-btn btn-edit'>Edit Equipment</a>");
-
-			if (equipment.isOperational()) {
-				html.append("<form method='GET' action='CheckoutForm' style='display:inline-block;'>")
-						.append("<input type='hidden' name='id' value='").append(equipment.getId()).append("'>")
-						.append("<button type='submit' class='action-btn btn-checkout'>Check out</button>")
-						.append("</form>");
-			} else {
-				html.append("<form method='GET' action='DetailView' style='display:inline-block;'>")
-						.append("<input type='hidden' name='id' value='").append(equipment.getId()).append("'>")
-						.append("<input type='hidden' name='action' value='backInService'>")
-						.append("<button type='submit' class='action-btn btn-return'>Back In Service</button>")
-						.append("</form>");
-			}
-			html.append("<form method='GET' action='DetailView' style='display:inline-block;'>")
-					.append("<input type='hidden' name='id' value='").append(equipment.getId()).append("'>")
-					.append("<input type='hidden' name='action' value='delete'>")
-					.append("<button type='submit' class='action-btn btn-delete'>Delete Equipment</button>")
-					.append("</form>");
-
-			html.append("</div></div></div>");
-		}
+		html.append(roleStrategy.buildEquipmentActions(user, equipment));
 
 		html.append("</div></div>");
 		html.append("</body></html>");
