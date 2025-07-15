@@ -78,7 +78,7 @@ public class LoginService {
 	 * @param password the plain text password to hash
 	 * @return the hashed password in hexadecimal string format
 	 */
-	private String hashPassword(String password) {
+	public String hashPassword(String password) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 

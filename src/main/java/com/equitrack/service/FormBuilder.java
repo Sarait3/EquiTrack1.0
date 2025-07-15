@@ -241,6 +241,8 @@ public class FormBuilder {
 	 * @param name		The name to be printed in the label
 	 * @param id		The internal name and id of the select tag
 	 * @param options	A 2d Array representing the options in the select. format should be {value, text}
+	 * 					To signify that an option should be pre-selected when the page loads add "true" to
+	 * 					the inner array: {value, text, true} 
 	 * @return
 	 */
 	public FormBuilder addSelect(String name, String id, String[][] options) {
@@ -248,7 +250,11 @@ public class FormBuilder {
 				+ "<select id='%s' name='%s'>", id, name, id, id);
 		
 		for (String[] option : options) {
-			html = html + String.format("<option value='%s'>%s</option>", option[0], option[1]);
+			if (option.length == 3 && option[2].equalsIgnoreCase("true")) {
+				html = html + String.format("<option selected value='%s'>%s</option>", option[0], option[1]);
+			} else {
+				html = html + String.format("<option value='%s'>%s</option>", option[0], option[1]);
+			}
 		}
 		
 		html = html + "</select>";

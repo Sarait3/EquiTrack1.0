@@ -22,10 +22,19 @@ public class AdminPageStrategy extends ManagerPageStrategy implements PageRoleSt
 		
 		for(User user : users.values()) {
 			html.append("<tr>")
-				.append(String.format("<td>%s, %s</td>", user.getLName(), user.getFName()))
-				.append(String.format("<td><a href='UserManagement?action=edituser&id=%s'>Edit User</a></td>", user.getId()))
-				.append(String.format("<td><a href='UserManagement?action=deleteuser&id=%s'>Delete User</a></td>", user.getId()))
-				.append("</tr>");
+				.append(String.format("<td><h2 style='color:black'>%s, %s</h2></td>", user.getLName(), user.getFName()))
+				.append("<td><form method='post'>"
+						+ "<input hidden id='action' name='action' value='edituser'>"
+						+ String.format("<input hidden id='id' name='id' value='%s'>", user.getId())
+						+ "<button type='submit'>Edit User</button></form></td>");
+			if (!user.getRole().equalsIgnoreCase("admin")) {
+				html.append("<td><form method='post'>"
+						+ "<input hidden id='action' name='action' value='deleteuser'>"
+						+ String.format("<input hidden id='id' name='id' value='%s'>", user.getId())
+						+ "<button type='submit'>Delete User</button></form></td>");
+			}
+				
+				html.append("</tr>");
 		}
 		
 		html.append("</table>")
@@ -39,7 +48,7 @@ public class AdminPageStrategy extends ManagerPageStrategy implements PageRoleSt
 	public String buildCreateUser() {
 		FormBuilder form = new FormBuilder();
 		
-		form.setTitle("Create User")
+		form.setTitle("Create User").addHiddenInput("action", "createUser")
 			.addRequiredInput("text", "First Name", "fName")
 			.addRequiredInput("text", "Last Name", "lName")
 			.addSelect("Role", "role", new String[][] {{"regular", "Regular"}, {"manager", "Manager"}, {"admin", "Admin"}})

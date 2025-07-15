@@ -184,9 +184,9 @@ public class UserDao {
 	
 	public boolean deleteUser(String id) {
 		try {
-			MyLock.writeLock.unlock();
+			MyLock.writeLock.lock();
 			
-			String sql = String.format("DELETE FROM users WHERE %s = %s", userColId, id);
+			String sql = String.format("DELETE FROM users WHERE %s LIKE '%s'", userColId, id);
 			
 			try (Connection conn = DBConnection.getConnection();
 					PreparedStatement statement = conn.prepareStatement(sql)) {

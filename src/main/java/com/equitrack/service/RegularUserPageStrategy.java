@@ -12,6 +12,7 @@ public class RegularUserPageStrategy implements PageRoleStrategy{
 		+ "<div class='sidebar'><nav><ul>"
 		+ "<li><a href='ListView'>Equipment List</a></li>"
 		+ "<li><a href='RequestsList'>My Checkout Requests</a></li>"
+		+ "<li><a href='UserManagement'>User Management</a></li>"
 		+ "</ul></nav></div>";
 	}
 	
@@ -35,13 +36,24 @@ public class RegularUserPageStrategy implements PageRoleStrategy{
 	
 	@Override
 	public String buildManageAccount() {
-		FormBuilder form = new FormBuilder();
+		FormBuilder changePass = new FormBuilder();
+		FormBuilder changeEmail = new FormBuilder();
+		StringBuilder html = new StringBuilder();
 		
-		return "<div class='action-section'>"
-				+ form.setTitle("Manage Account").addCustomButton("Change Email", "UserManagement?action=changeemail", "search-btn")
-					.addCustomButton("Change Password", "UserManagement?action=changepassword", "search-btn")
-					.createForm(false, false)
-				+ "</div>";
+		changePass.setTitle("Change Password").addHiddenInput("action", "changepassword")
+			.addRequiredInput("password", "Old Password", "oldPass")
+			.addRequiredInput("password", "New Password", "newPass");
+		
+		changeEmail.setTitle("Change Email").addHiddenInput("action", "changeemail")
+			.addRequiredInput("text", "New Email", "newmail")
+			.addRequiredInput("password", "Password", "password");
+
+		html.append("<div class='action-section'>")
+			.append(changePass.createForm(false, false))
+			.append(changeEmail.createForm(false, false))
+			.append("</div>");
+		
+		return html.toString();
 	}
 
 	@Override
