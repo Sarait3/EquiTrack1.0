@@ -57,13 +57,13 @@ public class UserManagementService extends PageBuilder {
 
 	public boolean changePassword(String id, String oldPass, String newPass) {
 		UserDao dao = new UserDao();
-		User user = dao.getUserById(id);
+		User userToEdit = dao.getUserById(id);
 		LoginService login = new LoginService();
 		oldPass = login.hashPassword(oldPass);
 
-		if (user != null && user.getPassword().equals(oldPass)) {
-			user.setPassword(newPass);
-			return dao.updateUser(user);
+		if (userToEdit != null && userToEdit.getPassword().equals(oldPass)) {
+			userToEdit.setPassword(newPass);
+			return dao.updateUser(userToEdit);
 		}
 
 		return false;
@@ -71,13 +71,13 @@ public class UserManagementService extends PageBuilder {
 
 	public boolean changeEmail(String id, String password, String newEmail) {
 		UserDao dao = new UserDao();
-		User user = dao.getUserById(id);
+		User userToEdit = dao.getUserById(id);
 		LoginService login = new LoginService();
 		password = login.hashPassword(password);
 
-		if (user != null && user.getPassword().equals(password)) {
-			user.setEmail(newEmail);
-			return dao.updateUser(user);
+		if (userToEdit != null && userToEdit.getPassword().equals(password)) {
+			userToEdit.setEmail(newEmail);
+			return dao.updateUser(userToEdit);
 		}
 
 		return false;
@@ -101,23 +101,23 @@ public class UserManagementService extends PageBuilder {
 	public String buildEditUser(String id) {
 		StringBuilder html = new StringBuilder();
 		FormBuilder form = new FormBuilder();
-		User editUser = dao.getUserById(id);
+		User userToEdit = dao.getUserById(id);
 		
-		form.setTitle("Edit User").addHiddenInput("action", "doneEditUser").addHiddenInput("id", editUser.getId())
-		.addRequiredInput("text", "First Name", "fName", editUser.getFName())
-		.addRequiredInput("text", "Last Name", "lName", editUser.getLName());
+		form.setTitle("Edit User").addHiddenInput("action", "doneEditUser").addHiddenInput("id", userToEdit.getId())
+		.addRequiredInput("text", "First Name", "fName", userToEdit.getFName())
+		.addRequiredInput("text", "Last Name", "lName", userToEdit.getLName());
 		
 		if (user.getRole().equalsIgnoreCase("admin")) {
 			form.addSelect("Role", "role", new String[][] {
-				{"regular", "Regular", editUser.getRole().equalsIgnoreCase("regular") ? "true" : "false"}, 
-				{"manager", "Manager", editUser.getRole().equalsIgnoreCase("manager") ? "true" : "false"}, 
-				{"admin", "Admin", editUser.getRole().equalsIgnoreCase("admin") ? "true" : "false"}});
+				{"regular", "Regular", userToEdit.getRole().equalsIgnoreCase("regular") ? "true" : "false"}, 
+				{"manager", "Manager", userToEdit.getRole().equalsIgnoreCase("manager") ? "true" : "false"}, 
+				{"admin", "Admin", userToEdit.getRole().equalsIgnoreCase("admin") ? "true" : "false"}});
 		} else {
-			form.addHiddenInput("role", editUser.getRole());
+			form.addHiddenInput("role", userToEdit.getRole());
 		}
 		
-		form.addRequiredInput("text", "Email", "email", editUser.getEmail())
-		.addRequiredInput("password", "Password", "password", editUser.getPassword())
+		form.addRequiredInput("text", "Email", "email", userToEdit.getEmail())
+		.addRequiredInput("password", "Password", "password", userToEdit.getPassword())
 		.addCancel("UserManagement", "Cancel");
 
 		html.append(page)

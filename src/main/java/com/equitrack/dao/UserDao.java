@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
+import com.equitrack.service.UserBuilder;
 
 /**
  * UserDao provides data access methods for retrieving user records from the
@@ -54,6 +55,7 @@ public class UserDao {
 	 * @return a User object if a match is found, null otherwise
 	 */
 	private User getUser(String columnName, String columnData) {
+		UserBuilder user = new UserBuilder();
 		try {
 			MyLock.readLock.lock();
 
@@ -66,9 +68,13 @@ public class UserDao {
 				try (ResultSet results = statement.executeQuery()) {
 
 					if (results.next()) {
-						return new User(results.getString(userColId), results.getString(userColRole),
-								results.getString(userColFName), results.getString(userColLName),
-								results.getString(userColEmail), results.getString(userColPass));
+						return user.setId(results.getString(userColId))
+							.setRole(results.getString(userColRole))
+							.setFName(results.getString(userColFName))
+							.setLName(results.getString(userColLName))
+							.setEmail(results.getString(userColEmail))
+							.setPassword(results.getString(userColPass))
+							.createUser();
 					}
 				}
 
@@ -88,29 +94,29 @@ public class UserDao {
 			MyLock.readLock.lock();
 
 			String sql = "SELECT * FROM users";
-			Map<UUID, User> userList = new HashMap<>();
-			String id = null, role, fName, lName, email, password;
+			Map<UUID, User> userMap = new HashMap<>();
 
 			try (Connection conn = DBConnection.getConnection();
 					PreparedStatement statement = conn.prepareStatement(sql);
 					ResultSet results = statement.executeQuery()) {
 
 				while (results.next()) {
-					id = results.getString(userColId);
-					role = results.getString(userColRole);
-					fName = results.getString(userColFName);
-					lName = results.getString(userColLName);
-					email = results.getString(userColEmail);
-					password = results.getString(userColPass);
+					UserBuilder user = new UserBuilder();
+					
+					user.setId(results.getString(userColId))
+						.setRole(results.getString(userColRole))
+						.setFName(results.getString(userColFName))
+						.setLName(results.getString(userColLName))
+						.setEmail(results.getString(userColEmail))
+						.setPassword(results.getString(userColPass));
 
-					userList.put(UUID.fromString(id),
-							new User(id, role, fName, lName, email, password));
+					userMap.put(UUID.fromString(results.getString(userColId)), user.createUser());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
-			return userList;
+			return userMap;
 
 		} finally {
 			MyLock.readLock.unlock();
