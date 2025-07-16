@@ -62,7 +62,7 @@ public class UserManagementService extends PageBuilder {
 		oldPass = login.hashPassword(oldPass);
 
 		if (userToEdit != null && userToEdit.getPassword().equals(oldPass)) {
-			userToEdit.setPassword(newPass);
+			userToEdit.setPassword(login.hashPassword(newPass));
 			return dao.updateUser(userToEdit);
 		}
 
@@ -90,7 +90,20 @@ public class UserManagementService extends PageBuilder {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 
-		User newUser = new User(role, fName, lName, email, password);
+		User newUser = new UserBuilder()
+				.setRole(role)
+				.setFName(fName)
+				.setLName(lName)
+				.setEmail(email)
+				.setPassword(password) 
+				.createUser();
+		
+		if (newUser == null) {
+			System.out.println("[ERROR] UserBuilder returned null. One or more fields were missing.");
+			System.out.println("[DEBUG] role=" + role + ", fName=" + fName + ", lName=" + lName + ", email=" + email + ", password=" + password);
+			return false;
+		}
+
 		return new UserDao().createUser(newUser);
 	}
 

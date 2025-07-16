@@ -26,189 +26,142 @@ public class RequestDao {
 	private static final String requestColStatus = "status";
 
 	public Map<UUID, Request> getAllRequests() {
-		try {
-			MyLock.readLock.lock();
+		String sql = "SELECT * FROM requests";
+		Map<UUID, Request> requestList = new HashMap<>();
 
-			String sql = "SELECT * FROM requests";
-			Map<UUID, Request> requestList = new HashMap<>();
-			String userId, id, equipmentId, status, location, notes;
-			LocalDate requestDate, checkoutDate, returnDate;
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement statement = conn.prepareStatement(sql);
+				ResultSet results = statement.executeQuery()) {
 
-			try (Connection conn = DBConnection.getConnection();
-					PreparedStatement statement = conn.prepareStatement(sql);
-					ResultSet results = statement.executeQuery()) {
+			while (results.next()) {
+				String id = results.getString(requestColId);
+				String userId = results.getString(requestColUserId);
+				String equipmentId = results.getString(requestColEquipmentId);
+				String status = results.getString(requestColStatus);
+				String location = results.getString(requestColLocation);
+				String notes = results.getString(requestColNotes);
+				LocalDate requestDate = results.getDate(requestColRequestDate).toLocalDate();
+				LocalDate checkoutDate = results.getDate(requestColCheckoutDate).toLocalDate();
+				LocalDate returnDate = results.getDate(requestColReturnDate).toLocalDate();
 
-				while (results.next()) {
-					id = results.getString(requestColId);
-					userId = results.getString(requestColUserId);
-					equipmentId = results.getString(requestColEquipmentId);
-					status = results.getString(requestColStatus);
-					location = results.getString(requestColLocation);
-					notes = results.getString(requestColNotes);
-					requestDate = results.getDate(requestColRequestDate).toLocalDate();
-					checkoutDate = results.getDate(requestColCheckoutDate).toLocalDate();
-					returnDate = results.getDate(requestColReturnDate).toLocalDate();
-
-					requestList.put(UUID.fromString(id), new Request(id, userId, equipmentId, status, location, notes,
-							requestDate, checkoutDate, returnDate));
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+				requestList.put(UUID.fromString(id), new Request(id, userId, equipmentId, status, location, notes,
+						requestDate, checkoutDate, returnDate));
 			}
-
-			return requestList;
-
-		} finally {
-			MyLock.readLock.unlock();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		return requestList;
 	}
 
-
 	public Map<UUID, Request> getRequestsByUserId(String userId) {
-		try {
-			MyLock.readLock.lock();
+		String sql = "SELECT * FROM requests WHERE " + requestColUserId + " = ?";
+		Map<UUID, Request> userRequests = new HashMap<>();
 
-			String sql = "SELECT * FROM requests WHERE " + requestColUserId + " = ?";
-			Map<UUID, Request> userRequests = new HashMap<>();
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
-			try (Connection conn = DBConnection.getConnection();
-					PreparedStatement statement = conn.prepareStatement(sql)) {
+			statement.setString(1, userId);
+			try (ResultSet results = statement.executeQuery()) {
+				while (results.next()) {
+					String id = results.getString(requestColId);
+					String equipmentId = results.getString(requestColEquipmentId);
+					String status = results.getString(requestColStatus);
+					String location = results.getString(requestColLocation);
+					String notes = results.getString(requestColNotes);
+					LocalDate requestDate = results.getDate(requestColRequestDate).toLocalDate();
+					LocalDate checkoutDate = results.getDate(requestColCheckoutDate).toLocalDate();
+					LocalDate returnDate = results.getDate(requestColReturnDate).toLocalDate();
 
-				statement.setString(1, userId);
-				try (ResultSet results = statement.executeQuery()) {
-					while (results.next()) {
-						String id = results.getString(requestColId);
-						String equipmentId = results.getString(requestColEquipmentId);
-						String status = results.getString(requestColStatus);
-						String location = results.getString(requestColLocation);
-						String notes = results.getString(requestColNotes);
-						LocalDate requestDate = results.getDate(requestColRequestDate).toLocalDate();
-						LocalDate checkoutDate = results.getDate(requestColCheckoutDate).toLocalDate();
-						LocalDate returnDate = results.getDate(requestColReturnDate).toLocalDate();
+					Request request = new Request(id, userId, equipmentId, status, location, notes, requestDate,
+							checkoutDate, returnDate);
 
-						Request request = new Request(id, userId, equipmentId, status, location, notes, requestDate,
-								checkoutDate, returnDate);
-
-						userRequests.put(UUID.fromString(id), request);
-					}
+					userRequests.put(UUID.fromString(id), request);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-
-			return userRequests;
-
-		} finally {
-			MyLock.readLock.unlock();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		return userRequests;
 	}
 
 	public Request getRequest(String id) {
-		try {
-			MyLock.readLock.lock();
+		String sql = "SELECT * FROM requests WHERE " + requestColId + " = ?";
+		Request request = null;
 
-			String sql = "SELECT * FROM requests WHERE " + requestColId + " = ?";
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
-			Request request = null;
-			String userId, equipmentId, status, location, notes;
-			LocalDate requestDate, checkoutDate, returnDate;
+			statement.setString(1, id);
+			try (ResultSet results = statement.executeQuery()) {
+				while (results.next()) {
+					String userId = results.getString(requestColUserId);
+					String equipmentId = results.getString(requestColEquipmentId);
+					String status = results.getString(requestColStatus);
+					String location = results.getString(requestColLocation);
+					String notes = results.getString(requestColNotes);
+					LocalDate requestDate = results.getDate(requestColRequestDate).toLocalDate();
+					LocalDate checkoutDate = results.getDate(requestColCheckoutDate).toLocalDate();
+					LocalDate returnDate = results.getDate(requestColReturnDate).toLocalDate();
 
-			try (Connection conn = DBConnection.getConnection();
-					PreparedStatement statement = conn.prepareStatement(sql)) {
-
-				statement.setString(1, id);
-				try (ResultSet results = statement.executeQuery()) {
-					while (results.next()) {
-						id = results.getString(requestColId);
-						userId = results.getString(requestColUserId);
-						equipmentId = results.getString(requestColEquipmentId);
-						status = results.getString(requestColStatus);
-						location = results.getString(requestColLocation);
-						notes = results.getString(requestColNotes);
-						requestDate = results.getDate(requestColRequestDate).toLocalDate();
-						checkoutDate = results.getDate(requestColCheckoutDate).toLocalDate();
-						returnDate = results.getDate(requestColReturnDate).toLocalDate();
-
-						request = new Request(id, userId, equipmentId, status, location, notes, requestDate,
-								checkoutDate, returnDate);
-					}
+					request = new Request(id, userId, equipmentId, status, location, notes, requestDate, checkoutDate,
+							returnDate);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-
-			return request;
-
-		} finally {
-			MyLock.readLock.unlock();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		return request;
 	}
 
 	public boolean createRequest(Request request) {
-		try {
-			MyLock.writeLock.lock();
+		String sql = String.format(
+				"INSERT INTO requests (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				requestColId, requestColUserId, requestColEquipmentId, requestColStatus, requestColLocation,
+				requestColNotes, requestColRequestDate, requestColCheckoutDate, requestColReturnDate);
 
-			String sql = String.format(
-					"INSERT INTO requests (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-					requestColId, requestColUserId, requestColEquipmentId, requestColStatus, requestColLocation,
-					requestColNotes, requestColRequestDate, requestColCheckoutDate, requestColReturnDate);
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
-			try (Connection conn = DBConnection.getConnection();
-					PreparedStatement statement = conn.prepareStatement(sql)) {
+			statement.setString(1, request.getId());
+			statement.setString(2, request.getUserId());
+			statement.setString(3, request.getEquipmentId());
+			statement.setString(4, request.getStatus());
+			statement.setString(5, request.getLocation());
+			statement.setString(6, request.getNotes());
+			statement.setDate(7, Date.valueOf(request.getRequestDate()));
+			statement.setDate(8, Date.valueOf(request.getCheckoutDate()));
+			statement.setDate(9, Date.valueOf(request.getReturnDate()));
 
-				statement.setString(1, request.getId());
-				statement.setString(2, request.getUserId());
-				statement.setString(3, request.getEquipmentId());
-				statement.setString(4, request.getStatus());
-				statement.setString(5, request.getLocation());
-				statement.setString(6, request.getNotes());
-				statement.setDate(7, Date.valueOf(request.getRequestDate()));
-				statement.setDate(8, Date.valueOf(request.getCheckoutDate()));
-				statement.setDate(9, Date.valueOf(request.getReturnDate()));
-
-				statement.execute();
-
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return false;
-		} finally {
-			MyLock.writeLock.unlock();
+			statement.execute();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		return false;
 	}
 
 	public User getUserForRequest(String requestId) {
-		try {
-			MyLock.readLock.lock();
-			Request request = getRequest(requestId);
-			if (request != null) {
-				UserDao userDao = new UserDao();
-				return userDao.getUserById(request.getUserId());
-			}
-		} finally {
-			MyLock.readLock.unlock();
+		Request request = getRequest(requestId);
+		if (request != null) {
+			UserDao userDao = new UserDao();
+			return userDao.getUserById(request.getUserId());
 		}
 		return null;
 	}
 
 	public Equipment getEquipmentForRequest(String requestId) {
-		try {
-			MyLock.readLock.lock();
-			Request request = getRequest(requestId);
-			if (request != null) {
-				EquipmentDao equipmentDao = new EquipmentDao();
-				return equipmentDao.getEquipment(request.getEquipmentId());
-			}
-		} finally {
-			MyLock.readLock.unlock();
+		Request request = getRequest(requestId);
+		if (request != null) {
+			EquipmentDao equipmentDao = new EquipmentDao();
+			return equipmentDao.getEquipment(request.getEquipmentId());
 		}
 		return null;
 	}
 
 	public boolean hasDateConflict(String equipmentId, LocalDate start, LocalDate end) {
 		String sql = "SELECT COUNT(*) FROM requests WHERE equipmentId = ? AND status = 'approved' AND NOT (returnDate < ? OR checkoutDate > ?)";
+
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setString(1, equipmentId);
 			stmt.setDate(2, Date.valueOf(start));
@@ -227,12 +180,11 @@ public class RequestDao {
 		String sql = "SELECT * FROM requests WHERE equipmentId = ? AND status = 'approved' AND checkoutDate >= ?";
 
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
 			LocalDate today = LocalDate.now();
 			stmt.setString(1, equipmentId);
 			stmt.setDate(2, Date.valueOf(today));
-
 			ResultSet rs = stmt.executeQuery();
+
 			while (rs.next()) {
 				String id = rs.getString("id");
 				String userId = rs.getString("userId");
@@ -255,59 +207,42 @@ public class RequestDao {
 		return upcoming;
 	}
 
-
 	public boolean updateRequest(Request request) {
-		try {
-			MyLock.writeLock.lock();
+		String sql = "UPDATE requests SET " + requestColStatus + " = ?, " + requestColLocation + " = ?, "
+				+ requestColNotes + " = ?, " + requestColRequestDate + " = ?, " + requestColCheckoutDate + " = ?, "
+				+ requestColReturnDate + " = ? WHERE " + requestColId + " = ?";
 
-			String sql = "UPDATE requests SET " + requestColStatus + " = ?, " + requestColLocation + " = ?, "
-					+ requestColNotes + " = ?, " + requestColRequestDate + " = ?, " + requestColCheckoutDate + " = ?, "
-					+ requestColReturnDate + " = ? " + "WHERE " + requestColId + " = ?";
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
-			try (Connection conn = DBConnection.getConnection();
-					PreparedStatement statement = conn.prepareStatement(sql)) {
+			statement.setString(1, request.getStatus());
+			statement.setString(2, request.getLocation());
+			statement.setString(3, request.getNotes());
+			statement.setDate(4, Date.valueOf(request.getRequestDate()));
+			statement.setDate(5, Date.valueOf(request.getCheckoutDate()));
+			statement.setDate(6, Date.valueOf(request.getReturnDate()));
+			statement.setString(7, request.getId());
 
-				statement.setString(1, request.getStatus());
-				statement.setString(2, request.getLocation());
-				statement.setString(3, request.getNotes());
-				statement.setDate(4, Date.valueOf(request.getRequestDate()));
-				statement.setDate(5, Date.valueOf(request.getCheckoutDate()));
-				statement.setDate(6, Date.valueOf(request.getReturnDate()));
-				statement.setString(7, request.getId());
-
-				statement.execute();
-
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return false;
-		} finally {
-			MyLock.writeLock.unlock();
+			statement.execute();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		return false;
 	}
 
 	public boolean deleteRequest(String id) {
-		try {
-			MyLock.writeLock.lock();
+		String sql = "DELETE FROM requests WHERE id = ?";
 
-			String sql = "DELETE FROM requests WHERE id = ?";
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
-			try (Connection conn = DBConnection.getConnection();
-					PreparedStatement statement = conn.prepareStatement(sql)) {
-
-				statement.setString(1, id);
-				statement.execute();
-
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return false;
-		} finally {
-			MyLock.writeLock.unlock();
+			statement.setString(1, id);
+			statement.execute();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		return false;
 	}
 }

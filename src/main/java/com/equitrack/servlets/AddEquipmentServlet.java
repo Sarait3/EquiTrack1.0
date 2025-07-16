@@ -67,7 +67,14 @@ public class AddEquipmentServlet extends HttpServlet {
 			imagePath = "images/" + fileName;
 		}
 
-		Equipment equipment = new Equipment(name, isOperational, location, imagePath, notes, null);
+		Equipment equipment = new Equipment.Builder()
+			    .setName(name)
+			    .setOperational(isOperational)
+			    .setLocation(location)
+			    .setImagePath(imagePath)
+			    .setNotes(notes)
+			    .build();
+
 		dao.createEquipment(equipment);
 
 		String message = "Equipment created successfully";

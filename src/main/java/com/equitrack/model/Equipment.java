@@ -79,6 +79,17 @@ public class Equipment {
 		this.setReturnDate(returnDate);
 		setOperationalString(isOperational);
 	}
+	
+	private Equipment(Builder builder) {
+		this.id = builder.id;
+		this.name = builder.name;
+		this.isOperational = builder.isOperational;
+		this.location = builder.location;
+		this.imagePath = builder.imagePath;
+		this.notes = builder.notes;
+		this.returnDate = builder.returnDate;
+	}
+
 
 	/** Returns the equipment ID */
 	public String getId() {
@@ -159,4 +170,59 @@ public class Equipment {
 	public void setReturnDate(LocalDate returnDate) {
 		this.returnDate = returnDate;
 	}
+	
+	public static class Builder {
+		private String id = UUID.randomUUID().toString();
+		private String name;
+		private boolean isOperational = true;
+		private String location;
+		private String imagePath;
+		private String notes;
+		private LocalDate returnDate;
+
+		public Builder setId(String id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder setName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public Builder setOperational(boolean isOperational) {
+			this.isOperational = isOperational;
+			return this;
+		}
+
+		public Builder setOperational(String isOperationalString) {
+			this.isOperational = isOperationalString.equalsIgnoreCase("operational");
+			return this;
+		}
+
+		public Builder setLocation(String location) {
+			this.location = location;
+			return this;
+		}
+
+		public Builder setImagePath(String imagePath) {
+			this.imagePath = imagePath;
+			return this;
+		}
+
+		public Builder setNotes(String notes) {
+			this.notes = notes;
+			return this;
+		}
+
+		public Builder setReturnDate(LocalDate returnDate) {
+			this.returnDate = returnDate;
+			return this;
+		}
+
+		public Equipment build() {
+			return new Equipment(this);
+		}
+	}
+
 }

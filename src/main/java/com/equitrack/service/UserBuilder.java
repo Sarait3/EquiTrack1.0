@@ -1,5 +1,7 @@
 package com.equitrack.service;
 
+import java.util.UUID;
+
 import com.equitrack.model.User;
 
 public class UserBuilder {
@@ -46,12 +48,10 @@ public class UserBuilder {
 	}
 
 	public UserBuilder setPassword(String password) {
-		LoginService login = new LoginService();
-
-		this.password = login.hashPassword(password);
-
-		return this;
+	        this.password = password;
+	        return this;
 	}
+
 
 	public User createUser() {
 		if (role == null || fName == null || lName == null || email == null || password == null) return null;
@@ -60,6 +60,7 @@ public class UserBuilder {
 	}
 
 	private User createNewUser() {
+		this.id = UUID.randomUUID().toString();
 		user = new User(role, fName, lName, email, password);
 
 		return user;

@@ -45,11 +45,12 @@ public class LoginService {
 	 */
 	public User validateLogin(String email, String password) {
 		UserDao dao = new UserDao();
+
 		User user = dao.getUserByEmail(email);
 
 		// Hash the password before comparing
 		password = hashPassword(password);
-
+		
 		if (user != null) {
 			if (user.getPassword().equals(password)) {
 				return user;
