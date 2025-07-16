@@ -97,12 +97,6 @@ public class UserManagementService extends PageBuilder {
 				.setEmail(email)
 				.setPassword(password) 
 				.createUser();
-		
-		if (newUser == null) {
-			System.out.println("[ERROR] UserBuilder returned null. One or more fields were missing.");
-			System.out.println("[DEBUG] role=" + role + ", fName=" + fName + ", lName=" + lName + ", email=" + email + ", password=" + password);
-			return false;
-		}
 
 		return new UserDao().createUser(newUser);
 	}

@@ -60,8 +60,7 @@ public class UserBuilder {
 	}
 
 	private User createNewUser() {
-		this.id = UUID.randomUUID().toString();
-		user = new User(role, fName, lName, email, password);
+		user = new User(UUID.randomUUID().toString(), role, fName, lName, email, password);
 
 		return user;
 	}
