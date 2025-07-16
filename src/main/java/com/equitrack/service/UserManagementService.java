@@ -105,12 +105,18 @@ public class UserManagementService extends PageBuilder {
 		
 		form.setTitle("Edit User").addHiddenInput("action", "doneEditUser").addHiddenInput("id", editUser.getId())
 		.addRequiredInput("text", "First Name", "fName", editUser.getFName())
-		.addRequiredInput("text", "Last Name", "lName", editUser.getLName())
-		.addSelect("Role", "role", new String[][] {
-			{"regular", "Regular", editUser.getRole().equalsIgnoreCase("regular") ? "true" : "false"}, 
-			{"manager", "Manager", editUser.getRole().equalsIgnoreCase("manager") ? "true" : "false"}, 
-			{"admin", "Admin", editUser.getRole().equalsIgnoreCase("admin") ? "true" : "false"}})
-		.addRequiredInput("text", "Email", "email", editUser.getEmail())
+		.addRequiredInput("text", "Last Name", "lName", editUser.getLName());
+		
+		if (user.getRole().equalsIgnoreCase("admin")) {
+			form.addSelect("Role", "role", new String[][] {
+				{"regular", "Regular", editUser.getRole().equalsIgnoreCase("regular") ? "true" : "false"}, 
+				{"manager", "Manager", editUser.getRole().equalsIgnoreCase("manager") ? "true" : "false"}, 
+				{"admin", "Admin", editUser.getRole().equalsIgnoreCase("admin") ? "true" : "false"}});
+		} else {
+			form.addHiddenInput("role", editUser.getRole());
+		}
+		
+		form.addRequiredInput("text", "Email", "email", editUser.getEmail())
 		.addRequiredInput("password", "Password", "password", editUser.getPassword())
 		.addCancel("UserManagement", "Cancel");
 
