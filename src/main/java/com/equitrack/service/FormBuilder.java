@@ -192,6 +192,11 @@ public class FormBuilder {
 		return this;
 	}
 	
+	/**
+	 * Removes the default submit button from the form and adds a new one with
+	 * a custom name, id, value, and class.
+	 * @return
+	 */
 	public FormBuilder addCustomSubmit(String name, String id, String value, String buttonClass) {
 		form.addButton(String.format("<button type='submit' name='%s' id='%s' value='%s' class='%s'>%s</button>", 
 				id, id, value, buttonClass, name));
@@ -219,6 +224,10 @@ public class FormBuilder {
 		return this;
 	}
 	
+	/**
+	 * Adds a cancel button to the form.
+	 * @return 
+	 */
 	public FormBuilder addCancel(String destination, String name) {
 		form.addButton(String.format("<a href='%s' class='back-btn'>Cancel</a>", destination, name));
 		

@@ -72,6 +72,10 @@ public class ManagerPageStrategy implements PageRoleStrategy{
 		return html.toString();
 	}
 	
+	/**
+	 * Generates the HTML for the basic account management page that allows
+	 * a user to change their own email and password.
+	 */
 	@Override
 	public String buildManageAccount() {
 		FormBuilder changePass = new FormBuilder();
@@ -94,6 +98,9 @@ public class ManagerPageStrategy implements PageRoleStrategy{
 		return html.toString();
 	}
 	
+	/**
+	 * Generates the HTML for the user list that allows a manager to edit users that are not admins or managers.
+	 */
 	@Override
 	public String buildUserList() {
 		UserDao dao = new UserDao();
@@ -107,10 +114,12 @@ public class ManagerPageStrategy implements PageRoleStrategy{
 			.append("<th>Name</th><th>Actions</th>");
 		
 		for(User user : users.values()) {
-			html.append("<tr>")
-				.append(String.format("<td>%s, %s</td>", user.getLName(), user.getFName()))
-				.append(String.format("<td><a href='UserManagement?action=edituser&id=%s'>Edit User</a></td>", user.getId()))
-				.append("</tr>");
+			if (user.getRole().equalsIgnoreCase("regular")) {
+				html.append("<tr>")
+					.append(String.format("<td>%s, %s</td>", user.getLName(), user.getFName()))
+					.append(String.format("<td><a href='UserManagement?action=edituser&id=%s'>Edit User</a></td>", user.getId()))
+					.append("</tr>");
+			}
 		}
 		
 		html.append("</table>")

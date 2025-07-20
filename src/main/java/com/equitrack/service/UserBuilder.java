@@ -7,7 +7,7 @@ import com.equitrack.model.User;
 public class UserBuilder {
 	User user;
 	String id, fName, lName, role, email, password;
-	
+
 	public UserBuilder() {
 		this.id = null;
 		this.role = null;
