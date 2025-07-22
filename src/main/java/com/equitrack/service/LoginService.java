@@ -22,16 +22,13 @@ public class LoginService {
 	 * @return HTML content for the login page
 	 */
 	public String loginPage(boolean firstTimeLogin) {
-		String errormsg = firstTimeLogin ?  "" : "Login failed, please try again";
+		String errormsg = firstTimeLogin ? "" : "Login failed, please try again";
 
 		FormBuilder builder = new FormBuilder();
-		
-		builder.setTitle("Login").setAction("Login").setMethod("post")
-				.addRequiredInput("text", "Email:", "email")
-				.addRequiredInput("password", "Password:", "password")
-				.addReset()
-				.addError(errormsg);
-				
+
+		builder.setTitle("Login").setAction("Login").setMethod("post").addRequiredInput("text", "Email:", "email")
+				.addRequiredInput("password", "Password:", "password").addReset().addError(errormsg);
+
 		return builder.createForm(true, false);
 
 	}
@@ -50,7 +47,7 @@ public class LoginService {
 
 		// Hash the password before comparing
 		password = hashPassword(password);
-		
+
 		if (user != null) {
 			if (user.getPassword().equals(password)) {
 				return user;

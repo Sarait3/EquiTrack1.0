@@ -8,13 +8,18 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import com.equitrack.model.Equipment;
 import com.equitrack.model.Request;
 import com.equitrack.model.User;
 
+/**
+ * Data Access Object (DAO) for interacting with the requests table in the
+ * database. Provides methods for creating, retrieving, updating, and deleting
+ * checkout requests, as well as utility methods for retrieving associated users
+ * and equipment.
+ */
 public class RequestDao {
-	// Constants for equipment table column names
+	// Constants for request table column names
 	private static final String requestColId = "id";
 	private static final String requestColUserId = "userId";
 	private static final String requestColEquipmentId = "equipmentId";
@@ -25,6 +30,11 @@ public class RequestDao {
 	private static final String requestColNotes = "notes";
 	private static final String requestColStatus = "status";
 
+	/**
+	 * Retrieves all requests from the database
+	 *
+	 * @return a map of request IDs to Request objects
+	 */
 	public Map<UUID, Request> getAllRequests() {
 		String sql = "SELECT * FROM requests";
 		Map<UUID, Request> requestList = new HashMap<>();
@@ -54,6 +64,12 @@ public class RequestDao {
 		return requestList;
 	}
 
+	/**
+	 * Retrieves all requests made by a specific user
+	 *
+	 * @param userId the ID of the user
+	 * @return a map of request IDs to Request objects for the given user
+	 */
 	public Map<UUID, Request> getRequestsByUserId(String userId) {
 		String sql = "SELECT * FROM requests WHERE " + requestColUserId + " = ?";
 		Map<UUID, Request> userRequests = new HashMap<>();
@@ -85,6 +101,12 @@ public class RequestDao {
 		return userRequests;
 	}
 
+	/**
+	 * Retrieves a specific request by its ID
+	 *
+	 * @param id the ID of the request
+	 * @return the matching Request object, or null if not found
+	 */
 	public Request getRequest(String id) {
 		String sql = "SELECT * FROM requests WHERE " + requestColId + " = ?";
 		Request request = null;
@@ -114,6 +136,12 @@ public class RequestDao {
 		return request;
 	}
 
+	/**
+	 * Inserts a new request into the database
+	 *
+	 * @param request the Request object to insert
+	 * @return true if the operation succeeded, false otherwise
+	 */
 	public boolean createRequest(Request request) {
 		String sql = String.format(
 				"INSERT INTO requests (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -141,6 +169,12 @@ public class RequestDao {
 		return false;
 	}
 
+	/**
+	 * Retrieves the User associated with a given request
+	 *
+	 * @param requestId the ID of the request
+	 * @return the User who made the request, or null if not found
+	 */
 	public User getUserForRequest(String requestId) {
 		Request request = getRequest(requestId);
 		if (request != null) {
@@ -150,6 +184,12 @@ public class RequestDao {
 		return null;
 	}
 
+	/**
+	 * Retrieves the Equipment associated with a given request
+	 *
+	 * @param requestId the ID of the request
+	 * @return the Equipment item associated with the request, or null if not found
+	 */
 	public Equipment getEquipmentForRequest(String requestId) {
 		Request request = getRequest(requestId);
 		if (request != null) {
@@ -159,6 +199,15 @@ public class RequestDao {
 		return null;
 	}
 
+	/**
+	 * Checks if a date range for a given equipment item conflicts with existing
+	 * approved requests
+	 *
+	 * @param equipmentId the ID of the equipment item
+	 * @param start       the proposed checkout date
+	 * @param end         the proposed return date
+	 * @return true if a conflict exists, false otherwise
+	 */
 	public boolean hasDateConflict(String equipmentId, LocalDate start, LocalDate end) {
 		String sql = "SELECT COUNT(*) FROM requests WHERE equipmentId = ? AND status = 'approved' AND NOT (returnDate < ? OR checkoutDate > ?)";
 
@@ -175,6 +224,13 @@ public class RequestDao {
 		return false;
 	}
 
+	/**
+	 * Retrieves all upcoming approved requests for a given equipment item
+	 *
+	 * @param equipmentId the ID of the equipment
+	 * @return a map of request IDs to Request objects that are approved and have a
+	 *         future checkout date
+	 */
 	public Map<UUID, Request> getUpcomingApprovedRequests(String equipmentId) {
 		Map<UUID, Request> upcoming = new HashMap<>();
 		String sql = "SELECT * FROM requests WHERE equipmentId = ? AND status = 'approved' AND checkoutDate >= ?";
@@ -207,6 +263,12 @@ public class RequestDao {
 		return upcoming;
 	}
 
+	/**
+	 * Updates an existing request's details in the database
+	 *
+	 * @param request the Request object with updated data
+	 * @return true if the update was successful, false otherwise
+	 */
 	public boolean updateRequest(Request request) {
 		String sql = "UPDATE requests SET " + requestColStatus + " = ?, " + requestColLocation + " = ?, "
 				+ requestColNotes + " = ?, " + requestColRequestDate + " = ?, " + requestColCheckoutDate + " = ?, "
@@ -231,6 +293,12 @@ public class RequestDao {
 		return false;
 	}
 
+	/**
+	 * Deletes a request by its ID from the database
+	 *
+	 * @param id the ID of the request to delete
+	 * @return true if the deletion was successful, false otherwise
+	 */
 	public boolean deleteRequest(String id) {
 		String sql = "DELETE FROM requests WHERE id = ?";
 

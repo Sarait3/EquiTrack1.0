@@ -10,8 +10,7 @@ public class FormBuilder {
 	private boolean hasAction, defaultSubmit, defaultMethod;
 
 	/**
-	 * Instantiates a new Form to be created when a FormBuilder
-	 * Object is created.
+	 * Instantiates a new Form to be created when a FormBuilder Object is created.
 	 */
 	public FormBuilder() {
 		this.form = new Form();
@@ -22,127 +21,119 @@ public class FormBuilder {
 
 	/**
 	 * Adds a new input and its label to the form.
-	 * @param type		The type of input to be generated, eg. "text", "date", etc.
-	 * @param name		The name to be printed in the label.
-	 * @param id		The id and internal name of the input.
+	 * 
+	 * @param type The type of input to be generated, eg. "text", "date", etc.
+	 * @param name The name to be printed in the label.
+	 * @param id   The id and internal name of the input.
 	 * @return
 	 */
 	public FormBuilder addInput(String type, String name, String id) {
-		form.addInput(String.format(
-				"<label for='%s'>%s</label>"
-						+ "<input type='%s' name='%s' id='%s' value=''>",
-						id, name,
-						type, id, id));
+		form.addInput(String.format("<label for='%s'>%s</label>" + "<input type='%s' name='%s' id='%s' value=''>", id,
+				name, type, id, id));
 
 		return this;
 	}
 
 	/**
 	 * Adds a new input and its label to the form.
-	 * @param type		The type of input to be generated, eg. "text", "date", etc.
-	 * @param name		The name to be printed in the label.
-	 * @param id		The id and internal name of the input.
-	 * @param value		The initial value to be placed inside the input.
+	 * 
+	 * @param type  The type of input to be generated, eg. "text", "date", etc.
+	 * @param name  The name to be printed in the label.
+	 * @param id    The id and internal name of the input.
+	 * @param value The initial value to be placed inside the input.
 	 * @return
 	 */
 	public FormBuilder addInput(String type, String name, String id, String value) {
-		form.addInput(String.format(
-				"<label for='%s'>%s</label>"
-						+ "<input type='%s' name='%s' id='%s' value='%s'>",
-						id, name,
-						type, id, id, value));
+		form.addInput(String.format("<label for='%s'>%s</label>" + "<input type='%s' name='%s' id='%s' value='%s'>", id,
+				name, type, id, id, value));
 
 		return this;
 	}
 
 	/**
 	 * Adds a new input and its label to the form.
-	 * @param type			The type of input to be generated, eg. "text", "date", etc.
-	 * @param name			The name to be printed in the label.
-	 * @param id			The id and internal name of the input.
-	 * @param value			The initial value to be placed inside the input.
-	 * @param isReadOnly	Whether or not the field should be editable.
+	 * 
+	 * @param type       The type of input to be generated, eg. "text", "date", etc.
+	 * @param name       The name to be printed in the label.
+	 * @param id         The id and internal name of the input.
+	 * @param value      The initial value to be placed inside the input.
+	 * @param isReadOnly Whether or not the field should be editable.
 	 * @return
 	 */
 	public FormBuilder addInput(String type, String name, String id, String value, boolean isReadOnly) {
 		String readOnly = isReadOnly ? "readonly" : "";
-		form.addInput(String.format(
-				"<label for='%s'>%s</label>"
-						+ "<input type='%s' %s name='%s' id='%s' value='%s'>",
-						id, name,
-						type, readOnly, id, id, value));
+		form.addInput(String.format("<label for='%s'>%s</label>" + "<input type='%s' %s name='%s' id='%s' value='%s'>",
+				id, name, type, readOnly, id, id, value));
 
 		return this;
 	}
 
 	/**
 	 * Adds a new required input and its label to the form.
-	 * @param type		The type of input to be generated, eg. "text", "date", etc.
-	 * @param name		The name to be printed in the label.
-	 * @param id		The id and internal name of the input.
+	 * 
+	 * @param type The type of input to be generated, eg. "text", "date", etc.
+	 * @param name The name to be printed in the label.
+	 * @param id   The id and internal name of the input.
 	 * @return
 	 */
 	public FormBuilder addRequiredInput(String type, String name, String id) {
-		form.addInput(String.format(
-				"<label for='%s'>%s</label>"
-						+ "<input type='%s' required name='%s' id='%s' value=''>",
-						id, name,
-						type, id, id));
+		form.addInput(
+				String.format("<label for='%s'>%s</label>" + "<input type='%s' required name='%s' id='%s' value=''>",
+						id, name, type, id, id));
 
 		return this;
 	}
 
 	/**
 	 * Adds a new required input and its label to the form.
-	 * @param type		The type of input to be generated, eg. "text", "date", etc.
-	 * @param name		The name to be printed in the label.
-	 * @param id		The id and internal name of the input.
-	 * @param value		The initial value to be placed inside the input.
+	 * 
+	 * @param type  The type of input to be generated, eg. "text", "date", etc.
+	 * @param name  The name to be printed in the label.
+	 * @param id    The id and internal name of the input.
+	 * @param value The initial value to be placed inside the input.
 	 * @return
 	 */
 	public FormBuilder addRequiredInput(String type, String name, String id, String value) {
-		form.addInput(String.format(
-				"<label for='%s'>%s</label>"
-						+ "<input type='%s' required name='%s' id='%s' value='%s'>",
-						id, name,
-						type, id, id, value));
+		form.addInput(
+				String.format("<label for='%s'>%s</label>" + "<input type='%s' required name='%s' id='%s' value='%s'>",
+						id, name, type, id, id, value));
 
 		return this;
 	}
 
 	/**
 	 * Adds a new hidden input to the form.
-	 * @param id		The internal name and id of the input.
-	 * @param value		The value to be stored in the hidden input.
+	 * 
+	 * @param id    The internal name and id of the input.
+	 * @param value The value to be stored in the hidden input.
 	 * @return
 	 */
 	public FormBuilder addHiddenInput(String id, String value) {
-		form.addInput(String.format(
-				"<input type='hidden' name='%s' id='%s' value='%s'>",
-				id, id, value));
+		form.addInput(String.format("<input type='hidden' name='%s' id='%s' value='%s'>", id, id, value));
 
 		return this;
 	}
-	
+
 	/**
-	 * Allows the user to add an input field of type "file" and 
-	 * specify the type of file the can be accepted.
-	 * @param name		The name of the field to be displayed in the label
-	 * @param id		The internal name and id of the input
-	 * @param fileType	The accepted filetype, eg. "image/*"
+	 * Allows the user to add an input field of type "file" and specify the type of
+	 * file the can be accepted.
+	 * 
+	 * @param name     The name of the field to be displayed in the label
+	 * @param id       The internal name and id of the input
+	 * @param fileType The accepted filetype, eg. "image/*"
 	 * @return
 	 */
 	public FormBuilder addFileInput(String name, String id, String fileType) {
-		form.addInput(String.format("<label for='%s'>%s</label>"
-				+ "<input type='file' name='%s' id='%s' accept='%s'", 
+		form.addInput(String.format("<label for='%s'>%s</label>" + "<input type='file' name='%s' id='%s' accept='%s'",
 				id, name, id, id, fileType));
-		
+
 		return this;
 	}
 
 	/**
-	 * Sets the action of the form, usually the current Servlet's
-	 * declared URL pattern. Defaults to an empty String.
+	 * Sets the action of the form, usually the current Servlet's declared URL
+	 * pattern. Defaults to an empty String.
+	 * 
 	 * @param formAction
 	 * @return
 	 */
@@ -155,6 +146,7 @@ public class FormBuilder {
 
 	/**
 	 * Sets the method of the form. Defaults to post.
+	 * 
 	 * @param formMethod
 	 * @return
 	 */
@@ -166,8 +158,9 @@ public class FormBuilder {
 	}
 
 	/**
-	 * Sets the title of the page to be displayed in the browser tab
-	 * and above the form.
+	 * Sets the title of the page to be displayed in the browser tab and above the
+	 * form.
+	 * 
 	 * @param formTitle
 	 * @return
 	 */
@@ -176,7 +169,7 @@ public class FormBuilder {
 
 		return this;
 	}
-	
+
 	public FormBuilder setStyle(String style) {
 		form.setStyle(style);
 		return this;
@@ -184,6 +177,7 @@ public class FormBuilder {
 
 	/**
 	 * Removes the submit button from the form.
+	 * 
 	 * @return
 	 */
 	public FormBuilder removeDefaultSubmit() {
@@ -191,51 +185,55 @@ public class FormBuilder {
 
 		return this;
 	}
-	
+
 	/**
-	 * Removes the default submit button from the form and adds a new one with
-	 * a custom name, id, value, and class.
+	 * Removes the default submit button from the form and adds a new one with a
+	 * custom name, id, value, and class.
+	 * 
 	 * @return
 	 */
 	public FormBuilder addCustomSubmit(String name, String id, String value, String buttonClass) {
-		form.addButton(String.format("<button type='submit' name='%s' id='%s' value='%s' class='%s'>%s</button>", 
-				id, id, value, buttonClass, name));
-		
+		form.addButton(String.format("<button type='submit' name='%s' id='%s' value='%s' class='%s'>%s</button>", id,
+				id, value, buttonClass, name));
+
 		this.removeDefaultSubmit();
-		
+
 		return this;
 	}
-	
+
 	public FormBuilder addCustomButton(String name, String destination, String buttonClass) {
 		form.addButton(String.format("<a href='%s' class='%s'>%s</a>", destination, buttonClass, name));
 		this.removeDefaultSubmit();
-		
+
 		return this;
 	}
 
 	/**
 	 * Adds a reset button to the form.
+	 * 
 	 * @return
 	 */
 	public FormBuilder addReset() {
-		
+
 		form.addButton("<button type='reset'>Reset</button>");
 
 		return this;
 	}
-	
+
 	/**
 	 * Adds a cancel button to the form.
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public FormBuilder addCancel(String destination, String name) {
 		form.addButton(String.format("<a href='%s' class='back-btn'>Cancel</a>", destination, name));
-		
+
 		return this;
 	}
 
 	/**
 	 * Adds an error message to the form under the submit/reset buttons.
+	 * 
 	 * @param errorMessage
 	 * @return
 	 */
@@ -244,20 +242,21 @@ public class FormBuilder {
 
 		return this;
 	}
-	
+
 	/**
 	 * Adds a select and its options to the form.
-	 * @param name		The name to be printed in the label
-	 * @param id		The internal name and id of the select tag
-	 * @param options	A 2d Array representing the options in the select. format should be {value, text}
-	 * 					To signify that an option should be pre-selected when the page loads add "true" to
-	 * 					the inner array: {value, text, true} 
+	 * 
+	 * @param name    The name to be printed in the label
+	 * @param id      The internal name and id of the select tag
+	 * @param options A 2d Array representing the options in the select. format
+	 *                should be {value, text} To signify that an option should be
+	 *                pre-selected when the page loads add "true" to the inner
+	 *                array: {value, text, true}
 	 * @return
 	 */
 	public FormBuilder addSelect(String name, String id, String[][] options) {
-		String html = String.format("<label for='%s'>%s</label>"
-				+ "<select id='%s' name='%s'>", id, name, id, id);
-		
+		String html = String.format("<label for='%s'>%s</label>" + "<select id='%s' name='%s'>", id, name, id, id);
+
 		for (String[] option : options) {
 			if (option.length == 3 && option[2].equalsIgnoreCase("true")) {
 				html = html + String.format("<option selected value='%s'>%s</option>", option[0], option[1]);
@@ -265,31 +264,32 @@ public class FormBuilder {
 				html = html + String.format("<option value='%s'>%s</option>", option[0], option[1]);
 			}
 		}
-		
+
 		html = html + "</select>";
-		
+
 		form.addInput(html);
-		
-		return this;
-	}
-	
-	/**
-	 * Allows the user to enter custom html in the form.
-	 * @param html	The custom html to enter.
-	 * @return
-	 */
-	public FormBuilder addCustomLine(String html) {
-		form.addInput(html);
-		
+
 		return this;
 	}
 
 	/**
-	 * Generates the html using the parameters set by previous method calls.
-	 * Also generates the rest of the page, including head section
+	 * Allows the user to enter custom html in the form.
 	 * 
-	 * @param generateHead		Whether or not to generate the head section of the page.
-	 * @param isMultipart	Whether or not to include enctype='multipart/form-data'
+	 * @param html The custom html to enter.
+	 * @return
+	 */
+	public FormBuilder addCustomLine(String html) {
+		form.addInput(html);
+
+		return this;
+	}
+
+	/**
+	 * Generates the html using the parameters set by previous method calls. Also
+	 * generates the rest of the page, including head section
+	 * 
+	 * @param generateHead Whether or not to generate the head section of the page.
+	 * @param isMultipart  Whether or not to include enctype='multipart/form-data'
 	 * @return returns the html of the form as a String
 	 */
 	public String createForm(boolean generateHead, boolean isMultipart) {
@@ -300,49 +300,39 @@ public class FormBuilder {
 		String formMethod = this.defaultMethod ? "method='post'" : form.getFormMethod();
 		String multipart = isMultipart ? "enctype='multipart/form-data'" : "";
 		String style = form.getStyle() != null ? String.format("style='%s'", form.getStyle()) : "";
-		
-		if (this.defaultSubmit) form.addButton("<button type='submit'>Submit</button>");
-		
+
+		if (this.defaultSubmit)
+			form.addButton("<button type='submit'>Submit</button>");
+
 		if (generateHead) {
-			sb.append("<!DOCTYPE html><html lang='en'><head>")
-			.append("<meta charset='UTF-8>")
-			.append("<meta name='viewport' content='width=device-width, initial-scale='1.0'>")
-			.append(errorMessage != null ? "<style>p {color: red; text-align: center}</style>" : "")
-			.append(String.format("<title>%s</title>", formTitle))
-			.append("<link rel='stylesheet' href='css/style.css'>")
-			.append("</head>")
-			.append("<body>")
-			.append("<div class='header'>")
-			.append(String.format("<h1>%s<h1>", formTitle))
-			.append("<div class='header-content'>")
-			.append("</div></div>");
+			sb.append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8>")
+					.append("<meta name='viewport' content='width=device-width, initial-scale='1.0'>")
+					.append(errorMessage != null ? "<style>p {color: red; text-align: center}</style>" : "")
+					.append(String.format("<title>%s</title>", formTitle))
+					.append("<link rel='stylesheet' href='css/style.css'>").append("</head>").append("<body>")
+					.append("<div class='header'>").append(String.format("<h1>%s<h1>", formTitle))
+					.append("<div class='header-content'>").append("</div></div>");
 		}
-		
-		sb.append("<form class='container-detail edit-form'" 
-		+ formAction 
-		+ formMethod 
-		+ multipart
-		+ style
-		+ ">")
-		.append("<h1 style='text-align:center'>" + formTitle + "</h1>");
+
+		sb.append("<form class='container-detail edit-form'" + formAction + formMethod + multipart + style + ">")
+				.append("<h1 style='text-align:center'>" + formTitle + "</h1>");
 
 		for (String input : form.getInputs()) {
 			sb.append(input);
 		}
 
 		sb.append("<div class='form-buttons'>");
-		
+
 		for (String button : form.getButtons()) {
 			sb.append(button);
 		}
 
-		sb.append("</div></form>")
-		.append(errorMessage);
-		
+		sb.append("</div></form>").append(errorMessage);
+
 		if (generateHead) {
 			sb.append("</body></html>");
 		}
-		
+
 		return sb.toString();
 	}
 }

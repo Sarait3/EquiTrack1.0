@@ -21,7 +21,8 @@ import com.equitrack.service.EditEquipmentBuilder;
 /**
  * Servlet that handles editing of existing equipment
  * 
- * Only users with the 'Admin' and 'Manager' role are allowed to access this functionality
+ * Only users with the 'Admin' and 'Manager' role are allowed to access this
+ * functionality
  * 
  */
 @WebServlet("/EditEquipment")
@@ -51,11 +52,11 @@ public class EditEquipmentServlet extends HttpServlet {
 			request.getSession().setAttribute("currentUser", user);
 		}
 
-	    if (user.getRole().equalsIgnoreCase("Regular")) {
-	    	response.setContentType("text/html");
+		if (user.getRole().equalsIgnoreCase("Regular")) {
+			response.setContentType("text/html");
 			response.getWriter().write(new AccessDeniedBuilder().buildPage());
 			return;
-	    }
+		}
 
 		EquipmentDao equipmentDao = new EquipmentDao();
 		String equipmentId = request.getParameter("id");

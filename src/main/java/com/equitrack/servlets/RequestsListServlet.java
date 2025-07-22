@@ -2,82 +2,87 @@ package com.equitrack.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import com.equitrack.model.*;
-
-import com.equitrack.service.ListViewBuilder;
 import com.equitrack.service.RequestsListBuilder;
 import com.equitrack.dao.*;
 
-
+/**
+ * Servlet for displaying a list of checkout requests.
+ * 
+ */
 @WebServlet("/RequestsList")
 public class RequestsListServlet extends HttpServlet {
 
+	/**
+	 * Handles GET requests to show the list of checkout requests based on the
+	 * user's role and filters
+	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		// Check user authentication
+		// Check if user is logged in
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
-		} else {
-			// Refresh user info from the database
-			UserDao userDao = new UserDao();
-			user = userDao.getUserById(user.getId());
-			request.getSession().setAttribute("user", user);
 		}
 
-		// Retrieve all requests from the database
+		// Refresh latest user info from DB
+		UserDao userDao = new UserDao();
+		user = userDao.getUserById(user.getId());
+		request.getSession().setAttribute("user", user);
+
+		// Fetch requests based on role
 		RequestDao requestDao = new RequestDao();
 		ArrayList<Request> requestsList;
-		
+
 		if (user.getRole().equalsIgnoreCase("Regular")) {
+			// Regular users only see their own requests
 			requestsList = new ArrayList<>(requestDao.getRequestsByUserId(user.getId()).values());
-		}
-		else {
+		} else {
+			// Managers/Admins see all requests
 			requestsList = new ArrayList<>(requestDao.getAllRequests().values());
 		}
-		
 
-		// Get filter inputs from request
+		// Get filter parameters
 		String searchInput = request.getParameter("searchInput");
 		String statusFilter = request.getParameter("statusFilter");
 
-		// Apply search filter if not null
+		// Apply search filter (by ID, name, equipment name)
 		if (searchInput != null && !searchInput.trim().isEmpty()) {
 			String lowerSearch = searchInput.toLowerCase();
-			ArrayList<Request> filteredList = new ArrayList<>();
+			ArrayList<Request> filtered = new ArrayList<>();
 			for (Request req : requestsList) {
 				User reqUser = requestDao.getUserForRequest(req.getId());
-				Equipment reqEquipment = requestDao.getEquipmentForRequest(req.getId());
-				if (req.getId().toLowerCase().contains(lowerSearch) || reqUser.getFName().toLowerCase().contains(lowerSearch) || reqUser.getLName().toLowerCase().contains(lowerSearch)
-						|| reqEquipment.getName().toLowerCase().contains(lowerSearch)) {
-					filteredList.add(req);
+				Equipment eq = requestDao.getEquipmentForRequest(req.getId());
+				if (req.getId().toLowerCase().contains(lowerSearch)
+						|| reqUser.getFName().toLowerCase().contains(lowerSearch)
+						|| reqUser.getLName().toLowerCase().contains(lowerSearch)
+						|| eq.getName().toLowerCase().contains(lowerSearch)) {
+					filtered.add(req);
 				}
 			}
-			requestsList = filteredList;
+			requestsList = filtered;
 		}
 
-		// Apply status filter if not null
+		// Apply status filter (pending, approved, declined)
 		if (statusFilter != null && !statusFilter.trim().isEmpty()) {
-			ArrayList<Request> filteredList = new ArrayList<>();
+			ArrayList<Request> filtered = new ArrayList<>();
 			for (Request req : requestsList) {
 				if (req.getStatus().equalsIgnoreCase(statusFilter)) {
-					filteredList.add(req);
+					filtered.add(req);
 				}
 			}
-			requestsList = filteredList;
+			requestsList = filtered;
 		}
 
+		// Build HTML page
 		RequestsListBuilder builder = new RequestsListBuilder(user, requestsList, searchInput, statusFilter);
 		String html = builder.buildPage();
 

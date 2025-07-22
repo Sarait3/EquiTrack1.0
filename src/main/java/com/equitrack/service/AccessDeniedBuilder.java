@@ -1,7 +1,18 @@
 package com.equitrack.service;
 
+/**
+ * A utility class that builds a simple HTML page indicating the user does not
+ * have permission to access the requested resource. This is typically used to
+ * enforce role-based access control
+ */
 public class AccessDeniedBuilder extends PageBuilder {
 
+	/**
+	 * Builds an HTML page with an "Access Denied" message and a link to return to
+	 * the list view
+	 *
+	 * @return a String containing the complete HTML markup
+	 */
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
 
@@ -16,6 +27,5 @@ public class AccessDeniedBuilder extends PageBuilder {
 				.append("</body></html>");
 
 		return html.toString();
-
 	}
 }

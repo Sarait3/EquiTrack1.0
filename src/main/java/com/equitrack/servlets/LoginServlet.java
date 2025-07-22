@@ -37,7 +37,8 @@ public class LoginServlet extends HttpServlet {
 		LoginService login = new LoginService();
 		HttpSession session = request.getSession();
 
-		// // First visit to login page (no failed attempt), show the login form with no error message
+		// // First visit to login page (no failed attempt), show the login form with no
+		// error message
 		if (session.getAttribute("user") == null) {
 			writer.write(login.loginPage(true));
 		} else {

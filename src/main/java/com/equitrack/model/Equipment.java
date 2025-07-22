@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * This class represents a piece of equipment in the app. It stores basic
- * details like name, location, image, operability, notes, and return date.
+ * This class represents a piece of equipment in the app. It stores details like
+ * name, location, image path, operational status, notes, and a return date.
  */
 public class Equipment {
 	private String id, name, location, imagePath, notes;
@@ -14,6 +14,11 @@ public class Equipment {
 
 	/**
 	 * Creates a new operational equipment item with a generated ID
+	 *
+	 * @param name       the name of the equipment
+	 * @param imagePath  the image path for the equipment
+	 * @param notes      any additional notes
+	 * @param returnDate the return date of the equipment
 	 */
 	public Equipment(String name, String imagePath, String notes, LocalDate returnDate) {
 		this.id = UUID.randomUUID().toString();
@@ -26,6 +31,13 @@ public class Equipment {
 
 	/**
 	 * Creates a new equipment item with all fields provided
+	 *
+	 * @param name          the name of the equipment
+	 * @param isOperational whether the equipment is operational
+	 * @param location      the location of the equipment
+	 * @param imagePath     the image path for the equipment
+	 * @param notes         any additional notes
+	 * @param returnDate    the return date of the equipment
 	 */
 	public Equipment(String name, boolean isOperational, String location, String imagePath, String notes,
 			LocalDate returnDate) {
@@ -39,7 +51,14 @@ public class Equipment {
 	}
 
 	/**
-	 * Creates a new equipment item with operability given as a string.
+	 * Creates a new equipment item with operability given as a string
+	 *
+	 * @param name          the name of the equipment
+	 * @param isOperational "operational" or "out of service"
+	 * @param location      the location of the equipment
+	 * @param imagePath     the image path for the equipment
+	 * @param notes         any additional notes
+	 * @param returnDate    the return date of the equipment
 	 */
 	public Equipment(String name, String isOperational, String location, String imagePath, String notes,
 			LocalDate returnDate) {
@@ -54,6 +73,14 @@ public class Equipment {
 
 	/**
 	 * Creates an equipment item with a given ID and boolean operability
+	 *
+	 * @param id            the unique ID of the equipment
+	 * @param name          the name of the equipment
+	 * @param isOperational operational status
+	 * @param location      the location of the equipment
+	 * @param imagePath     the image path
+	 * @param notes         additional notes
+	 * @param returnDate    the return date
 	 */
 	public Equipment(String id, String name, boolean isOperational, String location, String imagePath, String notes,
 			LocalDate returnDate) {
@@ -67,7 +94,15 @@ public class Equipment {
 	}
 
 	/**
-	 * Creates an equipment item with a given ID and operability as a string
+	 * Creates an equipment item with a given ID and operability as a string.
+	 *
+	 * @param id            the unique ID of the equipment
+	 * @param name          the name of the equipment
+	 * @param isOperational "operational" or "out of service"
+	 * @param location      the location of the equipment
+	 * @param imagePath     the image path
+	 * @param notes         additional notes
+	 * @param returnDate    the return date
 	 */
 	public Equipment(String id, String name, String isOperational, String location, String imagePath, String notes,
 			LocalDate returnDate) {
@@ -79,7 +114,12 @@ public class Equipment {
 		this.setReturnDate(returnDate);
 		setOperationalString(isOperational);
 	}
-	
+
+	/**
+	 * Private constructor used by the Builder.
+	 *
+	 * @param builder the builder instance
+	 */
 	private Equipment(Builder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
@@ -90,87 +130,96 @@ public class Equipment {
 		this.returnDate = builder.returnDate;
 	}
 
-
-	/** Returns the equipment ID */
+	/** @return the equipment ID */
 	public String getId() {
 		return id;
 	}
 
-	/** Sets the equipment ID */
+	/** @param id sets the equipment ID */
 	public void setId(String id) {
 		this.id = id;
 	}
 
-	/** Returns the name */
+	/** @return the equipment name */
 	public String getName() {
 		return name;
 	}
 
-	/** Sets the name */
+	/** @param name sets the equipment name */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/** Returns true if the equipment is available, false otherwise */
+	/** @return true if the equipment is operational */
 	public boolean isOperational() {
 		return this.isOperational;
 	}
 
-	/** Returns operability as a String: "Operational" or "Out Of Service" */
+	/**
+	 * @return "operational" if true, "out of service" otherwise
+	 */
 	public String isOperationalString() {
-		return this.isOperational() ? "operational" : "out of service";
+		return this.isOperational ? "operational" : "out of service";
 	}
 
-	/** Sets operability using a boolean */
+	/** @param isOperational sets the operational status */
 	public void setOperational(boolean isOperational) {
 		this.isOperational = isOperational;
 	}
 
-	/** Sets operability using a String: "Operational" or "Out Of Service" */
+	/**
+	 * Sets the operational status from a string.
+	 * 
+	 * @param isOperationalString "operational" or "out of service"
+	 */
 	public void setOperationalString(String isOperationalString) {
-		this.isOperational = isOperationalString.equalsIgnoreCase("operational") ? true : false;
+		this.isOperational = isOperationalString.equalsIgnoreCase("operational");
 	}
 
-	/** Returns the location of the equipment */
+	/** @return the equipment location */
 	public String getLocation() {
 		return location;
 	}
 
-	/** Sets the location */
+	/** @param location sets the equipment location */
 	public void setLocation(String location) {
 		this.location = location;
 	}
 
-	/** Returns notes */
+	/** @return additional notes */
 	public String getNotes() {
 		return notes;
 	}
 
-	/** Sets notes */
+	/** @param notes sets additional notes */
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
 
-	/** Returns the image path */
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
-
-	/** Sets the image path */
+	/** @return the image path */
 	public String getImagePath() {
 		return imagePath;
 	}
 
-	/** Returns the return date */
+	/** @param imagePath sets the image path */
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
+
+	/** @return the return date */
 	public LocalDate getReturnDate() {
 		return returnDate;
 	}
 
-	/** Sets the return date */
+	/** @param returnDate sets the return date */
 	public void setReturnDate(LocalDate returnDate) {
 		this.returnDate = returnDate;
 	}
-	
+
+	/**
+	 * Builder class for Equipment. Allows fluent creation of immutable Equipment
+	 * instances
+	 */
 	public static class Builder {
 		private String id = UUID.randomUUID().toString();
 		private String name;
@@ -180,49 +229,57 @@ public class Equipment {
 		private String notes;
 		private LocalDate returnDate;
 
+		/** @param id sets the ID */
 		public Builder setId(String id) {
 			this.id = id;
 			return this;
 		}
 
+		/** @param name sets the name */
 		public Builder setName(String name) {
 			this.name = name;
 			return this;
 		}
 
+		/** @param isOperational sets the operational status */
 		public Builder setOperational(boolean isOperational) {
 			this.isOperational = isOperational;
 			return this;
 		}
 
+		/** @param isOperationalString sets operational status from a string */
 		public Builder setOperational(String isOperationalString) {
 			this.isOperational = isOperationalString.equalsIgnoreCase("operational");
 			return this;
 		}
 
+		/** @param location sets the location */
 		public Builder setLocation(String location) {
 			this.location = location;
 			return this;
 		}
 
+		/** @param imagePath sets the image path */
 		public Builder setImagePath(String imagePath) {
 			this.imagePath = imagePath;
 			return this;
 		}
 
+		/** @param notes sets the notes */
 		public Builder setNotes(String notes) {
 			this.notes = notes;
 			return this;
 		}
 
+		/** @param returnDate sets the return date */
 		public Builder setReturnDate(LocalDate returnDate) {
 			this.returnDate = returnDate;
 			return this;
 		}
 
+		/** @return the built Equipment instance */
 		public Equipment build() {
 			return new Equipment(this);
 		}
 	}
-
 }

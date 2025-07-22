@@ -4,15 +4,29 @@ import com.equitrack.model.User;
 
 /**
  * Generates the HTML page for adding a new piece of equipment. This page is
- * only accessible to users with the "Admin" or "Manager" role.
+ * only accessible to users with the "Admin" or "Manager" role. It includes a
+ * sidebar, user info in the header, and a form for submitting equipment
+ * details.
  */
 public class AddEquipmentBuilder extends PageBuilder {
 	private User user;
 
+	/**
+	 * Constructs the builder with the given user information to personalize the
+	 * header.
+	 *
+	 * @param user the authenticated user accessing the add equipment page
+	 */
 	public AddEquipmentBuilder(User user) {
 		this.user = user;
 	}
 
+	/**
+	 * Builds and returns the HTML page for adding new equipment. Includes a form
+	 * with fields for name, location, image upload, status, and notes.
+	 *
+	 * @return a String containing the full HTML markup
+	 */
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();

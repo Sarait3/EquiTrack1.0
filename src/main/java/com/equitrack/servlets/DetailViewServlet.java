@@ -3,21 +3,26 @@ package com.equitrack.servlets;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import com.equitrack.dao.EquipmentDao;
 import com.equitrack.dao.UserDao;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
-
 import com.equitrack.service.ConfirmationPageBuilder;
 import com.equitrack.service.DetailViewBuilder;
 
+/**
+ * Servlet that handles viewing equipment details.
+ * 
+ */
 @WebServlet("/DetailView")
 public class DetailViewServlet extends HttpServlet {
 
+	/**
+	 * Handles GET requests to show equipment details or perform actions Redirects
+	 * to login if user is not logged in
+	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -27,27 +32,26 @@ public class DetailViewServlet extends HttpServlet {
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
-		} else {
-			// Refresh user from DB
-			UserDao userDao = new UserDao();
-			user = userDao.getUserById(user.getId());
-			request.getSession().setAttribute("user", user);
 		}
+
+		// Refresh user from database
+		UserDao userDao = new UserDao();
+		user = userDao.getUserById(user.getId());
+		request.getSession().setAttribute("user", user);
 
 		// Get equipment by ID
 		EquipmentDao equipmentDao = new EquipmentDao();
 		String equipmentId = request.getParameter("id");
 		Equipment equipment = equipmentDao.getEquipment(equipmentId);
 
-		// Handle actions
+		// Handle optional actions
 		String action = request.getParameter("action");
 		if ("delete".equals(action)) {
 			equipmentDao.deleteEquipment(equipmentId);
-			String message = "Equipment deleted successfully";
-			ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView", true);
-			String html = builder.buildPage();
+			ConfirmationPageBuilder builder = new ConfirmationPageBuilder("Equipment deleted successfully", "ListView",
+					true);
 			response.setContentType("text/html");
-			response.getWriter().write(html);
+			response.getWriter().write(builder.buildPage());
 			return;
 		} else if ("backInService".equals(action)) {
 			equipment.setOperational(true);
@@ -62,9 +66,10 @@ public class DetailViewServlet extends HttpServlet {
 			return;
 		}
 
-		// Default: show details
+		// Default: render equipment detail view
 		DetailViewBuilder builder = new DetailViewBuilder(user, equipment);
 		String html = builder.buildPage();
+
 		response.setContentType("text/html");
 		response.getWriter().write(html);
 	}

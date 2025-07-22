@@ -11,6 +11,11 @@ import java.util.UUID;
 
 import com.equitrack.model.Equipment;
 
+/**
+ * Data Access Object (DAO) for performing CRUD operations and logging on the
+ * Equipment database table. Handles interaction between the application and the
+ * equipment-related database tables
+ */
 public class EquipmentDao {
 	// Constants for equipment table column names
 	private static final String equipmentColId = "id";
@@ -21,19 +26,18 @@ public class EquipmentDao {
 	private static final String equipmentColNotes = "notes";
 	private static final String equipmentColReturnDate = "returnDate";
 
-	// Constants for checkout log table column names
-	private static final String logColItemId = "itemId";
-	private static final String logColUserId = "userId";
-	private static final String logColCheckoutDate = "checkoutDate";
-	private static final String logColReturnDate = "returnDate";
-
+	/**
+	 * Retrieves all equipment records from the database
+	 *
+	 * @return a map of UUID to Equipment objects
+	 */
 	public Map<UUID, Equipment> getAllEquipment() {
 		String sql = "SELECT * FROM equipment";
 		Map<UUID, Equipment> equipmentList = new HashMap<>();
 
 		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement statement = conn.prepareStatement(sql);
-			 ResultSet results = statement.executeQuery()) {
+				PreparedStatement statement = conn.prepareStatement(sql);
+				ResultSet results = statement.executeQuery()) {
 
 			while (results.next()) {
 				String id = results.getString(equipmentColId);
@@ -45,14 +49,8 @@ public class EquipmentDao {
 				LocalDate returnDate = results.getDate(equipmentColReturnDate) == null ? null
 						: results.getDate(equipmentColReturnDate).toLocalDate();
 
-				Equipment equipment = new Equipment.Builder()
-						.setId(id)
-						.setName(name)
-						.setOperational(isOperational)
-						.setLocation(location)
-						.setImagePath(imagePath)
-						.setNotes(notes)
-						.setReturnDate(returnDate)
+				Equipment equipment = new Equipment.Builder().setId(id).setName(name).setOperational(isOperational)
+						.setLocation(location).setImagePath(imagePath).setNotes(notes).setReturnDate(returnDate)
 						.build();
 
 				equipmentList.put(UUID.fromString(id), equipment);
@@ -64,12 +62,17 @@ public class EquipmentDao {
 		return equipmentList;
 	}
 
+	/**
+	 * Retrieves a single Equipment record by its ID
+	 *
+	 * @param id the ID of the equipment
+	 * @return the Equipment object or null if not found
+	 */
 	public Equipment getEquipment(String id) {
 		String sql = "SELECT * FROM equipment WHERE " + equipmentColId + " = ?";
 		Equipment equipment = null;
 
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement statement = conn.prepareStatement(sql)) {
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
 			statement.setString(1, id);
 			try (ResultSet results = statement.executeQuery()) {
@@ -82,14 +85,8 @@ public class EquipmentDao {
 					LocalDate returnDate = results.getDate(equipmentColReturnDate) == null ? null
 							: results.getDate(equipmentColReturnDate).toLocalDate();
 
-					equipment = new Equipment.Builder()
-							.setId(id)
-							.setName(name)
-							.setOperational(isOperational)
-							.setLocation(location)
-							.setImagePath(imagePath)
-							.setNotes(notes)
-							.setReturnDate(returnDate)
+					equipment = new Equipment.Builder().setId(id).setName(name).setOperational(isOperational)
+							.setLocation(location).setImagePath(imagePath).setNotes(notes).setReturnDate(returnDate)
 							.build();
 				}
 			}
@@ -100,14 +97,18 @@ public class EquipmentDao {
 		return equipment;
 	}
 
+	/**
+	 * Inserts a new equipment record into the database
+	 *
+	 * @param equipment the Equipment object to create
+	 * @return true if the insertion was successful; false otherwise
+	 */
 	public boolean createEquipment(Equipment equipment) {
-		String sql = String.format(
-				"INSERT INTO equipment (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		String sql = String.format("INSERT INTO equipment (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?)",
 				equipmentColId, equipmentColName, equipmentColIsOperational, equipmentColLocation,
 				equipmentColImagePath, equipmentColNotes, equipmentColReturnDate);
 
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement statement = conn.prepareStatement(sql)) {
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
 			statement.setString(1, equipment.getId());
 			statement.setString(2, equipment.getName());
@@ -126,13 +127,18 @@ public class EquipmentDao {
 		return false;
 	}
 
+	/**
+	 * Updates an existing equipment record in the database
+	 *
+	 * @param equipment the Equipment object with updated values
+	 * @return true if the update was successful; false otherwise
+	 */
 	public boolean updateEquipment(Equipment equipment) {
 		String sql = "UPDATE equipment SET " + equipmentColName + " = ?, " + equipmentColIsOperational + " = ?, "
 				+ equipmentColLocation + " = ?, " + equipmentColImagePath + " = ?, " + equipmentColNotes + " = ?, "
 				+ equipmentColReturnDate + " = ? WHERE " + equipmentColId + " = ?";
 
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement statement = conn.prepareStatement(sql)) {
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
 			statement.setString(1, equipment.getName());
 			statement.setString(2, equipment.isOperationalString());
@@ -151,11 +157,16 @@ public class EquipmentDao {
 		return false;
 	}
 
+	/**
+	 * Deletes an equipment record by its ID
+	 *
+	 * @param id the ID of the equipment to delete
+	 * @return true if deletion was successful; false otherwise
+	 */
 	public boolean deleteEquipment(String id) {
 		String sql = "DELETE FROM equipment WHERE id = ?";
 
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement statement = conn.prepareStatement(sql)) {
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
 
 			statement.setString(1, id);
 			statement.execute();
@@ -167,6 +178,13 @@ public class EquipmentDao {
 		return false;
 	}
 
+	/**
+	 * Creates a new equipment record or updates the existing one if it already
+	 * exists
+	 *
+	 * @param equipment the Equipment object to create or update
+	 * @return true if the operation was successful; false otherwise
+	 */
 	public boolean createOrUpdateEquipment(Equipment equipment) {
 		if (equipment != null && getAllEquipment().containsKey(equipment.getId())) {
 			return updateEquipment(equipment);
@@ -176,21 +194,4 @@ public class EquipmentDao {
 		return false;
 	}
 
-	public void logCheckout(String itemId, int userId, Date checkoutDate, Date returnDate) {
-		String sql = String.format("INSERT INTO checkoutLog (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
-				logColItemId, logColUserId, logColCheckoutDate, logColReturnDate);
-
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement statement = conn.prepareStatement(sql)) {
-
-			statement.setString(1, itemId);
-			statement.setInt(2, userId);
-			statement.setDate(3, checkoutDate);
-			statement.setDate(4, returnDate);
-
-			statement.execute();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }
