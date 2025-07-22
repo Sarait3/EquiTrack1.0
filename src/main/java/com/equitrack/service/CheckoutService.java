@@ -31,6 +31,9 @@ public class CheckoutService extends PageBuilder {
 		    }
 	}
 
+	/**
+	 * generates the HTML that is displayed when the user attempts to check an item out.
+	 */
 	public String buildPage() {
 		Equipment equipment = equipmentDao.getEquipment(this.itemId);
 

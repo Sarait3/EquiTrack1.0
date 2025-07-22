@@ -28,6 +28,14 @@ public class User {
 		this.password = password;
 	}
 	
+	/**
+	 * Creates a user with all fields specified, but automatically generates a UUID
+	 * @param role		the role of the user
+	 * @param fName		the user's first name
+	 * @param lName		the user's last name
+	 * @param email		the user's email
+	 * @param password	the user's password
+	 */
 	public User(String role, String fName, String lName, String email, String password) {
 		this.id = UUID.randomUUID().toString();
 		this.role = role;

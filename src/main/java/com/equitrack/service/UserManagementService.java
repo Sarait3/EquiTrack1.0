@@ -11,6 +11,11 @@ public class UserManagementService extends PageBuilder {
 	private PageRoleStrategy strategy;
 	private String page;
 
+	/**
+	 * Initializes a UserManagementService object and generates the initial HTML 
+	 * for the User Management page based on the role of the provided User object.
+	 * @param user	The currently logged in User to display the page to
+	 */
 	public UserManagementService(User user) {
 		this.user = user;
 		this.dao = new UserDao();
@@ -43,6 +48,10 @@ public class UserManagementService extends PageBuilder {
 		.append("<a href='Logout' class='back-btn'>Logout</a></div></div></div>").toString();
 	}
 
+	/**
+	 * Constructs the rest of the Page that wasn't done in the constructor
+	 * based on the User's role.
+	 */
 	@Override
 	public String buildPage() {
 		StringBuilder html = new StringBuilder();
@@ -55,6 +64,13 @@ public class UserManagementService extends PageBuilder {
 		return html.toString();
 	}
 
+	/**
+	 * Changes the password of the user with the provided id.
+	 * @param id		The UUID (in String format) of the user to be updated
+	 * @param oldPass	The user's old password
+	 * @param newPass	The user's new password
+	 * @return			Returns true if the operation was successful, false otherwise
+	 */
 	public boolean changePassword(String id, String oldPass, String newPass) {
 		UserDao dao = new UserDao();
 		User userToEdit = dao.getUserById(id);
@@ -69,6 +85,13 @@ public class UserManagementService extends PageBuilder {
 		return false;
 	}
 
+	/**
+	 * Changes the email address of the user with the provided id
+	 * @param id		The UUID (in String format) of the user to be updated
+	 * @param password	The user's password
+	 * @param newEmail	the user's new email address
+	 * @return			Returns true if the operation was successful, false otherwise
+	 */
 	public boolean changeEmail(String id, String password, String newEmail) {
 		UserDao dao = new UserDao();
 		User userToEdit = dao.getUserById(id);
@@ -83,6 +106,12 @@ public class UserManagementService extends PageBuilder {
 		return false;
 	}
 
+	/**
+	 * Processes information entered in the create user form found in the
+	 * AdminPageStrategy class.
+	 * @param request	The HTML post request containing the parameters of the user to be created
+	 * @return	Returns true if the operation was successful, false otherwise
+	 */
 	public boolean createUser(HttpServletRequest request) {
 		String role = request.getParameter("role");
 		String fName = request.getParameter("fName");
@@ -101,10 +130,22 @@ public class UserManagementService extends PageBuilder {
 		return new UserDao().createUser(newUser);
 	}
 
+	/**
+	 *  Calls the UserDao class' deleteUser() method to remove the desired user from 
+	 *  the 'users' table in the database
+	 * @param id	The UUID (in String format) of the user to be deleted
+	 * @return		Returns true if the operation was successful, false otherwise
+	 */
 	public boolean deleteUser(String id) {
 		return new UserDao().deleteUser(id);
 	}
 
+	/**
+	 * Generates the HTML for an edit user page in which an admin or manager can 
+	 * Edit the details of a user.
+	 * @param id	The UUID (in String format) of the user to be edited
+	 * @return		Returns true if the operation was successful, false otherwise
+	 */
 	public String buildEditUser(String id) {
 		StringBuilder html = new StringBuilder();
 		FormBuilder form = new FormBuilder();

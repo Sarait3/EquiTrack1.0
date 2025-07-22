@@ -33,7 +33,10 @@ public class RegularUserPageStrategy implements PageRoleStrategy{
 	public String buildRequestActions(User user, Request request) {
 		return "";
 	}
-	
+	/**
+	 * Generates the HTML for the basic account management page that allows
+	 * a user to change their own email and password.
+	 */
 	@Override
 	public String buildManageAccount() {
 		FormBuilder changePass = new FormBuilder();

@@ -8,6 +8,9 @@ import com.equitrack.model.User;
 
 public class AdminPageStrategy extends ManagerPageStrategy implements PageRoleStrategy{
 
+	/**
+	 * Generates the user list and buttons for editing and deleting existing users.
+	 */
 	@Override
 	public String buildUserList() {
 		UserDao dao = new UserDao();
@@ -44,6 +47,9 @@ public class AdminPageStrategy extends ManagerPageStrategy implements PageRoleSt
 		return html.toString();
 	}
 	
+	/**
+	 * Generates the HTML form for creating new users.
+	 */
 	@Override
 	public String buildCreateUser() {
 		FormBuilder form = new FormBuilder();
