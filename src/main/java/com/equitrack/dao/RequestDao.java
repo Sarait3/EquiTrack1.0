@@ -233,7 +233,7 @@ public class RequestDao {
 	 */
 	public Map<UUID, Request> getUpcomingApprovedRequests(String equipmentId) {
 		Map<UUID, Request> upcoming = new HashMap<>();
-		String sql = "SELECT * FROM requests WHERE equipmentId = ? AND status = 'approved' AND checkoutDate >= ?";
+		String sql = "SELECT * FROM requests WHERE equipmentId = ? AND status = 'approved' AND returnDate >= ?";
 
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 			LocalDate today = LocalDate.now();
