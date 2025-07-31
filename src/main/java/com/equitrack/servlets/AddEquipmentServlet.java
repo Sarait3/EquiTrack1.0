@@ -5,96 +5,87 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-
 import com.equitrack.dao.EquipmentDao;
-import com.equitrack.dao.UserDao;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
-import com.equitrack.service.AccessDeniedBuilder;
-import com.equitrack.service.AddEquipmentBuilder;
-import com.equitrack.service.ConfirmationPageBuilder;
+import com.equitrack.service.FormBuilder;
+import com.equitrack.service.ManagerPageStrategy;
+import com.equitrack.service.RegularUserPageStrategy;
 
-/**
- * Servlet that handles displaying and submitting the form to add new equipment
- * 
- */
 @WebServlet("/AddEquipment")
 @MultipartConfig
 public class AddEquipmentServlet extends HttpServlet {
 
-	/**
-	 * Handles GET requests by showing the Add Equipment form Only managers and
-	 * admins are allowed to access it
-	 */
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		User user = (User) request.getSession().getAttribute("user");
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
 
-		// Redirect to login if not logged in
-		if (user == null) {
-			response.sendRedirect("Login");
-			return;
-		} else {
-			// Refresh user data from the database
-			UserDao dao = new UserDao();
-			user = dao.getUserById(user.getId());
-			request.getSession().setAttribute("user", user);
-		}
+        if (user == null) {
+            response.sendRedirect("Login");
+            return;
+        }
 
-		// Block regular users
-		if (user.getRole().equalsIgnoreCase("Regular")) {
-			response.setContentType("text/html");
-			response.getWriter().write(new AccessDeniedBuilder().buildPage());
-			return;
-		}
+        if (user.getRole().equalsIgnoreCase("Regular")) {
+            request.setAttribute("message", "Access Denied: You do not have permission to access this page.");
+            request.setAttribute("success", false);
+            request.getRequestDispatcher("/WEB-INF/Views/AccessDenied.jsp").forward(request, response);
+            return;
+        }
 
-		// Show form to add new equipment
-		AddEquipmentBuilder builder = new AddEquipmentBuilder(user);
-		String html = builder.buildPage();
+        FormBuilder builder = new FormBuilder();
+        builder.setAction("AddEquipment")
+               .addRequiredInput("text", "Name:", "name")
+               .addRequiredInput("text", "Location:", "location")
+               .addFileInput("Image:", "imageFile", "image/*")
+               .addSelect("Status:", "isOperational", new String[][] {
+                   { "true", "Operational" },
+                   { "false", "Out Of Service" }
+               })
+               .addInput("textarea", "Notes:", "notes");
 
-		response.setContentType("text/html");
-		response.getWriter().write(html);
-	}
+        request.setAttribute("formHtml", builder.createForm(false, true));
+        request.setAttribute("user", user);
+        request.setAttribute("sidebarStrategy",
+            user.getRole().equalsIgnoreCase("Regular") ? new RegularUserPageStrategy() : new ManagerPageStrategy());
 
-	/**
-	 * Handles POST requests by creating a new equipment item using form data and
-	 * uploaded image file
-	 */
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/Views/AddEquipment.jsp").forward(request, response);
+    }
 
-		EquipmentDao dao = new EquipmentDao();
-		String imagePath = null;
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		String name = request.getParameter("name");
-		String location = request.getParameter("location");
-		String notes = request.getParameter("notes");
-		boolean isOperational = Boolean.parseBoolean(request.getParameter("isOperational"));
+        EquipmentDao dao = new EquipmentDao();
+        String imagePath = null;
 
-		// Handle uploaded image file
-		Part filePart = request.getPart("imageFile");
-		if (filePart != null && filePart.getSize() > 0) {
-			String fileName = filePart.getSubmittedFileName();
-			filePart.write(getServletContext().getRealPath("/") + "images/" + fileName);
-			imagePath = "images/" + fileName;
-		}
+        String name = request.getParameter("name");
+        String location = request.getParameter("location");
+        String notes = request.getParameter("notes");
+        boolean isOperational = Boolean.parseBoolean(request.getParameter("isOperational"));
 
-		// Create Equipment object using builder
-		Equipment equipment = new Equipment.Builder().setName(name).setOperational(isOperational).setLocation(location)
-				.setImagePath(imagePath).setNotes(notes).build();
+        Part filePart = request.getPart("imageFile");
+        if (filePart != null && filePart.getSize() > 0) {
+            String fileName = filePart.getSubmittedFileName();
+            filePart.write(getServletContext().getRealPath("/") + "images/" + fileName);
+            imagePath = "images/" + fileName;
+        }
 
-		// Save to database
-		dao.createEquipment(equipment);
+        Equipment equipment = new Equipment.Builder()
+                .setName(name)
+                .setOperational(isOperational)
+                .setLocation(location)
+                .setImagePath(imagePath)
+                .setNotes(notes)
+                .build();
 
-		// Show confirmation page
-		String message = "Equipment created successfully";
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView", true);
-		String html = builder.buildPage();
+        dao.createEquipment(equipment);
 
-		response.setContentType("text/html");
-		response.getWriter().write(html);
-	}
+        request.setAttribute("message", "Equipment created successfully");
+        request.setAttribute("isSuccessful", true);
+        request.setAttribute("returnTo", "ListView");
+        request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
+    }
 }

@@ -295,7 +295,7 @@ public class FormBuilder {
 	public String createForm(boolean generateHead, boolean isMultipart) {
 		StringBuilder sb = new StringBuilder();
 		String errorMessage = form.getErrorMessage() != null ? form.getErrorMessage() : "";
-		String formTitle = form.getFormTitle();
+		String formTitle = form.getFormTitle() != null ? form.getFormTitle() : "";
 		String formAction = this.hasAction ? form.getFormAction() : "";
 		String formMethod = this.defaultMethod ? "method='post'" : form.getFormMethod();
 		String multipart = isMultipart ? "enctype='multipart/form-data'" : "";

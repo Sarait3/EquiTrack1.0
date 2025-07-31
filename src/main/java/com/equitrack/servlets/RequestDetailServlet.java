@@ -4,13 +4,15 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-
 import com.equitrack.dao.RequestDao;
 import com.equitrack.dao.UserDao;
+import com.equitrack.model.Equipment;
 import com.equitrack.model.Request;
 import com.equitrack.model.User;
-import com.equitrack.service.ConfirmationPageBuilder;
-import com.equitrack.service.RequestDetailBuilder;
+import com.equitrack.service.AdminPageStrategy;
+import com.equitrack.service.ManagerPageStrategy;
+import com.equitrack.service.PageRoleStrategy;
+import com.equitrack.service.RegularUserPageStrategy;
 
 /**
  * Servlet that handles viewing and processing checkout requests.
@@ -20,70 +22,78 @@ import com.equitrack.service.RequestDetailBuilder;
 @WebServlet("/RequestDetail")
 public class RequestDetailServlet extends HttpServlet {
 
-	/**
-	 * Handles GET requests to either process an action or display the request
-	 * details Redirects to login if the user is not authenticated
-	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		// Check if user is logged in
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		}
+		
+		PageRoleStrategy strategy;
+		switch (user.getRole().toLowerCase()) {
+		case "admin":
+			strategy = new AdminPageStrategy();
+			break;
+		case "manager":
+			strategy = new ManagerPageStrategy();
+			break;
+		default:
+			strategy = new RegularUserPageStrategy();
+			break;
+		}
 
-		// Refresh user from DB
 		UserDao userDao = new UserDao();
 		user = userDao.getUserById(user.getId());
 		request.getSession().setAttribute("user", user);
 
-		// Get request by ID
 		RequestDao requestDao = new RequestDao();
 		String requestId = request.getParameter("id");
 		Request req = requestDao.getRequest(requestId);
+		
+		if (req == null) {
+			response.getWriter().write("<h1>Request not found.</h1>");
+			return;
+		}
 
 		String action = request.getParameter("action");
 
-		// Handle approve action
 		if ("approve".equalsIgnoreCase(action)) {
 			if (req.approve()) {
 				requestDao.updateRequest(req);
-				sendConfirmation(response, "Request approved successfully", true);
+				sendConfirmation(request, response, "Request approved successfully", true);
 			} else {
-				sendConfirmation(response, "This item is not available for the selected dates", false);
+				sendConfirmation(request, response, "This item is not available for the selected dates", false);
 			}
 			return;
 		}
 
-		// Handle decline action
 		if ("decline".equalsIgnoreCase(action)) {
 			req.decline();
 			requestDao.updateRequest(req);
-			sendConfirmation(response, "Request declined successfully", true);
+			sendConfirmation(request, response, "Request declined successfully", true);
 			return;
 		}
 
-		// No action: display request details
-		RequestDetailBuilder builder = new RequestDetailBuilder(user, req);
-		String html = builder.buildPage();
-		response.setContentType("text/html");
-		response.getWriter().write(html);
+		Equipment equipment = requestDao.getEquipmentForRequest(req.getId());
+		User reqUser = requestDao.getUserForRequest(req.getId());
+
+		request.setAttribute("user", user);
+		request.setAttribute("sidebarStrategy", strategy);
+		request.setAttribute("request", req);
+		request.setAttribute("equipment", equipment);
+		request.setAttribute("reqUser", reqUser);
+
+		request.getRequestDispatcher("/WEB-INF/Views/RequestDetail.jsp").forward(request, response);
 	}
 
-	/**
-	 * Sends a confirmation page with a message and redirect link
-	 *
-	 * @param response the HttpServletResponse to write to
-	 * @param message  the message to display
-	 * @param success  true if the operation was successful; false otherwise
-	 */
-	private void sendConfirmation(HttpServletResponse response, String message, boolean success) throws IOException {
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "RequestsList", success);
-		String html = builder.buildPage();
-		response.setContentType("text/html");
-		response.getWriter().write(html);
+	private void sendConfirmation(HttpServletRequest request, HttpServletResponse response, String message, boolean success)
+			throws ServletException, IOException {
+		request.setAttribute("message", message);
+		request.setAttribute("isSuccessful", success);
+		request.setAttribute("returnTo", "RequestsList");
+		request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 	}
 }

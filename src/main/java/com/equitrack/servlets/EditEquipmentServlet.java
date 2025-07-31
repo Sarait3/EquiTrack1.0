@@ -8,15 +8,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-
 import com.equitrack.dao.EquipmentDao;
-import com.equitrack.dao.UserDao;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
-import com.equitrack.service.AccessDeniedBuilder;
-import com.equitrack.service.ConfirmationPageBuilder;
-import com.equitrack.service.EditEquipmentBuilder;
+import com.equitrack.service.FormBuilder;
 
 /**
  * Servlet that handles editing of existing equipment
@@ -29,95 +26,88 @@ import com.equitrack.service.EditEquipmentBuilder;
 @MultipartConfig
 public class EditEquipmentServlet extends HttpServlet {
 
-	/**
-	 * Handles GET requests to display the equipment edit form Validates user
-	 * session and role before proceeding
-	 *
-	 * @param request  the HttpServletRequest object
-	 * @param response the HttpServletResponse object
-	 * @throws ServletException
-	 * @throws IOException
-	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		User user = (User) request.getSession().getAttribute("user");
+		HttpSession session = request.getSession();
+		User user = (User) session.getAttribute("user");
+
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
-		} else {
-			// Refresh user info from database
-			UserDao userDao = new UserDao();
-			user = userDao.getUserById(user.getId());
-			request.getSession().setAttribute("currentUser", user);
 		}
 
 		if (user.getRole().equalsIgnoreCase("Regular")) {
-			response.setContentType("text/html");
-			response.getWriter().write(new AccessDeniedBuilder().buildPage());
+			request.setAttribute("message", "Access Denied: You do not have permission to access this page.");
+			request.setAttribute("success", false);
+			request.getRequestDispatcher("/WEB-INF/Views/AccessDenied.jsp").forward(request, response);
 			return;
 		}
 
-		EquipmentDao equipmentDao = new EquipmentDao();
-		String equipmentId = request.getParameter("id");
-		Equipment equipment = equipmentDao.getEquipment(equipmentId);
+		String id = request.getParameter("id");
+		EquipmentDao dao = new EquipmentDao();
+		Equipment equipment = dao.getEquipment(id);
 
 		if (equipment == null) {
 			response.getWriter().write("<h1>Equipment not found.</h1>");
 			return;
 		}
 
-		// Build and display the edit form page
-		EditEquipmentBuilder builder = new EditEquipmentBuilder(user, equipment);
-		String html = builder.buildPage();
+		// Build form using FormBuilder
+		FormBuilder builder = new FormBuilder();
+		String status = equipment.isOperationalString();
 
-		response.setContentType("text/html");
-		response.getWriter().write(html);
+		builder.setTitle("Edit Equipment").setAction("EditEquipment").setMethod("post")
+				.addHiddenInput("id", equipment.getId()).addRequiredInput("text", "Name:", "name", equipment.getName())
+				.addRequiredInput("text", "Location:", "location", equipment.getLocation())
+				.addFileInput("Image:", "imageFile", "image/*")
+				.addCustomLine(
+						"<label for='isOperational'>Status:</label><select id='isOperational' name='isOperational'>"
+								+ "<option value='true'" + (equipment.isOperational() ? " selected" : "")
+								+ ">Operational</option>" + "<option value='false'"
+								+ (!equipment.isOperational() ? " selected" : "") + ">Out Of Service</option>"
+								+ "</select>")
+				.addInput("textarea", "Notes:", "notes", equipment.getNotes() != null ? equipment.getNotes() : "")
+				.removeDefaultSubmit()
+				.addCustomLine("<div class='form-buttons'>" + "<button type='submit'>Save Changes</button>"
+						+ "<a href='DetailView?id=" + equipment.getId() + "' class='back-btn'>Cancel</a></div>");
+
+		String formHtml = builder.createForm(false, true);
+
+		// Pass data to JSP
+		request.setAttribute("formHtml", formHtml);
+		request.setAttribute("user", user);
+		request.setAttribute("equipment", equipment);
+		request.getRequestDispatcher("/WEB-INF/Views/EditEquipment.jsp").forward(request, response);
 	}
 
-	/**
-	 * Handles POST requests to update an existing equipment Processes form input
-	 * and image upload
-	 *
-	 * @param request  the HttpServletRequest object
-	 * @param response the HttpServletResponse object
-	 * @throws ServletException
-	 * @throws IOException
-	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		// Fetch equipment from DB using ID from form
 		EquipmentDao dao = new EquipmentDao();
 		String id = request.getParameter("id");
 		Equipment equipment = dao.getEquipment(id);
 
-		// Update equipment from form fields
 		equipment.setName(request.getParameter("name"));
 		equipment.setLocation(request.getParameter("location"));
 		equipment.setNotes(request.getParameter("notes"));
 		equipment.setOperational(Boolean.parseBoolean(request.getParameter("isOperational")));
-		// Handle image file upload
+
 		Part filePart = request.getPart("imageFile");
 		if (filePart != null && filePart.getSize() > 0) {
 			String fileName = filePart.getSubmittedFileName();
-			// Save uploaded file to 'images' directory
 			filePart.write(getServletContext().getRealPath("/") + "images/" + fileName);
 			equipment.setImagePath("images/" + fileName);
 		}
 
-		// Save updated equipment to database
 		dao.updateEquipment(equipment);
 
-		// Display confirmation page
-		String message = "Equipment updated successfully";
-
-		ConfirmationPageBuilder builder = new ConfirmationPageBuilder(message, "ListView", true);
-
-		String html = builder.buildPage();
-		response.setContentType("text/html");
-		response.getWriter().write(html);
+		request.setAttribute("message", "Equipment updated successfully");
+		request.setAttribute("isSuccessful", true);
+		request.setAttribute("returnTo", "ListView");
+		
+		request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 	}
-
 }

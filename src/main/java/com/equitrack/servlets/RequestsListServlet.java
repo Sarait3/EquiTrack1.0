@@ -2,13 +2,14 @@ package com.equitrack.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-
 import com.equitrack.model.*;
-import com.equitrack.service.RequestsListBuilder;
+import com.equitrack.service.AdminPageStrategy;
+import com.equitrack.service.ManagerPageStrategy;
+import com.equitrack.service.PageRoleStrategy;
+import com.equitrack.service.RegularUserPageStrategy;
 import com.equitrack.dao.*;
 
 /**
@@ -17,44 +18,45 @@ import com.equitrack.dao.*;
  */
 @WebServlet("/RequestsList")
 public class RequestsListServlet extends HttpServlet {
-
-	/**
-	 * Handles GET requests to show the list of checkout requests based on the
-	 * user's role and filters
-	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		// Check if user is logged in
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		}
+		
+		PageRoleStrategy strategy;
+		switch (user.getRole().toLowerCase()) {
+		case "admin":
+			strategy = new AdminPageStrategy();
+			break;
+		case "manager":
+			strategy = new ManagerPageStrategy();
+			break;
+		default:
+			strategy = new RegularUserPageStrategy();
+			break;
+		}
 
-		// Refresh latest user info from DB
 		UserDao userDao = new UserDao();
 		user = userDao.getUserById(user.getId());
 		request.getSession().setAttribute("user", user);
 
-		// Fetch requests based on role
 		RequestDao requestDao = new RequestDao();
 		ArrayList<Request> requestsList;
 
 		if (user.getRole().equalsIgnoreCase("Regular")) {
-			// Regular users only see their own requests
 			requestsList = new ArrayList<>(requestDao.getRequestsByUserId(user.getId()).values());
 		} else {
-			// Managers/Admins see all requests
 			requestsList = new ArrayList<>(requestDao.getAllRequests().values());
 		}
 
-		// Get filter parameters
 		String searchInput = request.getParameter("searchInput");
 		String statusFilter = request.getParameter("statusFilter");
 
-		// Apply search filter (by ID, name, equipment name)
 		if (searchInput != null && !searchInput.trim().isEmpty()) {
 			String lowerSearch = searchInput.toLowerCase();
 			ArrayList<Request> filtered = new ArrayList<>();
@@ -71,7 +73,6 @@ public class RequestsListServlet extends HttpServlet {
 			requestsList = filtered;
 		}
 
-		// Apply status filter (pending, approved, declined)
 		if (statusFilter != null && !statusFilter.trim().isEmpty()) {
 			ArrayList<Request> filtered = new ArrayList<>();
 			for (Request req : requestsList) {
@@ -82,11 +83,19 @@ public class RequestsListServlet extends HttpServlet {
 			requestsList = filtered;
 		}
 
-		// Build HTML page
-		RequestsListBuilder builder = new RequestsListBuilder(user, requestsList, searchInput, statusFilter);
-		String html = builder.buildPage();
+		for (Request req : requestsList) {
+			User reqUser = requestDao.getUserForRequest(req.getId());
+			Equipment equipment = requestDao.getEquipmentForRequest(req.getId());
+			request.setAttribute("reqUser_" + req.getId(), reqUser);
+			request.setAttribute("equipment_" + req.getId(), equipment);
+		}
 
-		response.setContentType("text/html");
-		response.getWriter().write(html);
+		request.setAttribute("user", user);
+		request.setAttribute("sidebarStrategy", strategy);
+		request.setAttribute("requestsList", requestsList);
+		request.setAttribute("searchInput", searchInput);
+		request.setAttribute("statusFilter", statusFilter);
+
+		request.getRequestDispatcher("/WEB-INF/Views/RequestsList.jsp").forward(request, response);
 	}
 }

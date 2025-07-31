@@ -76,14 +76,12 @@ public class UserManagementServlet extends HttpServlet {
 						new ConfirmationPageBuilder("User Creation Failed", "UserManagement", false).buildPage());
 			break;
 		case "changepassword":
-			if (request.getParameter("password").equals(request.getParameter("repeatedpass"))) {
-				if (userManagement.changePassword(user.getId(), request.getParameter("password"),
-						request.getParameter("repeatedpass"))) {
+				if (userManagement.changePassword(user.getId(), request.getParameter("oldPass"),
+						request.getParameter("newPass"))) {
 					response.getWriter()
 							.write(new ConfirmationPageBuilder("Password Changed Sucessfully", "UserManagement", true)
 									.buildPage());
-				}
-			} else
+				} else
 				response.getWriter().write(
 						new ConfirmationPageBuilder("Password Change Failed", "UserManagement", false).buildPage());
 			break;
@@ -110,14 +108,14 @@ public class UserManagementServlet extends HttpServlet {
 						.write(new ConfirmationPageBuilder("User Editing Failed", "UserManagement", false).buildPage());
 			break;
 		case "changeemail":
-			if (userManagement.changePassword(user.getId(), request.getParameter("password"),
-					request.getParameter("repeatedpass"))) {
+			if (userManagement.changeEmail(user.getId(), request.getParameter("password"),
+					request.getParameter("newmail"))) {
 				response.getWriter()
-						.write(new ConfirmationPageBuilder("Password Changed Sucessfully", "UserManagement", true)
+						.write(new ConfirmationPageBuilder("Email Changed Sucessfully", "UserManagement", true)
 								.buildPage());
 			} else
 				response.getWriter().write(
-						new ConfirmationPageBuilder("Password Change Failed", "UserManagement", false).buildPage());
+						new ConfirmationPageBuilder("Email Change Failed", "UserManagement", false).buildPage());
 			break;
 		default:
 			response.getWriter().write(new UserManagementService(user).buildPage());

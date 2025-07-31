@@ -1,0 +1,37 @@
+<%@ page import="com.equitrack.model.User" %>
+<%
+    User user = (User) request.getAttribute("user");
+    String formHtml = (String) request.getAttribute("formHtml");
+%>
+<%@ include file="Sidebar.jsp" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Equipment</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="header">
+    <div class="header-content">
+        <label for="sidebar-toggle" class="sidebar-button">&#9776;</label>
+        <a href="ListView" class="back-btn">&larr; Back to List</a>
+        <h1>Add New Equipment</h1>
+        <div class="user-info">
+            <img src="images/user-icon.png" alt="User Icon" class="user-icon">
+            <span class="username"><%= user.getFName() %> <%= user.getLName() %></span>
+            <a href="Logout" class="logout-btn">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="container-detail">
+    <div class="equipment-detail">
+        <%= formHtml %>
+    </div>
+</div>
+
+</body>
+</html>
