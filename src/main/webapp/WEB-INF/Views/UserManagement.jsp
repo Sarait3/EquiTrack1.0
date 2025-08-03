@@ -50,7 +50,7 @@ table {
 		.append("<h1>Manage Users</h1>").append("<table>").append("<th>Name</th><th>Actions</th>");
 
 		for (User listUser : users.values()) {
-			if (listUser.getRole().equalsIgnoreCase("regular")) {
+			if (!listUser.getRole().equalsIgnoreCase("admin")) {
 		html.append("<tr>").append(String.format("<td>%s, %s</td>", listUser.getLName(), listUser.getFName()))
 				.append(String.format("<td><a href='UserManagement?action=edituser&id=%s'>Edit User</a></td>",
 						listUser.getId()));
