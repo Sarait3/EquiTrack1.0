@@ -169,10 +169,11 @@ public class UserDao {
 	 * @return Returns true if the operation was successful, false otherwise
 	 */
 	public boolean deleteUser(String id) {
-		String sql = String.format("DELETE FROM users WHERE %s LIKE '%s'", userColId, id);
+		String sql = String.format("DELETE FROM users WHERE %s = ?", userColId);
 
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
-
+			
+			statement.setString(1, id);
 			statement.execute();
 			return true;
 

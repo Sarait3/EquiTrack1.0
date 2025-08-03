@@ -8,7 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.equitrack.model.User;
-import com.equitrack.service.ConfirmationPageBuilder;
+import com.equitrack.service.AdminPageStrategy;
+import com.equitrack.service.ManagerPageStrategy;
+import com.equitrack.service.PageRoleStrategy;
+import com.equitrack.service.RegularUserPageStrategy;
 import com.equitrack.service.UserManagementService;
 
 /**
@@ -32,27 +35,58 @@ public class UserManagementServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		User user = (User) request.getSession().getAttribute("user");
+		UserManagementService userManagement = new UserManagementService(user);
+		String action = request.getParameter("action");
+		PageRoleStrategy strategy = null;
 
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		}
 
-		String action = request.getParameter("action");
+		if (user != null) {
+			switch (user.getRole().toLowerCase()) {
+			case "manager":
+				strategy = new ManagerPageStrategy();
+				break;
+			case "admin":
+				strategy = new AdminPageStrategy();
+				break;
+			default:
+				strategy = new RegularUserPageStrategy();
+				break;
+			}
+
+			request.setAttribute("strategy", strategy);
+			request.setAttribute("sidebarStrategy", strategy);
+		}
 
 		if (action != null) {
 			switch (action) {
-			case "changepassword":
-				break;
-			case "changeemail":
+			case "edituser":
+				request.setAttribute("id", request.getParameter("id"));
+				request.getRequestDispatcher("/WEB-INF/Views/EditUser.jsp").forward(request, response);
 				break;
 			case "deleteuser":
+				if (userManagement.deleteUser(request.getParameter("id"))) {
+					request.setAttribute("message", "User Deleted Successfully");
+					request.setAttribute("returnTo", "UserManagement");
+					request.setAttribute("isSuccessful", true);
+					request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				} else {
+					request.setAttribute("message", "User Deletion Successfully");
+					request.setAttribute("returnTo", "UserManagement");
+					request.setAttribute("isSuccessful", true);
+					request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				}
 				break;
 			default:
-				response.getWriter().write(new UserManagementService(user).buildPage());
+				request.setAttribute("user", user);
+				request.getRequestDispatcher("/WEB-INF/Views/UserManagement.jsp").forward(request,  response);
 			}
 		} else {
-			response.getWriter().write(new UserManagementService(user).buildPage());
+			request.setAttribute("user", user);
+			request.getRequestDispatcher("/WEB-INF/Views/UserManagement.jsp").forward(request,  response);
 		}
 	}
 
@@ -69,56 +103,61 @@ public class UserManagementServlet extends HttpServlet {
 		switch (request.getParameter("action")) {
 		case "createUser":
 			if (userManagement.createUser(request)) {
-				response.getWriter().write(
-						new ConfirmationPageBuilder("User Created Sucessfully", "UserManagement", true).buildPage());
-			} else
-				response.getWriter().write(
-						new ConfirmationPageBuilder("User Creation Failed", "UserManagement", false).buildPage());
+				request.setAttribute("message", "User Created Successfully");
+				request.setAttribute("returnTo", "UserManagement");
+				request.setAttribute("isSuccessful", true);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			} else {
+				request.setAttribute("message", "User Creation Failed");
+				request.setAttribute("returnTo", "UserManagement");
+				request.setAttribute("isSuccessful", false);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			}
 			break;
 		case "changepassword":
-				if (userManagement.changePassword(user.getId(), request.getParameter("oldPass"),
-						request.getParameter("newPass"))) {
-					response.getWriter()
-							.write(new ConfirmationPageBuilder("Password Changed Sucessfully", "UserManagement", true)
-									.buildPage());
-				} else
-				response.getWriter().write(
-						new ConfirmationPageBuilder("Password Change Failed", "UserManagement", false).buildPage());
-			break;
-		case "deleteuser":
-			if (userManagement.deleteUser(request.getParameter("id"))) {
-				response.getWriter().write(
-						new ConfirmationPageBuilder("User Deleted Sucessfully", "UserManagement", true).buildPage());
-			} else
-				response.getWriter().write(
-						new ConfirmationPageBuilder("User Deletion Failed", "UserManagement", false).buildPage());
-			break;
-		case "edituser":
-			response.getWriter().write(new UserManagementService(user).buildEditUser(request.getParameter("id")));
+			if (userManagement.changePassword(user.getId(), request.getParameter("oldPass"), request.getParameter("newPass"))) {
+				request.setAttribute("message", "Password Changed Successfully");
+				request.setAttribute("returnTo", "UserManagement");
+				request.setAttribute("isSuccessful", true);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			} else {
+				request.setAttribute("message", "Password Change Failed");
+				request.setAttribute("returnTo", "UserManagement");
+				request.setAttribute("isSuccessful", false);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			}
 			break;
 		case "doneEditUser":
 			userToEdit = new User(request.getParameter("id"), request.getParameter("role"),
 					request.getParameter("fName"), request.getParameter("lName"), request.getParameter("email"),
 					request.getParameter("password"));
 			if (userManagement.editUser(userToEdit)) {
-				response.getWriter().write(
-						new ConfirmationPageBuilder("User Edited Sucessfully", "UserManagement", true).buildPage());
-			} else
-				response.getWriter()
-						.write(new ConfirmationPageBuilder("User Editing Failed", "UserManagement", false).buildPage());
+				request.setAttribute("message", "User Edited Successfully");
+				request.setAttribute("returnTo", "UserManagement");
+				request.setAttribute("isSuccessful", true);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			} else {
+				request.setAttribute("message", "User Edit Failed");
+				request.setAttribute("returnTo", "UserManagement");
+				request.setAttribute("isSuccessful", false);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			}
 			break;
 		case "changeemail":
-			if (userManagement.changeEmail(user.getId(), request.getParameter("password"),
-					request.getParameter("newmail"))) {
-				response.getWriter()
-						.write(new ConfirmationPageBuilder("Email Changed Sucessfully", "UserManagement", true)
-								.buildPage());
-			} else
-				response.getWriter().write(
-						new ConfirmationPageBuilder("Email Change Failed", "UserManagement", false).buildPage());
+			if (userManagement.changeEmail(user.getId(), request.getParameter("password"), request.getParameter("newmail"))) {
+				request.setAttribute("message", "Email Changed Successfully");
+				request.setAttribute("returnTo", "UserManagement");
+				request.setAttribute("isSuccessful", true);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			} else {
+				request.setAttribute("message", "Email Change Failed");
+				request.setAttribute("returnTo", "UserManagement");
+				request.setAttribute("isSuccessful", true);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			}
 			break;
 		default:
-			response.getWriter().write(new UserManagementService(user).buildPage());
+			request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
 		}
 	}
 }
