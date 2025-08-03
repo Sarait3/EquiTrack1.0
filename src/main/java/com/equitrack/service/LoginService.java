@@ -16,24 +16,6 @@ import com.equitrack.model.*;
 public class LoginService {
 
 	/**
-	 * Generates the login page HTML.
-	 *
-	 * @param loginFailed whether the login attempt failed
-	 * @return HTML content for the login page
-	 */
-	public String loginPage(boolean firstTimeLogin) {
-		String errormsg = firstTimeLogin ? "" : "Login failed, please try again";
-
-		FormBuilder builder = new FormBuilder();
-
-		builder.setTitle("Login").setAction("Login").setMethod("post").addRequiredInput("text", "Email:", "email")
-				.addRequiredInput("password", "Password:", "password").addReset().addError(errormsg);
-
-		return builder.createForm(true, false);
-
-	}
-
-	/**
 	 * Validates user credentials
 	 *
 	 * @param email    the user's email

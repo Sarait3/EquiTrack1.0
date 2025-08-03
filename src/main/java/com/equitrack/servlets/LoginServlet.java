@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
 		// // First visit to login page (no failed attempt), show the login form with no
 		// error message
 		if (session.getAttribute("user") == null) {
-			writer.write(login.loginPage(true));
+			request.getRequestDispatcher("/WEB-INF/Views/Login.jsp").forward(request,  response);
 		} else {
 			// Already logged in, redirect to the equipment list view
 			response.sendRedirect("/EquiTrack/ListView");
@@ -72,7 +72,8 @@ public class LoginServlet extends HttpServlet {
 
 		if (user == null) {
 			// Login failed: redisplay form with error
-			writer.write(login.loginPage(false));
+			request.setAttribute("loginFailed", true);
+			request.getRequestDispatcher("/WEB-INF/Views/Login.jsp").forward(request,  response);
 		} else {
 			// Login successful: create user session
 			login.createSession(user, request);

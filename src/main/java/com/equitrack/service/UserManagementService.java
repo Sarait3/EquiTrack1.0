@@ -5,11 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.equitrack.dao.UserDao;
 import com.equitrack.model.User;
 
-public class UserManagementService extends PageBuilder {
-	private User user;
+public class UserManagementService {
 	private UserDao dao;
-	private PageRoleStrategy strategy;
-	private String page;
 
 	/**
 	 * Initializes a UserManagementService object and generates the initial HTML for
@@ -18,44 +15,7 @@ public class UserManagementService extends PageBuilder {
 	 * @param user The currently logged in User to display the page to
 	 */
 	public UserManagementService(User user) {
-		this.user = user;
 		this.dao = new UserDao();
-
-		switch (user.getRole().toLowerCase()) {
-		case "admin":
-			strategy = new AdminPageStrategy();
-			break;
-		case "manager":
-			strategy = new ManagerPageStrategy();
-			break;
-		default:
-			strategy = new RegularUserPageStrategy();
-			break;
-		}
-
-		page = new StringBuilder().append("<!DOCTYPE html><html lang='en'><head>").append("<meta charset='UTF-8'>")
-				.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>")
-				.append("<title>User Management</title>").append("<link rel='stylesheet' href='css/style.css'>")
-				.append("<style>table {margin-left:auto; margin-right:auto;}</style>").append("</head><body>")
-				.append(strategy.buildSidebar()).append("<div class='header'><div class='header-content'>")
-				.append("<label for='sidebar-toggle' class='sidebar-button'>&#9776;</label>")
-				.append("<h1><a href='ListView' style='color: inherit; text-decoration: none;'>User Management</a></h1>")
-				.append("<div class='user-info'><img src='images/user-icon.png' alt='User Icon' class='user-icon'>")
-				.append("<span class='username'>" + user.getFName() + " " + user.getLName() + "</span>")
-				.append("<a href='Logout' class='back-btn'>Logout</a></div></div></div>").toString();
-	}
-
-	/**
-	 * Constructs the rest of the Page that wasn't done in the constructor based on
-	 * the User's role.
-	 */
-	@Override
-	public String buildPage() {
-		StringBuilder html = new StringBuilder();
-
-		html.append(page).append(strategy.buildUserList()).append(strategy.buildCreateUser())
-				.append(strategy.buildManageAccount()).append("</body></html>");
-		return html.toString();
 	}
 
 	/**
@@ -73,7 +33,7 @@ public class UserManagementService extends PageBuilder {
 		oldPass = login.hashPassword(oldPass);
 
 		if (userToEdit != null && userToEdit.getPassword().equals(oldPass)) {
-			userToEdit.setPassword(login.hashPassword(newPass));
+			userToEdit.setPassword(newPass);
 			return dao.updateUser(userToEdit);
 		}
 
@@ -132,40 +92,6 @@ public class UserManagementService extends PageBuilder {
 	 */
 	public boolean deleteUser(String id) {
 		return new UserDao().deleteUser(id);
-	}
-
-	/**
-	 * Generates the HTML for an edit user page in which an admin or manager can
-	 * Edit the details of a user.
-	 * 
-	 * @param id The UUID (in String format) of the user to be edited
-	 * @return Returns true if the operation was successful, false otherwise
-	 */
-	public String buildEditUser(String id) {
-		StringBuilder html = new StringBuilder();
-		FormBuilder form = new FormBuilder();
-		User userToEdit = dao.getUserById(id);
-
-		form.setTitle("Edit User").addHiddenInput("action", "doneEditUser").addHiddenInput("id", userToEdit.getId())
-				.addRequiredInput("text", "First Name", "fName", userToEdit.getFName())
-				.addRequiredInput("text", "Last Name", "lName", userToEdit.getLName());
-
-		if (user.getRole().equalsIgnoreCase("admin")) {
-			form.addSelect("Role", "role", new String[][] {
-					{ "regular", "Regular", userToEdit.getRole().equalsIgnoreCase("regular") ? "true" : "false" },
-					{ "manager", "Manager", userToEdit.getRole().equalsIgnoreCase("manager") ? "true" : "false" },
-					{ "admin", "Admin", userToEdit.getRole().equalsIgnoreCase("admin") ? "true" : "false" } });
-		} else {
-			form.addHiddenInput("role", userToEdit.getRole());
-		}
-
-		form.addRequiredInput("text", "Email", "email", userToEdit.getEmail())
-				.addRequiredInput("password", "Password", "password", userToEdit.getPassword())
-				.addCancel("UserManagement", "Cancel");
-
-		html.append(page).append(form.createForm(false, false)).append("</body></html>");
-
-		return html.toString();
 	}
 
 	public boolean editUser(User user) {
