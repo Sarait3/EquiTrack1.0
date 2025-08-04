@@ -22,10 +22,8 @@
 	
 	builder.setTitle("Login").setAction("Login").setMethod("post").addRequiredInput("text", "Email:", "email")
 		.addRequiredInput("password", "Password:", "password").addReset().addError(errormsg);
-	
-	String form = builder.createForm(true, false);
 	%>
 	
-	<%=form %>
+	<%=builder.createForm(true, false) %>
 </body>
 </html>

@@ -18,7 +18,6 @@
 	<%@include file='Sidebar.jsp' %>
 	
 	<%
-	StringBuilder html = new StringBuilder();
 	FormBuilder form = new FormBuilder();
 	User userToEdit = new UserDao().getUserById(request.getAttribute("id").toString());
 
@@ -39,9 +38,6 @@
 	form.addRequiredInput("text", "Email", "email", userToEdit.getEmail())
 		.addRequiredInput("password", "Password", "password", userToEdit.getPassword())
 		.addCancel("UserManagement", "Cancel");
-
-	html.append(form.createForm(false, false)).append("</body></html>");
-
 	%>
 	<%=form.createForm(false, false)%>
 </body>
