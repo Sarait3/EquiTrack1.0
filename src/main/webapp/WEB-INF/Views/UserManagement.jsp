@@ -13,23 +13,20 @@ StringBuilder html = new StringBuilder();
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>User Management</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="css/style.css">
-<style>
-table {
-	margin: auto
-}
-</style>
+	<meta charset="UTF-8">
+	<title>User Management</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/style.css">
+	<style>
+		table { margin: auto}
+	</style>
 </head>
 <body>
 	<%@ include file="Sidebar.jsp"%>
 
 	<div class="header">
 		<div class="header-content">
-			<label for="sidebar-toggle" class="sidebar-button">&#9776;</label> <a
-				href="ListView" class="back-btn">&larr; Back to List View</a>
+			<label for="sidebar-toggle" class="sidebar-button">&#9776;</label> <a href="ListView" class="back-btn">&larr; Back to List View</a>
 			<h1>User Management</h1>
 			<div class="user-info">
 				<img src="images/user-icon.png" alt="User Icon" class="user-icon">
@@ -40,43 +37,56 @@ table {
 	</div>
 
 	<%
-	html = new StringBuilder();
-
+	UserDao dao = new UserDao();
 	if (strategy.canManageUsers()) {
-		UserDao dao = new UserDao();
 		Map<UUID, User> users = dao.getAllUsers();
-
-		html.append("<div style='text-align:center' class='action-section container-detail'>")
-		.append("<h1>Manage Users</h1>").append("<table>").append("<th>Name</th><th>Actions</th>");
-
-		for (User listUser : users.values()) {
-			if (!listUser.getRole().equalsIgnoreCase("admin")) {
-		html.append("<tr>").append(String.format("<td>%s, %s</td>", listUser.getLName(), listUser.getFName()))
-				.append(String.format("<td><a href='UserManagement?action=edituser&id=%s'>Edit User</a></td>",
-						listUser.getId()));
-		if (strategy.canDeleteUsers()) {
-			html.append(String.format("<td><a href='UserManagement?action=deleteuser&id=%s'>Delete User</a></td>",
-					listUser.getId()));
-		}
-		html.append("</tr>");
-			}
-		}
-		html.append("</table></div>");
+		%>
+		<div style="text-align: center" class="action-section container-detail">
+			<h1>Manage Users</h1>
+			<table>
+				<tr>
+					<th>Name</th>
+					<th>Actions</th>
+				</tr>
+				<%
+				for (User listUser : users.values()) {
+				%>
+				<tr>
+					<td><%=listUser.getLName()%>, <%=listUser.getFName()%></td>
+					<td><a href="UserManagement?action=edituser&id=<%=listUser.getId()%>">Edit User</a></td>
+					<%
+					if (!listUser.getRole().equalsIgnoreCase("admin") && strategy.canDeleteUsers()) {
+					%>
+					<td><a href="UserManagement?action=deleteuser&id=<%=listUser.getId()%>">Delete User</a></td>
+					<%
+					}
+				}
+					%>
+				</tr>
+			</table>
+		</div>
+		<%
 	}
+	%>
 
+	<% 
 	if (strategy.canCreateUsers()) {
 		FormBuilder createUserForm = new FormBuilder();
-
+		
 		createUserForm.setTitle("Create User").addHiddenInput("action", "createUser")
-		.addRequiredInput("text", "First Name", "fName").addRequiredInput("text", "Last Name", "lName")
-		.addSelect("Role", "role",
+				.addRequiredInput("text", "First Name", "fName").addRequiredInput("text", "Last Name", "lName")
+				.addSelect("Role", "role",
 				new String[][] { { "regular", "Regular" }, { "manager", "Manager" }, { "admin", "Admin" } })
-		.addRequiredInput("text", "Email", "email").addRequiredInput("password", "Password", "password")
-		.addRequiredInput("password", "Repeat Password", "repeatedpass");
+				.addRequiredInput("text", "Email", "email").addRequiredInput("password", "Password", "password")
+				.addRequiredInput("password", "Repeat Password", "repeatedpass");
+		%>
+	
+		<div class='action-section'>
+			<%=createUserForm.createForm(false, false) %>
+	</div>
+	<%} %>
 
-		html.append("<div class='action-section'>" + createUserForm.createForm(false, false) + "</div>");
-	}
-
+	<%
 	FormBuilder changePass = new FormBuilder();
 	FormBuilder changeEmail = new FormBuilder();
 
@@ -86,12 +96,11 @@ table {
 
 	changeEmail.setTitle("Change Email").addHiddenInput("action", "changeemail")
 			.addRequiredInput("text", "New Email", "newmail").addRequiredInput("password", "Password", "password");
-
-	html.append("<div class='action-section'>").append(changePass.createForm(false, false))
-			.append(changeEmail.createForm(false, false)).append("</div>");
 	%>
-	<%=html.toString()%>
 
-
+	<div class='action-section'>
+		<%=changePass.createForm(false, false)%>
+		<%=changeEmail.createForm(false, false)%>
+	</div>;
 </body>
 </html>
