@@ -38,6 +38,8 @@ StringBuilder html = new StringBuilder();
 
 	<%
 	UserDao dao = new UserDao();
+	
+	// If the strategy given by the servlet says the user can manage other users, renders a list of all users
 	if (strategy.canManageUsers()) {
 		Map<UUID, User> users = dao.getAllUsers();
 		%>
@@ -55,6 +57,8 @@ StringBuilder html = new StringBuilder();
 					<td><%=listUser.getLName()%>, <%=listUser.getFName()%></td>
 					<td><a href="UserManagement?action=edituser&id=<%=listUser.getId()%>">Edit User</a></td>
 					<%
+					// if the strategy says the user can delete users, add a "delete user" button
+					// as long as the user in the list is not also an admin
 					if (!listUser.getRole().equalsIgnoreCase("admin") && strategy.canDeleteUsers()) {
 					%>
 					<td><a href="UserManagement?action=deleteuser&id=<%=listUser.getId()%>">Delete User</a></td>
@@ -70,6 +74,7 @@ StringBuilder html = new StringBuilder();
 	%>
 
 	<% 
+	// if the strategy given by the servlet says the logged in user can create new users, render a form to do so
 	if (strategy.canCreateUsers()) {
 		FormBuilder createUserForm = new FormBuilder();
 		
@@ -87,6 +92,7 @@ StringBuilder html = new StringBuilder();
 	<%} %>
 
 	<%
+	// render the forms to change the password and email of the logged in user
 	FormBuilder changePass = new FormBuilder();
 	FormBuilder changeEmail = new FormBuilder();
 

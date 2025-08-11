@@ -21,11 +21,15 @@
 	FormBuilder form = new FormBuilder();
 	User userToEdit = new UserDao().getUserById(request.getAttribute("id").toString());
 
+	//create the standardized form for editing a user.
 	form.setTitle("Edit User").setAction("UserManagement")
 		.addHiddenInput("action", "doneEditUser").addHiddenInput("id", userToEdit.getId())
 		.addRequiredInput("text", "First Name", "fName", userToEdit.getFName())
 		.addRequiredInput("text", "Last Name", "lName", userToEdit.getLName());
 
+	// if the logged in user is an admin, add a selection that allows them to change the
+	// role of the user being edited that defaults to that user's current role.
+	// otherwise, just add a hidden input containing the role.
 	if (strategy.getRoleLabel().equalsIgnoreCase("admin")) {
 		form.addSelect("Role", "role", new String[][] {
 			{ "regular", "Regular", userToEdit.getRole().equalsIgnoreCase("regular") ? "true" : "false" },
@@ -35,10 +39,12 @@
 		form.addHiddenInput("role", userToEdit.getRole());
 	}
 
+	//finish the form with the inputs for the user's email and password, and add a cancel button.
 	form.addRequiredInput("text", "Email", "email", userToEdit.getEmail())
 		.addRequiredInput("password", "Password", "password", userToEdit.getPassword())
 		.addCancel("UserManagement", "Cancel");
 	%>
+	<!-- render the form -->
 	<%=form.createForm(false, false)%>
 </body>
 </html>
