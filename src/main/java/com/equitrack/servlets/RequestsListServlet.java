@@ -13,21 +13,36 @@ import com.equitrack.service.RegularUserPageStrategy;
 import com.equitrack.dao.*;
 
 /**
- * Servlet for displaying a list of checkout requests.
+ * Displays a list of checkout requests with optional search and status filters
+ *
+ * Regular users see only their own requests; managers and admins see all
+ * requests
  * 
  */
 @WebServlet("/RequestsList")
 public class RequestsListServlet extends HttpServlet {
+
+	/**
+	 * Renders the requests list for the current user, applying optional filters
+	 *
+	 *
+	 * @param request  HTTP request
+	 * @param response HTTP response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
+			// Not authenticated: go to login
 			response.sendRedirect("Login");
 			return;
 		}
-		
+
+		// Choose sidebar/permissions strategy based on the role currently in session
 		PageRoleStrategy strategy;
 		switch (user.getRole().toLowerCase()) {
 		case "admin":
@@ -41,6 +56,7 @@ public class RequestsListServlet extends HttpServlet {
 			break;
 		}
 
+		// Refresh user from DB to reflect any recent changes
 		UserDao userDao = new UserDao();
 		user = userDao.getUserById(user.getId());
 		request.getSession().setAttribute("user", user);
@@ -48,6 +64,7 @@ public class RequestsListServlet extends HttpServlet {
 		RequestDao requestDao = new RequestDao();
 		ArrayList<Request> requestsList;
 
+		// Scope requests by role
 		if (user.getRole().equalsIgnoreCase("Regular")) {
 			requestsList = new ArrayList<>(requestDao.getRequestsByUserId(user.getId()).values());
 		} else {
@@ -73,6 +90,7 @@ public class RequestsListServlet extends HttpServlet {
 			requestsList = filtered;
 		}
 
+		// Status filter: exact status match
 		if (statusFilter != null && !statusFilter.trim().isEmpty()) {
 			ArrayList<Request> filtered = new ArrayList<>();
 			for (Request req : requestsList) {
@@ -83,6 +101,7 @@ public class RequestsListServlet extends HttpServlet {
 			requestsList = filtered;
 		}
 
+		// Attach related objects for JSP rendering
 		for (Request req : requestsList) {
 			User reqUser = requestDao.getUserForRequest(req.getId());
 			Equipment equipment = requestDao.getEquipmentForRequest(req.getId());
@@ -90,6 +109,7 @@ public class RequestsListServlet extends HttpServlet {
 			request.setAttribute("equipment_" + req.getId(), equipment);
 		}
 
+		// Forward to view
 		request.setAttribute("user", user);
 		request.setAttribute("sidebarStrategy", strategy);
 		request.setAttribute("requestsList", requestsList);

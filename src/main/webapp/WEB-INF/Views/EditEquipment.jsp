@@ -1,10 +1,13 @@
 <%@ page import="com.equitrack.model.*" %>
+
+<%-- Data prepared by the servlet --%>
 <%
-    Equipment equipment = (Equipment) request.getAttribute("equipment");
-    User user = (User) request.getAttribute("user");
-    String formHtml = (String) request.getAttribute("formHtml");
+    Equipment equipment = (Equipment) request.getAttribute("equipment"); // equipment being edited
+    User user = (User) request.getAttribute("user");                     // current signed-in user
+    String formHtml = (String) request.getAttribute("formHtml");         // form markup built by FormBuilder
 %>
 
+<%-- Sidebar --%>
 <%@ include file="Sidebar.jsp" %>
 
 <!DOCTYPE html>
@@ -19,9 +22,15 @@
 
 <div class="header">
     <div class="header-content">
+        <%-- Sidebar toggle --%>
         <label for="sidebar-toggle" class="sidebar-button">&#9776;</label>
+
+        <%-- Back to the equipment detail view --%>
         <a href="DetailView?id=<%= equipment.getId() %>" class="back-btn">&larr; Back to Equipment Details</a>
+
         <h1>Edit Equipment</h1>
+
+        <%-- Current user info and logout --%>
         <div class="user-info">
             <img src="images/user-icon.png" alt="User Icon" class="user-icon">
             <span class="username"><%= user.getFName() %> <%= user.getLName() %></span>
@@ -33,6 +42,7 @@
 <div class="container-detail">
     <div class="equipment-detail">
 
+        <%-- Quick equipment summary header --%>
         <div class="detail-header">
             <div class="equipment-info">
                 <img src="<%= equipment.getImagePath() %>" alt="<%= equipment.getName() %>" class="equipment-image">
@@ -46,6 +56,7 @@
             </div>
         </div>
 
+        <%-- Render the edit form HTML produced by FormBuilder --%>
         <%= formHtml %>
 
     </div>

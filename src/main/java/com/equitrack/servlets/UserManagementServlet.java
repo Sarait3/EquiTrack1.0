@@ -72,21 +72,21 @@ public class UserManagementServlet extends HttpServlet {
 					request.setAttribute("message", "User Deleted Successfully");
 					request.setAttribute("returnTo", "UserManagement");
 					request.setAttribute("isSuccessful", true);
-					request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+					request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 				} else {
 					request.setAttribute("message", "User Deletion Successfully");
 					request.setAttribute("returnTo", "UserManagement");
 					request.setAttribute("isSuccessful", true);
-					request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+					request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 				}
 				break;
 			default:
 				request.setAttribute("user", user);
-				request.getRequestDispatcher("/WEB-INF/Views/UserManagement.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/UserManagement.jsp").forward(request, response);
 			}
 		} else {
 			request.setAttribute("user", user);
-			request.getRequestDispatcher("/WEB-INF/Views/UserManagement.jsp").forward(request,  response);
+			request.getRequestDispatcher("/WEB-INF/Views/UserManagement.jsp").forward(request, response);
 		}
 	}
 
@@ -106,25 +106,26 @@ public class UserManagementServlet extends HttpServlet {
 				request.setAttribute("message", "User Created Successfully");
 				request.setAttribute("returnTo", "UserManagement");
 				request.setAttribute("isSuccessful", true);
-				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 			} else {
 				request.setAttribute("message", "User Creation Failed");
 				request.setAttribute("returnTo", "UserManagement");
 				request.setAttribute("isSuccessful", false);
-				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 			}
 			break;
 		case "changepassword":
-			if (userManagement.changePassword(user.getId(), request.getParameter("oldPass"), request.getParameter("newPass"))) {
+			if (userManagement.changePassword(user.getId(), request.getParameter("oldPass"),
+					request.getParameter("newPass"))) {
 				request.setAttribute("message", "Password Changed Successfully");
 				request.setAttribute("returnTo", "UserManagement");
 				request.setAttribute("isSuccessful", true);
-				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 			} else {
 				request.setAttribute("message", "Password Change Failed");
 				request.setAttribute("returnTo", "UserManagement");
 				request.setAttribute("isSuccessful", false);
-				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 			}
 			break;
 		case "doneEditUser":
@@ -135,29 +136,30 @@ public class UserManagementServlet extends HttpServlet {
 				request.setAttribute("message", "User Edited Successfully");
 				request.setAttribute("returnTo", "UserManagement");
 				request.setAttribute("isSuccessful", true);
-				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 			} else {
 				request.setAttribute("message", "User Edit Failed");
 				request.setAttribute("returnTo", "UserManagement");
 				request.setAttribute("isSuccessful", false);
-				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 			}
 			break;
 		case "changeemail":
-			if (userManagement.changeEmail(user.getId(), request.getParameter("password"), request.getParameter("newmail"))) {
+			if (userManagement.changeEmail(user.getId(), request.getParameter("password"),
+					request.getParameter("newmail"))) {
 				request.setAttribute("message", "Email Changed Successfully");
 				request.setAttribute("returnTo", "UserManagement");
 				request.setAttribute("isSuccessful", true);
-				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 			} else {
 				request.setAttribute("message", "Email Change Failed");
 				request.setAttribute("returnTo", "UserManagement");
 				request.setAttribute("isSuccessful", true);
-				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+				request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 			}
 			break;
 		default:
-			request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request,  response);
+			request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 		}
 	}
 }

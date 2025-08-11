@@ -1,11 +1,12 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.equitrack.model.*" %>
 
+<%-- Data prepared by the servlet --%>
 <%
-    User user = (User) request.getAttribute("user");
-    ArrayList<Request> requestsList = (ArrayList<Request>) request.getAttribute("requestsList");
-    String searchInput = (String) request.getAttribute("searchInput");
-    String statusFilter = (String) request.getAttribute("statusFilter");
+    User user = (User) request.getAttribute("user");                            // current user (assumed non-null)
+    ArrayList<Request> requestsList = (ArrayList<Request>) request.getAttribute("requestsList"); // filtered list
+    String searchInput = (String) request.getAttribute("searchInput");          // current search text
+    String statusFilter = (String) request.getAttribute("statusFilter");        // current status filter
 %>
 
 <!DOCTYPE html>
@@ -18,12 +19,18 @@
 </head>
 <body>
 
+<%-- Sidebar  --%>
 <%@ include file="Sidebar.jsp" %>
 
 <div class="header">
     <div class="header-content">
+        <%-- Sidebar toggle--%>
         <label for="sidebar-toggle" class="sidebar-button">&#9776;</label>
+
+        <%-- Title doubles as a link to refresh/clear filters --%>
         <h1><a href="ListView" style="color: inherit; text-decoration: none;">Checkout Requests List</a></h1>
+
+        <%-- Current user and logout --%>
         <div class="user-info">
             <img src="images/user-icon.png" alt="User Icon" class="user-icon">
             <span class="username"><%= user.getFName() %> <%= user.getLName() %></span>
@@ -33,19 +40,23 @@
 </div>
 
 <div class="container">
+    <%-- Search and filter controls --%>
     <div class="search-bar">
         <form class="search-form" method="GET" action="RequestsList">
-            <input type="text" name="searchInput" class="search-input" placeholder="Search requests..." value="<%= searchInput != null ? searchInput : "" %>">
+            <input type="text" name="searchInput" class="search-input"
+                   placeholder="Search requests..."
+                   value="<%= searchInput != null ? searchInput : "" %>">
 
             <select name="statusFilter" class="search-input">
                 <option value="" <%= (statusFilter == null || statusFilter.equals("")) ? "selected" : "" %>>All Status</option>
-                <option value="pending" <%= "pending".equals(statusFilter) ? "selected" : "" %>>Pending</option>
+                <option value="pending"  <%= "pending".equals(statusFilter)  ? "selected" : "" %>>Pending</option>
                 <option value="approved" <%= "approved".equals(statusFilter) ? "selected" : "" %>>Approved</option>
                 <option value="declined" <%= "declined".equals(statusFilter) ? "selected" : "" %>>Declined</option>
             </select>
 
             <button type="submit" class="search-btn">Search</button>
 
+            <%-- Show reset link when any filter is active --%>
             <% if ((searchInput != null && !searchInput.trim().isEmpty()) || (statusFilter != null && !statusFilter.trim().isEmpty())) { %>
                 <a href="RequestsList" class="reset-btn">View All</a>
             <% } %>
@@ -69,10 +80,11 @@
                     No results found.
                 </div>
             <% } else {
+                // For each Request, the servlet pre-attaches "reqUser_<id>" and "equipment_<id>" attributes
                 for (Request req : requestsList) {
                     User reqUser = (User) request.getAttribute("reqUser_" + req.getId());
                     Equipment eq = (Equipment) request.getAttribute("equipment_" + req.getId());
-                    String status = req.getStatus().toLowerCase();
+                    String status = req.getStatus().toLowerCase(); // used for CSS class and label
             %>
                 <a class="request-item" href="RequestDetail?id=<%= req.getId() %>">
                     <div class="user-name"><%= reqUser.getFName() %> <%= reqUser.getLName() %></div>

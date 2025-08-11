@@ -10,22 +10,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+
 import com.equitrack.dao.EquipmentDao;
 import com.equitrack.model.Equipment;
 import com.equitrack.model.User;
 import com.equitrack.service.FormBuilder;
 
 /**
- * Servlet that handles editing of existing equipment
- * 
- * Only users with the 'Admin' and 'Manager' role are allowed to access this
- * functionality
- * 
+ * Edit existing equipment
+ *
+ * Only users with Admin or Manager roles may access this page
  */
 @WebServlet("/EditEquipment")
 @MultipartConfig
 public class EditEquipmentServlet extends HttpServlet {
 
+	/**
+	 * Shows the edit form for the selected equipment
+	 *
+	 * Redirects to Login if not authenticated, blocks Regular users
+	 *
+	 * @param request  HTTP request (expects "id" parameter)
+	 * @param response HTTP response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -33,11 +42,13 @@ public class EditEquipmentServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
 
+		// Authentication check
 		if (user == null) {
 			response.sendRedirect("Login");
 			return;
 		}
 
+		// Authorization: Regular users cannot edit equipment
 		if (user.getRole().equalsIgnoreCase("Regular")) {
 			request.setAttribute("message", "Access Denied: You do not have permission to access this page.");
 			request.setAttribute("success", false);
@@ -49,14 +60,14 @@ public class EditEquipmentServlet extends HttpServlet {
 		EquipmentDao dao = new EquipmentDao();
 		Equipment equipment = dao.getEquipment(id);
 
+		// Guard: invalid or missing id
 		if (equipment == null) {
 			response.getWriter().write("<h1>Equipment not found.</h1>");
 			return;
 		}
 
-		// Build form using FormBuilder
+		// Build form using FormBuilder for consistent UI
 		FormBuilder builder = new FormBuilder();
-		String status = equipment.isOperationalString();
 
 		builder.setTitle("Edit Equipment").setAction("EditEquipment").setMethod("post")
 				.addHiddenInput("id", equipment.getId()).addRequiredInput("text", "Name:", "name", equipment.getName())
@@ -71,7 +82,7 @@ public class EditEquipmentServlet extends HttpServlet {
 				.addInput("textarea", "Notes:", "notes", equipment.getNotes() != null ? equipment.getNotes() : "")
 				.removeDefaultSubmit()
 				.addCustomLine("<div class='form-buttons'>" + "<button type='submit'>Save Changes</button>"
-						+ "<a href='DetailView?id=" + equipment.getId() + "' class='back-btn'>Cancel</a></div>");
+						+ "<a href='DetailView?id=" + equipment.getId() + "' class='back-btn'>Cancel</a>" + "</div>");
 
 		String formHtml = builder.createForm(false, true);
 
@@ -82,6 +93,17 @@ public class EditEquipmentServlet extends HttpServlet {
 		request.getRequestDispatcher("/WEB-INF/Views/EditEquipment.jsp").forward(request, response);
 	}
 
+	/**
+	 * Applies edits and saves the equipment
+	 *
+	 * Expects parameters: id, name, location, notes, isOperational. Optionally
+	 * accepts an uploaded "imageFile"
+	 *
+	 * @param request  HTTP request with multipart form data
+	 * @param response HTTP response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -90,11 +112,13 @@ public class EditEquipmentServlet extends HttpServlet {
 		String id = request.getParameter("id");
 		Equipment equipment = dao.getEquipment(id);
 
+		// Basic field updates
 		equipment.setName(request.getParameter("name"));
 		equipment.setLocation(request.getParameter("location"));
 		equipment.setNotes(request.getParameter("notes"));
 		equipment.setOperational(Boolean.parseBoolean(request.getParameter("isOperational")));
 
+		// Optional image upload
 		Part filePart = request.getPart("imageFile");
 		if (filePart != null && filePart.getSize() > 0) {
 			String fileName = filePart.getSubmittedFileName();
@@ -102,12 +126,13 @@ public class EditEquipmentServlet extends HttpServlet {
 			equipment.setImagePath("images/" + fileName);
 		}
 
+		// Persist changes
 		dao.updateEquipment(equipment);
 
+		// Confirmation
 		request.setAttribute("message", "Equipment updated successfully");
 		request.setAttribute("isSuccessful", true);
 		request.setAttribute("returnTo", "ListView");
-		
 		request.getRequestDispatcher("/WEB-INF/Views/confirmation.jsp").forward(request, response);
 	}
 }
