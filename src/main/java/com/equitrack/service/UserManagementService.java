@@ -52,10 +52,11 @@ public class UserManagementService {
 		UserDao dao = new UserDao();
 		User userToEdit = dao.getUserById(id);
 		LoginService login = new LoginService();
-		password = login.hashPassword(password);
+		String hashpassword = login.hashPassword(password);
 
-		if (userToEdit != null && userToEdit.getPassword().equals(password)) {
+		if (userToEdit != null && userToEdit.getPassword().equals(hashpassword)) {
 			userToEdit.setEmail(newEmail);
+			userToEdit.setPassword(password);
 			return dao.updateUser(userToEdit);
 		}
 

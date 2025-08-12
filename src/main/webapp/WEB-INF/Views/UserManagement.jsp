@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@page import="com.equitrack.service.FormBuilder"%>
 <%@page import="com.equitrack.dao.UserDao"%>
+<%@page import="com.equitrack.model.User" %>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.UUID"%>
 
