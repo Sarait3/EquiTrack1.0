@@ -19,7 +19,9 @@ public class DBConnection {
         }
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + db +
-                "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+			"?useSSL=true&requireSSL=true&verifyServerCertificate=false" +
+			"&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+
 
         return DriverManager.getConnection(url, user, pass);
     }
