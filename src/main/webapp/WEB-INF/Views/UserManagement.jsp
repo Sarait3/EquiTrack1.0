@@ -4,6 +4,7 @@
 <%@page import="com.equitrack.dao.UserDao"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.UUID"%>
+<%@page import="com.equitrack.model.User"%>
 
 <%
 User user = (User) request.getAttribute("user");
