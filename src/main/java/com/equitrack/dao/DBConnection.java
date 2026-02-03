@@ -14,14 +14,10 @@ public class DBConnection {
         String user = System.getenv("DB_USER");
         String pass = System.getenv("DB_PASSWORD");
 
-        if (port == null || port.isEmpty()) {
-            port = "3306";
-        }
+        if (port == null || port.isBlank()) port = "5432";
+        if (db == null || db.isBlank()) db = "postgres";
 
-        String url = "jdbc:mysql://" + host + ":" + port + "/" + db +
-			"?useSSL=true&requireSSL=true&verifyServerCertificate=false" +
-			"&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-
+        String url = "jdbc:postgresql://" + host + ":" + port + "/" + db + "?sslmode=require";
 
         return DriverManager.getConnection(url, user, pass);
     }
