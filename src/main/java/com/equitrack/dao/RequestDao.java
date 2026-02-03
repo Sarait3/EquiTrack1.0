@@ -21,11 +21,11 @@ import com.equitrack.model.User;
 public class RequestDao {
 	// Constants for request table column names
 	private static final String requestColId = "id";
-	private static final String requestColUserId = "userId";
-	private static final String requestColEquipmentId = "equipmentId";
-	private static final String requestColRequestDate = "requestDate";
-	private static final String requestColCheckoutDate = "checkoutDate";
-	private static final String requestColReturnDate = "returnDate";
+	private static final String requestColUserId = "userid";
+	private static final String requestColEquipmentId = "equipmentid";
+	private static final String requestColRequestDate = "requestdate";
+	private static final String requestColCheckoutDate = "checkoutdate";
+	private static final String requestColReturnDate = "returndate";
 	private static final String requestColLocation = "location";
 	private static final String requestColNotes = "notes";
 	private static final String requestColStatus = "status";
