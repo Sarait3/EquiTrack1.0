@@ -19,12 +19,12 @@ import com.equitrack.model.Equipment;
 public class EquipmentDao {
 	// Constants for equipment table column names
 	private static final String equipmentColId = "id";
-	private static final String equipmentColName = "itemName";
-	private static final String equipmentColIsOperational = "isOperational";
+	private static final String equipmentColName = "itemname";
+	private static final String equipmentColIsOperational = "isoperational";
 	private static final String equipmentColLocation = "location";
 	private static final String equipmentColImagePath = "imagePath";
 	private static final String equipmentColNotes = "notes";
-	private static final String equipmentColReturnDate = "returnDate";
+	private static final String equipmentColReturnDate = "returndate";
 
 	/**
 	 * Retrieves all equipment records from the database
