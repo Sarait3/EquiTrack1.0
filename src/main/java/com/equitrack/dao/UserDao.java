@@ -13,9 +13,9 @@ import com.equitrack.service.UserBuilder;
 public class UserDao {
 	// Constants for column names in the 'users' table
 	private static final String userColId = "id";
-	private static final String userColRole = "userRole";
-	private static final String userColFName = "fName";
-	private static final String userColLName = "lName";
+	private static final String userColRole = "userrole";
+	private static final String userColFName = "fname";
+	private static final String userColLName = "lname";
 	private static final String userColEmail = "email";
 	private static final String userColPass = "password";
 
